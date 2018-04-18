@@ -1,16 +1,11 @@
 #!/bin/bash
 #
-cd /home/cameronc/gitdir/remoll/build/output
-read -p 'Folder: ' mod
-i=1
+dir=$HOME/gitdir/dose_remoll/build/output
+i=2
 while [ $i -le 10 ];
 do
-  hadd out_${mod}${i}/remoll_${mod}_1M_int1.root out_${mod}${i}/remoll_${mod}_1M_1.root out_${mod}${i}/remoll_${mod}_1M_2.root  
-  rm out_${mod}${i}/remoll_${mod}_1M_1.root
-  rm out_${mod}${i}/remoll_${mod}_1M_2.root
-  mv out_${mod}${i}/remoll_${mod}_1M_int1.root out_${mod}${i}/remoll_${mod}_1M_1.root
-  hadd out_${mod}${i}/remoll_${mod}_1M_int2.root out_${mod}${i}/remoll_${mod}_1M_1.root out_${mod}${i}/remoll_${mod}_1M.root 
-  rm out_${mod}${i}/remoll_${mod}_1M_1.root
-  rm out_${mod}${i}/remoll_${mod}_1M.root
-  mv out_${mod}${i}/remoll_${mod}_1M_int2.root out_${mod}${i}/remoll_${mod}_1M.root
+  #destination, add in, add original
+	hadd $dir/result.root $dir/out_AlCan$i/remoll_beam_tracking_1M_NEW.root $dir/Result.root
+	let i=i+1
+	mv $dir/result.root $dir/Result.root
 done

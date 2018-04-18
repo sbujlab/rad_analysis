@@ -1,36 +1,42 @@
 #!/bin/bash
 #
-outLocation=$HOME/gitdir/remoll/build/output/
-cd $outLocation
 
-read -p 'Modifier: ' mod
-read -p 'Number of jobs: ' j
-i=1
+############################ 
+##### Define Functions #####
 
+#####
+# Run jobs
 
-# I want to create the runscript.sh file, the runexample.mac file, and maybe even the mollerMother.gdml file all in one go.
-# Create functions that will print such files if called, then call them, maybe with case flags to turn them on/off based on default settings of how I feel at the time
+iterator () {
 
+  outLocation=$HOME/gitdir/remoll/build/output/
+  cd $outLocation
+  i=1
+  
+  read -p 'Number of jobs: ' j
 
-for i in `seq 1 $j`;
-do
-	name="out_${mod}${i}"
-	mkdir $name
-	cd $name
-	qsub ../../macros/runscript_${mod}.sh
-  sleep 1
-  cd ..
-done
+  for i in `seq 1 $j`;
+  do
+    name="out_${mod}${i}"
+    mkdir $name
+    cd $name
+    qsub ../../macros/runscript_${mod}.sh
+    sleep 1
+    cd ..
+  done
+}
 
 #####
 # Create runexample_${mod}.mac file
+
+macroPrinter () {
 
   buildLocation=$HOME/gitdir/remoll/build/
   cd $buildLocation
 
   macroFileName="macros/runexample_${mod}.mac"
 
-
+/bin/cat <<EOM >$macroFileName
   # Macrofile
   # This must be called before initialize
   /remoll/setgeofile ../../geometry/mollerMother_${mod}.gdml
@@ -53,30 +59,40 @@ done
   #/remoll/seed 123456
   /remoll/filename remoll_${mod}_1M.root
   /run/beamOn 1000000
+EOM
+}
 
 #####
 # Create runscript_${mod}.sh file
+
+runscriptPrinter () {
 
   buildLocation=$HOME/gitdir/remoll/build/
   cd $buildLocation
 
   qsubFileName="macros/runscript_${mod}.sh"
   
+/bin/cat <<EOM >$qsubFileName
   #!/bin/bash
   #
   #$ -cwd
   #$ -j y
   #$ -S /bin/bash
   ../../remoll ../../macros/runexample_${mod}.mac
+EOM
+}
 
 #####
 # create mollerMother_${mod}.gdml file
+
+motherGDMLPrinter () {
 
   buildLocation=$HOME/gitdir/remoll/build/
   cd $buildLocation
 
   motherFileName="geometry/mollerMother_${mod}.gdml"
 
+/bin/cat <<EOM >$motherFileName
   <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
   <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/gdml.xsd">
 
@@ -110,39 +126,39 @@ done
         <solidref ref="boxMother"/>
 
         <physvol>
-        <file name="../../geometry/targetDaughter_merged.gdml"/>
+        <file name="../../geometry/targetDaughter_${mod}.gdml"/>
         <positionref ref="targetCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
 
         <physvol>
-        <file name="../../geometry/hallDaughter_merged.gdml"/>
+        <file name="../../geometry/hallDaughter_${mod}.gdml"/>
         <positionref ref="hallCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
         <physvol>
-        <file name="../../geometry/detectorDaughter_merged.gdml"/>
+        <file name="../../geometry/detectorDaughter_${mod}.gdml"/>
         <positionref ref="detectorCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
         <physvol>
-        <file name="../../geometry/upstreamDaughter_merged.gdml"/>
+        <file name="../../geometry/upstreamDaughter_${mod}.gdml"/>
         <positionref ref="upstreamCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
         <physvol>
-        <file name="../../geometry/hybridDaughter_merged.gdml"/>
+        <file name="../../geometry/hybridDaughter_${mod}.gdml"/>
         <positionref ref="hybridCenter"/>
         <rotationref ref="identity"/>
         </physvol>    
 
   <!--
         <physvol>
-        <file name="../../geometry/dumpDaughter.gdml"/>
+        <file name="../../geometry/dumpDaughter_${mod}.gdml"/>
         <positionref ref="hybridCenter"/>
         <rotationref ref="identity"/>
         </physvol>    
@@ -156,3 +172,39 @@ done
     </setup>
    
   </gdml> 
+EOM
+}
+
+
+########################
+##### Main Program #####
+
+
+if [ $# != 0 ]; then
+  read -p 'Modifier: ' mod
+  for input in $@; do
+    case $input in
+      macro)
+        macroPrinter
+      ;;
+      runscript)
+        runscriptPrinter
+      ;;
+      GDML)
+        motherGDMLPrinter  
+      ;;
+      iterator)
+        iterator
+      ;;
+      *)
+        echo "Usage: macro, runscript, GDML, or iterator"
+      ;;
+    esac
+  #shift
+  done
+elif [ $# == 0 ]; then
+  read -p 'Modifier for iterator, macro and runscript creation: ' mod
+  macroPrinter
+  runscriptPrinter
+  iterator
+fi
