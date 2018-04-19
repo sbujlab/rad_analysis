@@ -75,6 +75,7 @@ Int_t fGenDetHit_det[__IO_MAXHIT];
 Int_t fGenDetHit_trid[__IO_MAXHIT];
 Int_t fGenDetHit_pid[__IO_MAXHIT];
 Double_t fGenDetHit_P[__IO_MAXHIT];
+Double_t fGenDetHit_E[__IO_MAXHIT];
 Double_t fGenDetHit_PZ[__IO_MAXHIT];
 Double_t fGenDetHit_X[__IO_MAXHIT];
 Double_t fGenDetHit_Y[__IO_MAXHIT];
@@ -84,10 +85,10 @@ Double_t fGenDetHit_VY[__IO_MAXHIT];
 Double_t fGenDetHit_VZ[__IO_MAXHIT];
 
 // List of sensitive detectors:
-const int n_detectors= 4;
+const int n_detectors= 1;
 
-Int_t SensVolume_v[n_detectors] = {100,6,9,53};//,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,51,52,53,54};
-TString sdet[n_detectors]={"dumpDet","Roof","Dump","GateValve"};
+Int_t SensVolume_v[n_detectors] = {9002};//,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,51,52,53,54};
+TString sdet[n_detectors]={"9002"};
 // Idealized vacuum detector near dump = 100
 // Hall roof = 6
 // Hall walls = 7
@@ -149,7 +150,7 @@ int main(Int_t argc,Char_t* argv[]) {
   ofstream list_outputs;
 
   //remoll Tree
-  TChain * Tmol =new TChain("T");
+  TChain * Tmol =new TChain("t");
   //Cameron Clarke runs:
   //input info:
   int n_files;
@@ -208,20 +209,30 @@ int main(Int_t argc,Char_t* argv[]) {
   // Alright: Everything necessary exists for me to plot vertex vs. z plots, but the R vs. z plots are probably enough for now to be honest (need to be set to some absolute scale). It would be nice to have a radiation at top of hall plot vs. z (color mapped maybe) distribution as well though. I also want to generate plots of the last significant scattering vertex, not just the particle creation vertices, in case these are significantly different.
 
   //generic hit (for sens detectors)
-  Tmol->SetBranchAddress("rate",&fEvRate);
-  Tmol->SetBranchAddress("hit.n",&fNGenDetHit);
-  Tmol->SetBranchAddress("hit.det",&fGenDetHit_det);
-  Tmol->SetBranchAddress("hit.pid",&fGenDetHit_pid);
-  Tmol->SetBranchAddress("hit.trid",&fGenDetHit_trid);
-  Tmol->SetBranchAddress("hit.p",&fGenDetHit_P);
-  Tmol->SetBranchAddress("hit.pz",&fGenDetHit_PZ);
-  Tmol->SetBranchAddress("hit.x",&fGenDetHit_X);
-  Tmol->SetBranchAddress("hit.y",&fGenDetHit_Y);
-  Tmol->SetBranchAddress("hit.z",&fGenDetHit_Z);
-  Tmol->SetBranchAddress("hit.vx",&fGenDetHit_VX);
-  Tmol->SetBranchAddress("hit.vy",&fGenDetHit_VY);
-  Tmol->SetBranchAddress("hit.vz",&fGenDetHit_VZ);
-  Int_t nentries = (Int_t)Tmol->GetEntries();
+  //Tmol->SetBranchAddress("rate",&fEvRate);
+  //Tmol->SetBranchAddress("hit.n",&fNGenDetHit);
+  ///Tmol->SetBranchAddress("hit.det",&fGenDetHit_det);
+  //Tmol->SetBranchAddress("hit.pid",&fGenDetHit_pid);
+  //Tmol->SetBranchAddress("hit.trid",&fGenDetHit_trid);
+  //Tmol->SetBranchAddress("hit.p",&fGenDetHit_P);
+  ///Tmol->SetBranchAddress("hit.pz",&fGenDetHit_PZ);
+  ///Tmol->SetBranchAddress("hit.x",&fGenDetHit_X);
+  ///Tmol->SetBranchAddress("hit.y",&fGenDetHit_Y);
+  ///Tmol->SetBranchAddress("hit.z",&fGenDetHit_Z);
+  Tmol->SetBranchAddress("pdgID",&fGenDetHit_pid);
+  Tmol->SetBranchAddress("pz",&fGenDetHit_PZ);
+  Tmol->SetBranchAddress("E",&fGenDetHit_E);
+  Tmol->SetBranchAddress("x",&fGenDetHit_X);
+  Tmol->SetBranchAddress("y",&fGenDetHit_Y);
+  Tmol->SetBranchAddress("z",&fGenDetHit_Z);
+  Tmol->SetBranchAddress("volID",&fGenDetHit_det);
+  Tmol->SetBranchAddress("x0",&fGenDetHit_VX);
+  Tmol->SetBranchAddress("y0",&fGenDetHit_VY);
+  Tmol->SetBranchAddress("z0",&fGenDetHit_VZ);
+  ///Tmol->SetBranchAddress("hit.vx",&fGenDetHit_VX);
+  ///Tmol->SetBranchAddress("hit.vy",&fGenDetHit_VY);
+  ///Tmol->SetBranchAddress("hit.vz",&fGenDetHit_VZ);
+  Int_t nentries = (Int_t)Tmol->GetEntries()/18; // 1 Million only
 
   if (kSaveRootFile){
     TString rootfilestatus="RECREATE";
@@ -237,10 +248,7 @@ int main(Int_t argc,Char_t* argv[]) {
   gStyle->SetNumberContours(255);
 
   //indices asigned to each detector
-  detectormap[6]=1;     // Roof det
-  detectormap[9]=2;     // Dump det
-  detectormap[53]=3;    // Gatevalve det
-  detectormap[100]=0;   // dumpDet
+  detectormap[9002]=0;  // CipDet
 
   //indices asigned to pid numbers
   pidmap[11]=0; //electron 
@@ -277,17 +285,17 @@ int main(Int_t argc,Char_t* argv[]) {
   for (int i=0; i<nentries ; i++) {
     Tmol->GetEntry(i);
     for (int j = 0; j<fNGenDetHit; j++){
-      if(kVertices && fGenDetHit_PZ[j]<=0.0 && (fGenDetHit_X[j]<=2.0 &&fGenDetHit_X[j]>=-2.0) && (fGenDetHit_Y[j]<=2.0 && fGenDetHit_Y[j]>=-2.0) && (fGenDetHit_det[j]==SensVolume_v[0] || fGenDetHit_det[j]==SensVolume_v[1] || fGenDetHit_det[j]==SensVolume_v[2] || fGenDetHit_det[j]==SensVolume_v[3]) && (TMath::Abs(fGenDetHit_pid[j])==11 || fGenDetHit_pid[j]==22 || fGenDetHit_pid[j]==2112) ){//total into the hall
+      if(kVertices && fGenDetHit_PZ[j]<=0.0 && (fGenDetHit_X[j]<=2000.0 &&fGenDetHit_X[j]>=-2000.0) && (fGenDetHit_Y[j]<=2000.0 && fGenDetHit_Y[j]>=-2000.0) && (fGenDetHit_det[j]==SensVolume_v[0]) && (TMath::Abs(fGenDetHit_pid[j])==11 || fGenDetHit_pid[j]==22 || fGenDetHit_pid[j]==2112) ){//total into the hall
 	      //big set of for loops!!
 	      detid=detectormap[fGenDetHit_det[j]]; 
         pid=pidmap[(Int_t)TMath::Abs(fGenDetHit_pid[j])];
-        kineE = TMath::Sqrt(TMath::Power(fGenDetHit_P[j]*1000,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit_pid[j])],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit_pid[j])];
-        if (kineE >= 0.1){
+        kineE = fGenDetHit_E[j]*1 - pidmass[(Int_t)TMath::Abs(fGenDetHit_pid[j])];
+        if (kineE >= 0.1){// 0.1 MeV
           flux_local[detid][pid]++;
           power_local[detid][pid]+=kineE;
           HistoE_RadDet[detid][pid]->Fill(kineE,1);
-          HistoVertex_RadDet[detid][pid]->Fill(fGenDetHit_VZ[j]*100,fGenDetHit_VY[j]*100,kineE);
-          HistoHit_RadDet[detid][pid]->Fill(fGenDetHit_X[j]*100,fGenDetHit_Y[j]*100,kineE);
+          HistoVertex_RadDet[detid][pid]->Fill(fGenDetHit_VZ[j]/10,fGenDetHit_VY[j]/10,kineE);
+          HistoHit_RadDet[detid][pid]->Fill(fGenDetHit_X[j]/10,fGenDetHit_Y[j]/10,kineE);
         }
       }
     }

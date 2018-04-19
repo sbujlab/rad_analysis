@@ -84,26 +84,9 @@ Double_t fGenDetHit_VY[__IO_MAXHIT];
 Double_t fGenDetHit_VZ[__IO_MAXHIT];
 
 // List of sensitive detectors:
-const int n_detectors= 4;
+const int n_detectors= 1;
 
-Int_t SensVolume_v[n_detectors] = {100,6,9,53};//,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,51,52,53,54};
-TString sdet[n_detectors]={"dumpDet","Roof","Dump","GateValve"};
-// Idealized vacuum detector near dump = 100
-// Hall roof = 6
-// Hall walls = 7
-// Hall floor = 8
-// Dump walls = 9
-// Dump lead shield left = 10
-// Dump lead shield right = 11
-// Neckdown: 12 - 21
-// Nitrogen Atm wall = 22
-// DS Dump = 23
-// Dump water tank = 24
-// Dump water = 25
-// Dump extension beampipe = 51
-// Telescoping beampipe = 52
-// Gatevalve = 53
-// Midpipe = 54
+Int_t SensVolume_v[n_detectors] = {100};// Idealized vacuum detector near dump = 100
 
 const int n_energy_ranges = 1;
 const int n_particles = 3;
@@ -112,8 +95,8 @@ const int n_particles = 3;
 Double_t flux_local[n_detectors][n_particles]={{0}};
 Double_t power_local[n_detectors][n_particles]={{0}};
 
-std::map<int,int> pidmap;
 std::map<int,int> detectormap;
+std::map<int,int> pidmap;
 std::map<int,double> pidmass;
 
 // FIXME get the hit_radius cuts right based on new beam pipes etc.
@@ -152,45 +135,28 @@ int main(Int_t argc,Char_t* argv[]) {
   TChain * Tmol =new TChain("T");
   //Cameron Clarke runs:
   //input info:
+  const int n_mills = 1;// FIXME number of million events
   int n_files;
-  const int n_mills = 18;// FIXME number of million events
+  n_files = atoi(argv[2]) - 1;
   Int_t n_events = n_mills*1e6;
   Int_t beamcurrent = 85;//uA
-  TString added_file_array[n_mills]={""};//200]={""};
-  if (n_mills==1){
-    n_files = atoi(argv[2]) - 1;
-    for (int v=0 ; v <= n_files ; v++){ 
-      int r = v;
-      ostringstream temp_str_stream2;
-      ostringstream temp_str_stream3;
-      temp_str_stream2<<r;
-      TString vS;
-      vS=temp_str_stream2.str();
-      if (v==0){
-        temp_str_stream3<<"/home/cameronc/gitdir/prex_cam/build/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M.root";
-      }
-      else {
-        temp_str_stream3<<"/home/cameronc/gitdir/prex_cam/build/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M_"<<vS<<".root";
-      }
-      added_file_array[v]=temp_str_stream3.str();
-      Tmol->Add(added_file_array[v]);
-      std::cout<<"File: "<<added_file_array[v]<<std::endl;
+  TString added_file_array[200]={""};
+  for (int v=0 ; v <= n_files ; v++){ 
+    int r = v;
+    ostringstream temp_str_stream2;
+    ostringstream temp_str_stream3;
+    temp_str_stream2<<r;
+    TString vS;
+    vS=temp_str_stream2.str();
+    if (v==0){
+      temp_str_stream3<<"/home/cameronc/gitdir/prex_cam/build/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M.root";
     }
-  }
-  else if (n_mills==18){
-    n_files = n_mills;//atoi(argv[2]) - 1;
-    for (int v=0 ; v < n_files ; v++){ 
-      int r = v;
-      ostringstream temp_str_stream2;
-      ostringstream temp_str_stream3;
-      temp_str_stream2<<r;
-      TString vS;
-      vS=temp_str_stream2.str();
-      temp_str_stream3<<"/home/cameronc/gitdir/prex_cam/build/out_"<<argv[1]<<"_"<<v+1<<"/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M.root";
-      added_file_array[v]=temp_str_stream3.str();
-      Tmol->Add(added_file_array[v]);
-      std::cout<<"File: "<<added_file_array[v]<<std::endl;
+    else {
+      temp_str_stream3<<"/home/cameronc/gitdir/prex_cam/build/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M/prex_dump_"<<argv[1]<<"_"<<n_mills<<"M_"<<vS<<".root";
     }
+    added_file_array[v]=temp_str_stream3.str();
+    Tmol->Add(added_file_array[v]);
+    std::cout<<"File: "<<added_file_array[v]<<std::endl;
   }
   
   ostringstream temp_str_stream4;
@@ -237,10 +203,7 @@ int main(Int_t argc,Char_t* argv[]) {
   gStyle->SetNumberContours(255);
 
   //indices asigned to each detector
-  detectormap[6]=1;     // Roof det
-  detectormap[9]=2;     // Dump det
-  detectormap[53]=3;    // Gatevalve det
-  detectormap[100]=0;   // dumpDet
+  detectormap[100]=0;   // Cyl det
 
   //indices asigned to pid numbers
   pidmap[11]=0; //electron 
@@ -256,6 +219,7 @@ int main(Int_t argc,Char_t* argv[]) {
   TH2D *HistoHit_RadDet[n_detectors][n_particles];
 
   TString spid[n_particles]={"e+-","#gamma","n0"};
+  TString sdet[n_detectors]={"dumpDet","Roof","Dump","GateValve"};
   int n_bins[4][n_particles]={
     {3000,3000,750},
     {200,200,50},
@@ -277,7 +241,7 @@ int main(Int_t argc,Char_t* argv[]) {
   for (int i=0; i<nentries ; i++) {
     Tmol->GetEntry(i);
     for (int j = 0; j<fNGenDetHit; j++){
-      if(kVertices && fGenDetHit_PZ[j]<=0.0 && (fGenDetHit_X[j]<=2.0 &&fGenDetHit_X[j]>=-2.0) && (fGenDetHit_Y[j]<=2.0 && fGenDetHit_Y[j]>=-2.0) && (fGenDetHit_det[j]==SensVolume_v[0] || fGenDetHit_det[j]==SensVolume_v[1] || fGenDetHit_det[j]==SensVolume_v[2] || fGenDetHit_det[j]==SensVolume_v[3]) && (TMath::Abs(fGenDetHit_pid[j])==11 || fGenDetHit_pid[j]==22 || fGenDetHit_pid[j]==2112) ){//total into the hall
+      if(kVertices && fGenDetHit_PZ[j]<=0.0 && (fGenDetHit_X[j]<=2.0 &&fGenDetHit_X[j]>=-2.0) && (fGenDetHit_Y[j]<=2.0 && fGenDetHit_Y[j]>=-2.0) && (fGenDetHit_det[j]==SensVolume_v[0]) && (TMath::Abs(fGenDetHit_pid[j])==11 || fGenDetHit_pid[j]==22 || fGenDetHit_pid[j]==2112) ){//total into the hall
 	      //big set of for loops!!
 	      detid=detectormap[fGenDetHit_det[j]]; 
         pid=pidmap[(Int_t)TMath::Abs(fGenDetHit_pid[j])];
