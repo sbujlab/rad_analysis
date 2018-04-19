@@ -184,16 +184,16 @@ if [ $# != 0 ]; then
   read -p 'Modifier: ' mod
   for input in $@; do
     case $input in
-      macro)
+      -m|macro)
         macroPrinter
       ;;
-      runscript)
+      -r|runscript)
         runscriptPrinter
       ;;
-      GDML)
+      gdml|-g|GDML)
         motherGDMLPrinter  
       ;;
-      iterator)
+      -s|submit|-i|iterator)
         iterator
       ;;
       *)
