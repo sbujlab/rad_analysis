@@ -1205,7 +1205,7 @@ int main(Int_t argc,Char_t* argv[]) {
   shld_sum=0;
   TList * list_flux = new TList;
   printf(" \n Total_Radiation_Flux_into_the_specified_detector_(Counts, for %d events)\n",n_events);
-  sprintf(line2,"Total_Radiation_Flux_into_the_speicified_detector_(Counts, for %d events",n_events);
+  sprintf(line2,"Total_Radiation_Flux_into_the_specified_detector_(Counts, for %d events",n_events);
   list_flux->Add(new TObjString(line2));
   list_outputs << line2 << endl;
   printf(" %20s %20s","Type","E_Range_(MeV)");

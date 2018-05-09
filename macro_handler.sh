@@ -20,10 +20,24 @@ iterator () {
     name="out_${mod}${i}"
     mkdir $name
     cd $name
+    mkdir geometry
+    cp -rp ../../geometry/*${mod}* ./geometry/ 
+    if [ $changeInclude -eq true ];
+      then
+      changeIncludes $i
+    fi
     qsub ../../macros/runscript_${mod}.sh
     sleep 1
     cd ..
   done
+}
+
+#####
+# Create a new included .xml file to be read in by whatever the ${mod} files expect
+
+changeIncludes () {
+  n=$1
+  # Take the number n and use it to print (in ./geometry/) a schematically identical included .xml file that gets placed next to the rest of the gdml files
 }
 
 #####
@@ -39,7 +53,7 @@ macroPrinter () {
 /bin/cat <<EOM >$macroFileName
   # Macrofile
   # This must be called before initialize
-  /remoll/setgeofile ../../geometry/mollerMother_${mod}.gdml
+  /remoll/setgeofile mollerMother_${mod}.gdml #../../geometry/mollerMother_${mod}.gdml
   # This must be explicitly called
   /run/initialize
   /remoll/addfield $buildLocation/map_directory/blockyHybrid_rm_3.0.txt
@@ -91,7 +105,8 @@ motherGDMLPrinter () {
   cd $buildLocation
 
   motherFileName="geometry/mollerMother_${mod}.gdml"
-
+                                        # Be prepared to remove the ${mod}s from the superfluous sub files each time
+                                        # Hard code the ones hat I know work for each application.
 /bin/cat <<EOM >$motherFileName
   <?xml version="1.0" encoding="UTF-8" standalone="no" ?>
   <gdml xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/gdml.xsd">
@@ -126,39 +141,39 @@ motherGDMLPrinter () {
         <solidref ref="boxMother"/>
 
         <physvol>
-        <file name="../../geometry/targetDaughter_${mod}.gdml"/>
+        <file name="geometry/targetDaughter_${mod}.gdml"/>
         <positionref ref="targetCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
 
         <physvol>
-        <file name="../../geometry/hallDaughter_${mod}.gdml"/>
+        <file name="geometry/hallDaughter_${mod}.gdml"/>
         <positionref ref="hallCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
         <physvol>
-        <file name="../../geometry/detectorDaughter_${mod}.gdml"/>
+        <file name="geometry/detectorDaughter_${mod}.gdml"/>
         <positionref ref="detectorCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
         <physvol>
-        <file name="../../geometry/upstreamDaughter_${mod}.gdml"/>
+        <file name="geometry/upstreamDaughter_${mod}.gdml"/>
         <positionref ref="upstreamCenter"/>
         <rotationref ref="identity"/>
         </physvol>
 
         <physvol>
-        <file name="../../geometry/hybridDaughter_${mod}.gdml"/>
+        <file name="geometry/hybridDaughter_${mod}.gdml"/>
         <positionref ref="hybridCenter"/>
         <rotationref ref="identity"/>
         </physvol>    
 
   <!--
         <physvol>
-        <file name="../../geometry/dumpDaughter_${mod}.gdml"/>
+        <file name="geometry/dumpDaughter_${mod}.gdml"/>
         <positionref ref="hybridCenter"/>
         <rotationref ref="identity"/>
         </physvol>    
@@ -179,11 +194,16 @@ EOM
 ########################
 ##### Main Program #####
 
+changeInclude=false
 
 if [ $# != 0 ]; then
   read -p 'Modifier: ' mod
   for input in $@; do
     case $input in
+      -c|changeIncludes)
+        changeInclude=true
+        echo "Be sure to place this before iterator flag"
+      ;;
       -m|macro)
         macroPrinter
       ;;
@@ -195,6 +215,7 @@ if [ $# != 0 ]; then
       ;;
       -s|submit|-i|iterator)
         iterator
+        echo "Be sure to place this at the end of the list of flags"
       ;;
       *)
         echo "Usage: macro, runscript, GDML, or iterator"
