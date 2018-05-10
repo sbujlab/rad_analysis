@@ -11,22 +11,31 @@ iterator () {
 
   outLocation=$HOME/gitdir/remoll/build/output/
   cd $outLocation
-  i=1
+  initial=1
   
   read -p 'Number of jobs: ' j
 
-  for i in `seq 1 $j`;
+  if [ $changeInclude -eq 0 ];
+    then
+    let initial=0
+    read -p 'Minimum value of included.xml variable: ' min
+    read -p 'Maximum value of included.xml variable: ' max
+    read -p 'Step size of included.xml variable: ' step
+    let final=$(printf "%.0f\n" "$(bc -l <<< \($max-$min\)/$step)")
+  fi 
+
+  for i in `seq $initial $final`;
   do
-    name="out_${mod}${i}"
+    name=out_${mod}${i}
     mkdir $name
     cd $name
     mkdir geometry
-    cp -rp ../../geometry/*${mod}* ./geometry/ 
-    if [ $changeInclude -eq true ];
+    cp -rp "${HOME}"/gitdir/remoll/geometry/*${mod}* "./geometry/"
+    if [ $changeInclude -eq 0 ];
       then
-      changeIncludes $i
+      changeIncludes $i $mod $min $max $final
     fi
-    qsub ../../macros/runscript_${mod}.sh
+  #  qsub ../../macros/runscript_${mod}.sh
     sleep 1
     cd ..
   done
@@ -36,7 +45,13 @@ iterator () {
 # Create a new included .xml file to be read in by whatever the ${mod} files expect
 
 changeIncludes () {
-  n=$1
+  n=$(printf "%.2f\n" "$(bc -l <<< ${3}+\(\(${1}\)*\(${4}-${3}\)/${5}\))") #initial parameter + (iterator parameter-1) * (final - initial parameter limits) / number of steps
+  modifier=${2}
+  include_name=geometry/include_${modifier}_variable.xml
+/bin/cat <<EOM >$include_name
+<!-- $include_name include file for ${n} parameter, $((${1}+1)) step of $((${5}+1)), running from ${3} to ${4} -->
+EOM
+
   # Take the number n and use it to print (in ./geometry/) a schematically identical included .xml file that gets placed next to the rest of the gdml files
 }
 
@@ -194,15 +209,15 @@ EOM
 ########################
 ##### Main Program #####
 
-changeInclude=false
+changeInclude=1
 
 if [ $# != 0 ]; then
   read -p 'Modifier: ' mod
   for input in $@; do
     case $input in
       -c|changeIncludes)
-        changeInclude=true
-        echo "Be sure to place this before iterator flag"
+        let changeInclude=0
+        echo "Be sure to place changeIncludes before iterator flag"
       ;;
       -m|macro)
         macroPrinter
@@ -215,10 +230,10 @@ if [ $# != 0 ]; then
       ;;
       -s|submit|-i|iterator)
         iterator
-        echo "Be sure to place this at the end of the list of flags"
+        echo "Be sure to place iterator at the end of the list of flags"
       ;;
       *)
-        echo "Usage: macro, runscript, GDML, or iterator"
+        echo "Usage: macro printing, include file iteration, runscript printing, GDML printing, or iterator running"
       ;;
     esac
   #shift
