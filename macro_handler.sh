@@ -110,7 +110,7 @@ runscriptPrinter () {
   #$ -cwd
   #$ -j y
   #$ -S /bin/bash
-  ../../remoll ../../macros/runexample_${mod}.mac
+  ./remoll ./runexample_${mod}.mac
 EOM
 }
 
@@ -235,15 +235,20 @@ if [ $# != 0 ]; then
         iterator
         echo "Be sure to place iterator at the end of the list of flags"
       ;;
+      --help|-h|help)
+        echo "Usage: -m macro printing, -c include file printing, -r runscript printing, -g GDML printing, or -i iterator running"
+      ;;
       *)
-        echo "Usage: macro printing, include file iteration, runscript printing, GDML printing, or iterator running"
+        echo "Usage: -m macro printing, -c include file printing, -r runscript printing, -g GDML printing, or -i iterator running"
       ;;
     esac
   #shift
   done
 elif [ $# == 0 ]; then
   read -p 'Modifier for iterator, macro and runscript creation: ' mod
-  macroPrinter
-  runscriptPrinter
+  #changeInclude=0
+  #motherGDMLPrinter
+  #macroPrinter
+  #runscriptPrinter
   iterator
 fi
