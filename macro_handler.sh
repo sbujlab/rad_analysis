@@ -13,7 +13,7 @@ iterator () {
   cd $outLocation
   initial=1
   
-  read -p 'Number of jobs: ' j
+  read -p 'Number of jobs: ' final
 
   if [ $changeInclude -eq 0 ];
     then
@@ -38,7 +38,7 @@ iterator () {
       then
       changeIncludes $i $mod $min $max $final
     fi
-  #  qsub ../../macros/runscript_${mod}.sh
+    #qsub ./runscript_${mod}.sh
     sleep 1
     cd ..
   done
@@ -71,7 +71,7 @@ macroPrinter () {
 /bin/cat <<EOM >$macroFileName
   # Macrofile
   # This must be called before initialize
-  /remoll/setgeofile mollerMother_${mod}.gdml #../../geometry/mollerMother_${mod}.gdml
+  /remoll/setgeofile geometry/mollerMother_${mod}.gdml #../../geometry/mollerMother_${mod}.gdml
   # This must be explicitly called
   /run/initialize
   /remoll/addfield $buildLocation/map_directory/blockyHybrid_rm_3.0.txt
