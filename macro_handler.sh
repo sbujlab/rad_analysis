@@ -31,6 +31,9 @@ iterator () {
     cd $name
     mkdir geometry
     cp -rp "${HOME}"/gitdir/remoll/geometry/*${mod}* "./geometry/"
+    cp -rp "${HOME}"/gitdir/remoll/build/remoll "./remoll"
+    cp -rp "${HOME}"/gitdir/remoll/build/macros/runscript_${mod}.sh "./runscript_${mod}.sh"
+    cp -rp "${HOME}"/gitdir/remoll/build/macros/runexample_${mod}.mac "./runexample_${mod}.mac"
     if [ $changeInclude -eq 0 ];
       then
       changeIncludes $i $mod $min $max $final
