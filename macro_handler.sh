@@ -38,7 +38,7 @@ iterator () {
       then
       changeIncludes $i $mod $min $max $final
     fi
-    #qsub ./runscript_${mod}.sh
+    qsub ../../macros/runscript_${mod}.sh
     sleep 1
     cd ..
   done
@@ -69,28 +69,28 @@ macroPrinter () {
   macroFileName="macros/runexample_${mod}.mac"
 
 /bin/cat <<EOM >$macroFileName
-  # Macrofile
-  # This must be called before initialize
-  /remoll/setgeofile geometry/mollerMother_${mod}.gdml #../../geometry/mollerMother_${mod}.gdml
-  # This must be explicitly called
-  /run/initialize
-  /remoll/addfield $buildLocation/map_directory/blockyHybrid_rm_3.0.txt
-  /remoll/addfield $buildLocation/map_directory/blockyUpstream_rm_1.1.txt
-  # Raster and initial angle stuff
-  /remoll/oldras false
-  /remoll/rasx 5 mm
-  /remoll/rasy 5 mm
-  /remoll/beamene 11 GeV
-  /remoll/gen beam
-  /remoll/beamcurr 85 microampere
-  # Make interactions with W, Cu, and Pb
-  # realistic rather than pure absorbers
-  /remoll/kryptonite false
-  /process/list
-  # Specify random number seed - DO NOT USE THE SAME SEED OVER AND OVER AGAIN
-  #/remoll/seed 123456
-  /remoll/filename remoll_${mod}_1M.root
-  /run/beamOn 1000000
+# Macrofile
+# This must be called before initialize
+/remoll/setgeofile geometry/mollerMother_${mod}.gdml #../../geometry/mollerMother_${mod}.gdml
+# This must be explicitly called
+/run/initialize
+/remoll/addfield $buildLocation/map_directory/blockyHybrid_rm_3.0.txt
+/remoll/addfield $buildLocation/map_directory/blockyUpstream_rm_1.1.txt
+# Raster and initial angle stuff
+/remoll/oldras false
+/remoll/rasx 5 mm
+/remoll/rasy 5 mm
+/remoll/beamene 11 GeV
+/remoll/gen beam
+/remoll/beamcurr 85 microampere
+# Make interactions with W, Cu, and Pb
+# realistic rather than pure absorbers
+/remoll/kryptonite false
+/process/list
+# Specify random number seed - DO NOT USE THE SAME SEED OVER AND OVER AGAIN
+#/remoll/seed 123456
+/remoll/filename remoll_${mod}_1M.root
+/run/beamOn 1000000
 EOM
 }
 
@@ -105,12 +105,12 @@ runscriptPrinter () {
   qsubFileName="macros/runscript_${mod}.sh"
   
 /bin/cat <<EOM >$qsubFileName
-  #!/bin/bash
-  #
-  #$ -cwd
-  #$ -j y
-  #$ -S /bin/bash
-  ./remoll ./runexample_${mod}.mac
+#!/bin/bash
+#
+#$ -cwd
+#$ -j y
+#$ -S /bin/bash
+./remoll ./runexample_${mod}.mac
 EOM
 }
 
