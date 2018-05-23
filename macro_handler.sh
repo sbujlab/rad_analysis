@@ -51,6 +51,18 @@ iterator () {
   done
 }
 
+
+#####
+# Read the user's modifier input from the command line, only if the user hasn't already done so or if the input was null
+
+modReader(){
+  if [[ $modSet -eq 1 ]] || [[ -z "$mod" ]]
+  then
+    modSet=0
+    read -p 'Modifier for iterator, macro and runscript creation: ' mod
+  fi
+}
+
 #####
 # Set the current build directory by looking up at most 3 directories (including the current working directory) and searching in each one for a directory named build who position is assigned to a variable $BUILD
 setBuildDir () {
@@ -278,17 +290,6 @@ elif [ $# == 0 ]; then
   #motherGDMLPrinter
   #macroPrinter
   #runscriptPrinter
+  #modReader
   iterator
 fi
-
-#####
-# Read the user's modifier input from the command line, only if the user hasn't already done so or if the input was null
-
-modReader(){
-  if [[ $modSet -eq 1 ]] || [[ -z "$mod" ]]
-  then
-    modSet=0
-    read -p 'Modifier for iterator, macro and runscript creation: ' mod
-  fi
-}
-
