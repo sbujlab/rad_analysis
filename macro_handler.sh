@@ -1,14 +1,6 @@
 #!/bin/bash
 #
 
-cd ..
-cd build
-cd ..
-cd build
-cd ..
-cd build
-BUILD=$PWD
-
 ############################ 
 ##### Define Functions #####
 
@@ -16,7 +8,9 @@ BUILD=$PWD
 # Run jobs
 
 iterator () {
-
+  setBuildDir
+  cd $BUILD
+  modReader 
   outLocation=$PWD/output/
   cd $outLocation
   initial=1
@@ -58,7 +52,27 @@ iterator () {
 }
 
 #####
-# Create a new included .xml file to be read in by whatever the ${mod} files expect
+# Set the current build directory by looking up at most 3 directories (including the current working directory) and searching in each one for a directory named build who position is assigned to a variable $BUILD
+setBuildDir () {
+
+if [ -d ./build ]
+  then
+    pushd ./build > /dev/null
+    BUILD=$PWD
+  elif [ -d ../build ]
+  then
+    pushd ../build > /dev/null
+    BUILD=$PWD;
+  elif [ -d ../../build ]
+  then
+    pushd ../../build > /dev/null
+    BUILD=$PWD;
+  fi
+  popd > /dev/null
+}
+
+#####
+# Create a new included .xml file to be read in by whatever the ${mod} files expect - not intended for standalone command line use - called by iterator only if needed.
 
 changeIncludes () {
   n=$(printf "%.2f\n" "$(bc -l <<< ${3}+\(\(${1}\)*\(${4}-${3}\)/${5}\))") #initial parameter + (iterator parameter-1) * (final - initial parameter limits) / number of steps
@@ -76,14 +90,16 @@ EOM
 
 macroPrinter () {
 
+  setBuildDir
   cd $BUILD
+  modReader 
 
   macroFileName="macros/runexample_${mod}.mac"
 
 /bin/cat <<EOM >$macroFileName
 # Macrofile
 # This must be called before initialize
-/remoll/setgeofile geometry/mollerMother_${mod}.gdml #../../geometry/mollerMother_${mod}.gdml
+/remoll/setgeofile geometry/mollerMother_${mod}.gdml
 # This must be explicitly called
 /run/initialize
 /remoll/addfield $BUILD/map_directory/blockyHybrid_rm_3.0.txt
@@ -111,7 +127,9 @@ EOM
 
 runscriptPrinter () {
 
+  setBuildDir
   cd $BUILD
+  modReader 
 
   qsubFileName="macros/runscript_${mod}.sh"
   
@@ -130,8 +148,9 @@ EOM
 
 motherGDMLPrinter () {
 
+  setBuildDir
   cd $BUILD
-
+  modReader 
   motherFileName="geometry/mollerMother_${mod}.gdml"
                                         # Be prepared to remove the ${mod}s from the superfluous sub files each time
                                         # Hard code the ones hat I know work for each application.
@@ -222,42 +241,54 @@ EOM
 ##### Main Program #####
 
 changeInclude=1
+modSet=1
 
 if [ $# != 0 ]; then
   read -p 'Modifier: ' mod
   for input in $@; do
     case $input in
-      -c|changeIncludes)
+      -c|--changeIncludes)
         let changeInclude=0
         echo "Be sure to place changeIncludes before iterator flag"
       ;;
-      -m|macro)
+      -m|--macro)
         macroPrinter
       ;;
-      -r|runscript)
+      -r|--runscript)
         runscriptPrinter
       ;;
-      gdml|-g|GDML)
+      -g|--gdml|--GDML)
         motherGDMLPrinter  
       ;;
-      -s|submit|-i|iterator)
+      -i|--submit|-s|--iterator)
         iterator
         echo "Be sure to place iterator at the end of the list of flags"
       ;;
-      --help|-h|help)
-        echo "Usage: -m macro printing, -c include file printing, -r runscript printing, -g GDML printing, or -i iterator running"
-      ;;
-      *)
-        echo "Usage: -m macro printing, -c include file printing, -r runscript printing, -g GDML printing, or -i iterator running"
+      --help|-h|help|*)
+        echo "Usage: Execute from a folder either containing, or one or two directories below a folder containing the 'build' directory you intend to run from
+
+Usage: -m macro printing, -c include file printing (not standalone), -r runscript printing, -g GDML printing, or -i iterator running"
       ;;
     esac
   #shift
   done
 elif [ $# == 0 ]; then
-  read -p 'Modifier for iterator, macro and runscript creation: ' mod
+  #read -p 'Modifier for iterator, macro and runscript creation: ' mod
   #changeInclude=0
   #motherGDMLPrinter
   #macroPrinter
   #runscriptPrinter
   iterator
 fi
+
+#####
+# Read the user's modifier input from the command line, only if the user hasn't already done so or if the input was null
+
+modReader(){
+  if [[ $modSet -eq 1 ]] || [[ -z "$mod" ]]
+  then
+    modSet=0
+    read -p 'Modifier for iterator, macro and runscript creation: ' mod
+  fi
+}
+
