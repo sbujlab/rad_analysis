@@ -36,6 +36,7 @@ iterator () {
     cd $name
     mkdir geometry
     cp -rp "${BUILD}"/geometry/*${mod}* "./geometry/"
+    cp -rp "${BUILD}"/geometry/mollerParallel.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/materials.xml "./geometry/"
     cp -rp "${BUILD}"/geometry/schema "./geometry/"
     cp -rp "${BUILD}"/remoll "./remoll"
@@ -71,16 +72,18 @@ if [ -d ./build ]
   then
     pushd ./build > /dev/null
     BUILD=$PWD
+    popd > /dev/null
   elif [ -d ../build ]
   then
     pushd ../build > /dev/null
     BUILD=$PWD;
+    popd > /dev/null
   elif [ -d ../../build ]
   then
     pushd ../../build > /dev/null
     BUILD=$PWD;
+    popd > /dev/null
   fi
-  popd > /dev/null
 }
 
 #####
@@ -121,11 +124,11 @@ macroPrinter () {
 /remoll/rasx 5 mm
 /remoll/rasy 5 mm
 /remoll/beamene 11 GeV
-/remoll/gen beam
+/remoll/evgen/set beam
 /remoll/beamcurr 85 microampere
 # Make interactions with W, Cu, and Pb
 # realistic rather than pure absorbers
-/remoll/kryptonite false
+/remoll/kryptonite/set false
 /process/list
 # Specify random number seed - DO NOT USE THE SAME SEED OVER AND OVER AGAIN
 #/remoll/seed 123456
@@ -288,8 +291,8 @@ elif [ $# == 0 ]; then
   #read -p 'Modifier for iterator, macro and runscript creation: ' mod
   #changeInclude=0
   #motherGDMLPrinter
-  #macroPrinter
-  #runscriptPrinter
+  macroPrinter
+  runscriptPrinter
   #modReader
   iterator
 fi
