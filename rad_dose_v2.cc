@@ -15,7 +15,7 @@ Plots added for y vs z vertex distributions
 
 Daniel DeLayo Thursday June 14 15:55:00 EDT 2018
 Convert branch addressing from remoll v1 to v2 structure, and
-update remolltypes.hh inheritance for simpler root style variable use
+update remolltypes.hh inheritance for simpler vector style variable reading (while preserving array notation)
 
 */
 
@@ -68,6 +68,8 @@ update remolltypes.hh inheritance for simpler root style variable use
 
 #include "remolltypes.hh"
 
+
+
 using namespace std;
 
 //#define __IO_MAXHIT 10000
@@ -97,8 +99,8 @@ Double_t fGenDetHit_edep[__IO_MAXHIT];
 
 //cout<<"echo "<<__LINE__<<endl;
 
-vector < remollGenericDetectorHit_t > * fGenDetHitHelper = new vector < remollGenericDetectorHit_t >; 
-vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
+std::vector < remollGenericDetectorHit_t > * fGenDetHitHelper =0;// new std::vector < remollGenericDetectorHit_t >; 
+std::vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
 //cout<<"echo "<<__LINE__<<endl;
 
 // List of sensitive detectors:
@@ -317,11 +319,9 @@ cout<<"echo "<<__LINE__<<endl;
   Tmol->SetBranchAddress("hit.vy",&fGenDetHit_VY);
   Tmol->SetBranchAddress("hit.vz",&fGenDetHit_VZ);
 */
-  Tmol->SetBranchAddress("hit",&fGenDetHit);
-cout<<"echo "<<__LINE__<<endl;
+  Tmol->SetBranchAddress("hit",&fGenDetHitHelper);
 
-  Int_t nentries = (Int_t)Tmol->GetEntries();
-cout<<"echo "<<__LINE__<<endl;
+  const Int_t nentries = (Int_t)Tmol->GetEntries();
 
   if (kSaveRootFile){
     TString rootfilestatus="RECREATE";
@@ -540,14 +540,23 @@ cout<<"echo "<<__LINE__<<endl;
   printf("Normalized to %d events \n",n_events);
 cout<<"echo "<<__LINE__<<endl;
   for (int i=0; i<nentries ; i++) {
+cout<<"echo "<<__LINE__<<" ptr="<<fGenDetHitHelper<<endl;
+cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->capacity()<<endl;
+cout<<"echo "<<__LINE__<<" ptr="<<&fGenDetHit<<endl;
+//cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<endl;
     Tmol->GetEntry(i);
-cout<<"echo "<<__LINE__<<endl;
+cout<<"echo "<<__LINE__<<" ptr="<<fGenDetHitHelper<<endl;
+cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->capacity()<<endl;
+cout<<"echo "<<__LINE__<<" ptr="<<&fGenDetHit<<endl;
+//cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<endl;
     fGenDetHit = *fGenDetHitHelper; 
-cout<<"echo "<<__LINE__<<fGenDetHit.size()<<endl;
 
 int out_count = 0;
-    for (int j = 0; j<fGenDetHit.size(); j++){
-cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<" it="<<out_count++<<endl;
+    for (int j = 0; j < fGenDetHit.size(); j++){
+cout<<"echo "<<__LINE__<<" ptr="<<&fGenDetHit<<" it="<<j<<endl;
+cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<" it="<<j<<endl;
+cout<<"echo "<<__LINE__<<" ptr="<<fGenDetHitHelper<<" it="<<j<<endl;
+cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->size()<<" it="<<j<<endl;
 
 
       //for rate weighted simulations
