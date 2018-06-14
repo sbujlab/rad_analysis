@@ -98,9 +98,6 @@ Double_t fGenDetHit_edep[__IO_MAXHIT];
 */
 
 //cout<<"echo "<<__LINE__<<endl;
-
-std::vector < remollGenericDetectorHit_t > * fGenDetHitHelper =0;// new std::vector < remollGenericDetectorHit_t >; 
-std::vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
 //cout<<"echo "<<__LINE__<<endl;
 
 // List of sensitive detectors:
@@ -197,6 +194,9 @@ TFile * rootfile;
 int main(Int_t argc,Char_t* argv[]) {
   TApplication theApp("App",&argc,argv);
 
+  gInterpreter->GenerateDictionary("remollGenericDetectorHit_t";"remolltypes.hh");
+  std::vector < remollGenericDetectorHit_t > * fGenDetHitHelper =0;// new std::vector < remollGenericDetectorHit_t >; 
+  std::vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
 cout<<"echo "<<__LINE__<<endl;
 
   ofstream list_outputs;
