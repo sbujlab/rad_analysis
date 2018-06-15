@@ -32,6 +32,7 @@ update remolltypes.hh inheritance for simpler vector style variable reading (whi
 #include <TRandom.h>
 #include <TRandom3.h>
 #include <TApplication.h>
+#include <TRint.h>
 #include <TSystem.h>
 
 #include <TH2F.h>
@@ -68,8 +69,6 @@ update remolltypes.hh inheritance for simpler vector style variable reading (whi
 
 #include "remolltypes.hh"
 
-
-
 using namespace std;
 
 //#define __IO_MAXHIT 10000
@@ -97,8 +96,6 @@ Double_t fGenDetHit_edep[__IO_MAXHIT];
 //Double_t fGenDetHit_T[__IO_MAXHIT];
 */
 
-//cout<<"echo "<<__LINE__<<endl;
-//cout<<"echo "<<__LINE__<<endl;
 
 // List of sensitive detectors:
 const int n_detectors= 16;
@@ -143,7 +140,7 @@ std::map<int,int> pidmap;
 std::map<int,double> pidmass;
 
 // FIXME get the hit_radius cuts right based on new beam pipes etc.
-Double_t hit_radius_min[2] = {0.46038,0.46038}; //m inner radius of the beam pipe 45.72 cm and outer radius of the beam pipe 46.038 cm and radius of the detector plane is 1.9 m
+//Double_t hit_radius_min[2] = {0.46038,0.46038}; //m inner radius of the beam pipe 45.72 cm and outer radius of the beam pipe 46.038 cm and radius of the detector plane is 1.9 m
 Double_t hit_radius;
 Double_t kineE;
 
@@ -192,12 +189,13 @@ void set_plot_style();
 
 TFile * rootfile;
 int main(Int_t argc,Char_t* argv[]) {
-  TApplication theApp("App",&argc,argv);
+  TRint theRint("Rint",0,0);//,&argc,argv);
+  //theRint.ExecLogon();
+  //TApplication theApp("App",&argc,argv);
 
-  gInterpreter->GenerateDictionary("remollGenericDetectorHit_t";"remolltypes.hh");
-  std::vector < remollGenericDetectorHit_t > * fGenDetHitHelper =0;// new std::vector < remollGenericDetectorHit_t >; 
-  std::vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
-cout<<"echo "<<__LINE__<<endl;
+//  gInterpreter->GenerateDictionary("remollGenericDetectorHit_t","remolltypes.hh");
+  std::vector < remollGenericDetectorHit_t > *fGenDetHitHelper = new std::vector < remollGenericDetectorHit_t >; 
+  //std::vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
 
   ofstream list_outputs;
 
@@ -210,7 +208,6 @@ cout<<"echo "<<__LINE__<<endl;
   //Cameron Clarke runs:
   //input info:
   const int n_mills = 1;// FIXME number of million events
-cout<<"echo "<<__LINE__<<endl;
 
   Int_t n_events = n_mills*1e6;
   Int_t beamcurrent = 85;//uA
@@ -302,11 +299,9 @@ cout<<"echo "<<__LINE__<<endl;
   // Alright: Everything necessary exists for me to plot vertex vs. z plots, but the R vs. z plots are probably enough for now to be honest (need to be set to some absolute scale). It would be nice to have a radiation at top of hall plot vs. z (color mapped maybe) distribution as well though. I also want to generate plots of the last significant scattering vertex, not just the particle creation vertices, in case these are significantly different.
 
 
-cout<<"echo "<<__LINE__<<endl;
 
   //generic hit (for sens detectors)
   Tmol->SetBranchAddress("rate",&fEvRate);
-cout<<"echo "<<__LINE__<<endl;
   /*Tmol->SetBranchAddress("hit.n",&fNGenDetHit);
   Tmol->SetBranchAddress("hit.det",&fGenDetHit_det);
   Tmol->SetBranchAddress("hit.pid",&fGenDetHit_pid);
@@ -393,22 +388,22 @@ cout<<"echo "<<__LINE__<<endl;
   //                                      { change the binning to reflect the opposite nature, good, all binned in one spot, decent-needs better boundaries->775?, 775?, decent, decent, seems to miss a whole lot }
   //                                      { hall**            ,  target       ,  collar        ,  coll1shld , +magnet    ,  coll4shld,  hybshld         ,  dump ,  other,  all  }; -> Hall is an inverted volume in x and z, not y.
   //                                was   {-315 tp 1781.837   , -315 to 315   ,  275.1 to 315.1,  397.45-775,  775.55-812,  812-992  ,  992-1821.837    ,  dump ,  other,  all  }; -> Hall is an inverted volume in x and z, not y.
-  Double_t z_vertex_cuts_low[n_regions] = {-235.-80           , -235.-80.     ,  285.1+10.-20. ,  315.1     ,  775.05+0.5,  812.     ,  992.            ,  2800., -500. , -3000.}; //last index store vertices outside of other ranges 
-  Double_t z_vertex_cuts_up[n_regions]  = { 1821.837          ,  235.+80.     ,  285.1+10.+20. ,  812.      ,  812.      ,  992.     ,  1821.837        ,  6000.,  2000.,  6000.};
-  Double_t x_vertex_cuts_low[n_regions] = {-296.5             ,  91.5-296.-80., -18.5-20.      , -213.-1.   , -386.84-1. , -386.84-1.,  91.5-285.75-40. , -500. , -500. , -3000.};
-  Double_t x_vertex_cuts_up[n_regions]  = { 296.5             ,  91.5+296.+80.,  18.5+20.      ,  213.+1.   ,  386.84+1. ,  386.84+1.,  91.5+285.75+40. ,  500. ,  500. ,  3000.};
-  Double_t y_vertex_cuts_low[n_regions] = {-330.              , -40.-250.-40. , -18.5-20.      , -213.-1.   , -290.-1.   , -290.-1.  , -40.-250.-40.    , -500. , -500. , -1000.};
-  Double_t y_vertex_cuts_up[n_regions]  = { 330.              , -40.+250.+40. ,  18.5+20.      ,  213.+1.   ,  290.+1.   ,  290.+1.  , -40.+250.+40.    ,  500. ,  500. ,  2500.};
-  Double_t R_vertex_cuts_up[n_regions]  = { 5000.             ,  500.         ,  75.           ,  350.      ,  500.      ,  500.     ,  450.            ,  500. ,  500. ,  3500.};
+  Double_t z_vertex_cuts_low[n_regions] = {-2350.-800.           , -2350.-800.     ,  2851.+100.-200. ,  3151.     ,  7750.5+5.,  8120.     ,  9920.            ,  28000., -5000. , -30000.}; //last index store vertices outside of other ranges 
+  Double_t z_vertex_cuts_up[n_regions]  = { 18218.37          ,  2350.+800.     ,  2851.+100.+200. ,  8120.      ,  8120.      ,  9920.     ,  18218.37        ,  60000.,  20000.,  60000.};
+  Double_t x_vertex_cuts_low[n_regions] = {-2965.             ,  9150.-2960.-800., -185.-200.      , -2130.-10.   , -3868.4-10. , -3868.4-10.,  915.-2857.5-400. , -5000. , -5000. , -30000.};
+  Double_t x_vertex_cuts_up[n_regions]  = { 2965.             ,  915.+2960.+800.,  185.+200.      ,  2130.+10.   ,  3868.4+10. ,  3868.4+10.,  915.+2857.5+400. ,  5000. ,  5000. ,  30000.};
+  Double_t y_vertex_cuts_low[n_regions] = {-3300.              , -400.-2500.-400. , -185.-200.      , -2130.-10.   , -2900.-10.   , -2900.-10.  , -400.-2500.-400.    , -5000. , -5000. , -10000.};
+  Double_t y_vertex_cuts_up[n_regions]  = { 3300.              , -400.+2500.+400. ,  185.+200.      ,  2130.+10.   ,  2900.+10.   ,  2900.+10.  , -400.+2500.+400.    ,  5000. ,  5000. ,  25000.};
+  Double_t R_vertex_cuts_up[n_regions]  = { 5000.             ,  5000.         ,  750.           ,  3500.      ,  5000.      ,  5000.     ,  4500.            ,  5000. ,  5000. ,  35000.};
   Int_t    x_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1000, 1000, 1000}; // default, overridden below
   Int_t    y_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1000, 1000, 1000};
   Int_t    z_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1200, 1000, 1000};
   Int_t    R_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 500 , 1000, 1000};
   // FIXME Use a constant bin/area metric.
-  Int_t    x_area_per_bin = 1; // 1 cm per bin
-  Int_t    y_area_per_bin = 1; // 1 cm per bin
-  Int_t    z_area_per_bin = 1; // 1 cm per bin
-  Int_t    R_area_per_bin = 1; // 1 cm per bin
+  Int_t    x_area_per_bin = 10; // 10 mm per bin
+  Int_t    y_area_per_bin = 10; // 10 mm per bin
+  Int_t    z_area_per_bin = 10; // 10 mm per bin
+  Int_t    R_area_per_bin = 10; // 10 mm per bin
   for (int q=0;q<n_regions;q++){  
     z_vertex_bin_counts[q] = (z_vertex_cuts_up[q]-z_vertex_cuts_low[q])/z_area_per_bin;
     x_vertex_bin_counts[q] = (x_vertex_cuts_up[q]-x_vertex_cuts_low[q])/x_area_per_bin;
@@ -417,25 +412,25 @@ cout<<"echo "<<__LINE__<<endl;
   }
 
   // If in classic mode these values will be used (smaller bin ranges):
-  Double_t Hall_z_vertices_low = -350.;
-  Double_t Hall_z_vertices_up  =  1800.;
-  Double_t Hall_x_vertices_low = -500.;
-  Double_t Hall_x_vertices_up  =  500.;
-  Double_t Hall_y_vertices_low = -500.;
-  Double_t Hall_y_vertices_up  =  500.;
-  Double_t Hall_R_vertices_up  =  3500.;
+  Double_t Hall_z_vertices_low = -3500.;
+  Double_t Hall_z_vertices_up  =  18000.;
+  Double_t Hall_x_vertices_low = -5000.;
+  Double_t Hall_x_vertices_up  =  5000.;
+  Double_t Hall_y_vertices_low = -5000.;
+  Double_t Hall_y_vertices_up  =  5000.;
+  Double_t Hall_R_vertices_up  =  35000.;
   if(kVertices==kTRUE && kShlds==kFALSE){
     z_vertex_bin_counts[0] = 650;//0;
     x_vertex_bin_counts[0] = 600;//0;
     y_vertex_bin_counts[0] = 350;//0;
     R_vertex_bin_counts[0] = 300;//0;
-    Double_t Hall_z_vertices_low = -300;//0.;
-    Double_t Hall_z_vertices_up  =  350;//0.;
-    Double_t Hall_x_vertices_low = -300;//0.;
-    Double_t Hall_x_vertices_up  =  300;//0.;
-    Double_t Hall_y_vertices_low = -100;//0.;
-    Double_t Hall_y_vertices_up  =  250;//0.;
-    Double_t Hall_R_vertices_up  =  350;//0.;
+    Double_t Hall_z_vertices_low = -3000;//0.;
+    Double_t Hall_z_vertices_up  =  3500;//0.;
+    Double_t Hall_x_vertices_low = -3000;//0.;
+    Double_t Hall_x_vertices_up  =  3000;//0.;
+    Double_t Hall_y_vertices_low = -1000;//0.;
+    Double_t Hall_y_vertices_up  =  2500;//0.;
+    Double_t Hall_R_vertices_up  =  3500;//0.;
   }
 
   // OLD vertices
@@ -538,27 +533,19 @@ cout<<"echo "<<__LINE__<<endl;
   Double_t rho;
   Double_t phi;
   printf("Normalized to %d events \n",n_events);
-cout<<"echo "<<__LINE__<<endl;
   for (int i=0; i<nentries ; i++) {
-cout<<"echo "<<__LINE__<<" ptr="<<fGenDetHitHelper<<endl;
-cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->capacity()<<endl;
-cout<<"echo "<<__LINE__<<" ptr="<<&fGenDetHit<<endl;
-//cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<endl;
     Tmol->GetEntry(i);
-cout<<"echo "<<__LINE__<<" ptr="<<fGenDetHitHelper<<endl;
-cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->capacity()<<endl;
-cout<<"echo "<<__LINE__<<" ptr="<<&fGenDetHit<<endl;
-//cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<endl;
-    fGenDetHit = *fGenDetHitHelper; 
+    std::vector < remollGenericDetectorHit_t > &fGenDetHit = *fGenDetHitHelper; 
+    //cout<<"echo "<<__LINE__<<" Helper ptr="<<fGenDetHitHelper<<endl;
+    //cout<<"echo "<<__LINE__<<" Helper->capacity()="<<fGenDetHitHelper->capacity()<<endl;
+    //cout<<"echo "<<__LINE__<<" Hit ptr="<<&fGenDetHit<<endl;
+    cout<<"echo "<<__LINE__<<" Hit.size()="<<fGenDetHit.size()<<endl;
+    //fGenDetHit = *fGenDetHitHelper; 
 
 int out_count = 0;
     for (int j = 0; j < fGenDetHit.size(); j++){
-cout<<"echo "<<__LINE__<<" ptr="<<&fGenDetHit<<" it="<<j<<endl;
-cout<<"echo "<<__LINE__<<" size="<<fGenDetHit.size()<<" it="<<j<<endl;
-cout<<"echo "<<__LINE__<<" ptr="<<fGenDetHitHelper<<" it="<<j<<endl;
-cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->size()<<" it="<<j<<endl;
 
-
+      //if(fGenDetHit[j].trid>4) break;
       //for rate weighted simulations
       //if(fEvRate<0)
       //break;
@@ -566,20 +553,24 @@ cout<<"echo "<<__LINE__<<" size="<<fGenDetHitHelper->size()<<" it="<<j<<endl;
       //for e-beam on target
       //record power and flux by the hall detectors only for pid==11,22,2112 particles
       // FIXME edit the detector definitions
+      cout<<"fGenDetHit[j].det = "<<fGenDetHit[j].det<<endl;
+      cout<<"fGenDetHit[j].pz = "<<fGenDetHit[j].pz<<endl;
+      cout<<"fGenDetHit[j].trid = "<<fGenDetHit[j].trid<<endl;
+      cout<<"fGenDetHit[j].vz = "<<fGenDetHit[j].vz<<endl;
+      cout<<"fGenDetHit[j].pid = "<<fGenDetHit[j].pid<<endl;
+/*FIXME - wasn't commented*/
       if(kVertices && (fGenDetHit[j].det==SensVolume_v[0] || fGenDetHit[j].det==SensVolume_v[1] || fGenDetHit[j].det==SensVolume_v[2]) && (TMath::Abs(fGenDetHit[j].pid)==11 || fGenDetHit[j].pid==22 || fGenDetHit[j].pid==2112) ){//total into the hall
-cout<<"echo "<<__LINE__<<endl;
 	      //big set of for loops!!
 	      detid=detectormap[fGenDetHit[j].det]; 
-cout<<"echo "<<__LINE__<<endl;
         if (fGenDetHit[j].vz<0)//for backside
           vrtx_z=0;
         else
           vrtx_z=1;//for forward 
 
-        if (detid==0)//for cyc. detector (det=99)
-          hit_radius = TMath::Sqrt(TMath::Power(fGenDetHit[j].x,2)+TMath::Power(fGenDetHit[j].y,2));//for the cyclindrival detector to ignore the flux going into the beam dump
-        else
-          hit_radius = 999;
+        //if (detid==0)//for cyc. detector (det=99)
+        //  hit_radius = TMath::Sqrt(TMath::Power(fGenDetHit[j].x,2)+TMath::Power(fGenDetHit[j].y,2));//for the cyclindrical detector to ignore the flux going into the beam dump
+        //else
+        //  hit_radius = 999;
         pid=pidmap[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
         //use a nested if to get the vertex range using fGenDetHit.VZ[j]
         //for (Int_t vrt_i=0;vrt_i<n_regions+1;vrt_i++){
@@ -601,7 +592,8 @@ cout<<"echo "<<__LINE__<<endl;
 //        } // Old end of for-loop, not it will add the event to any region's histgrams that may or may not overlap (before it was exclusive to just the first region that got it -> removed the 'breaks'). CSC 7/26/2017 EDIT
 
           if(vrtx>=0){
-            kineE = TMath::Sqrt(TMath::Power(fGenDetHit[j].p*1000,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
+            kineE = TMath::Sqrt(TMath::Power(fGenDetHit[j].p,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
+            cout<<"kinetic energy = "<<kineE<<endl;
             for (Int_t ke_i=0;ke_i<n_energy_ranges;ke_i++){
               if (kineE > energy_cut_low[ke_i] && kineE <= energy_cut_up[ke_i]){
                 keid=ke_i;
@@ -611,7 +603,8 @@ cout<<"echo "<<__LINE__<<endl;
                 keid=-1;
               }      
             }
-            if (keid>=0 && hit_radius > hit_radius_min[vrtx_z] ){// FIXME Should I make all the plots have an ALL region at vrtx = n_regions (an n_regions+1 index) and make the n_regions-1 index function as a catchall? YES FIXME ->>>> && vrtx<n_regions-1){
+            //cout<<"keid = "<<keid<<endl;
+            if (keid>=0) {// && hit_radius > hit_radius_min[vrtx_z] ){// FIXME Should I make all the plots have an ALL region at vrtx = n_regions (an n_regions+1 index) and make the n_regions-1 index function as a catchall? YES FIXME ->>>> && vrtx<n_regions-1){
               flux_local[vrtx][detid][pid][keid]++;
               power_local[vrtx][detid][pid][keid]+=kineE;
               rho = TMath::Sqrt(TMath::Power(fGenDetHit[j].z,2)+TMath::Power(fGenDetHit[j].x,2)); //z is in direction of beam, x is transverse, y is vertically upwards.
@@ -636,12 +629,13 @@ cout<<"echo "<<__LINE__<<endl;
               //HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit.VZ[j]*100,TMath::Sqrt(TMath::Power(fGenDetHit.VX[j]*100,2)+TMath::Power(fGenDetHit.VY[j]*100,2)),kineE/n_events);
               HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz*100,fGenDetHit[j].vy*100,kineE/n_events);
  
+              //printf("success: energy inside the ranges %4.3f \n",kineE);
             }
-            else if (hit_radius > hit_radius_min[vrtx_z])//without this condition warning will print for tracks going to the dump
-              printf("warning: energy outside the ranges %4.3f \n",kineE);
+            //else if (hit_radius > hit_radius_min[vrtx_z])//without this condition warning will print for tracks going to the dump
+            //  printf("warning: energy outside the ranges %4.3f \n",kineE);
           }// end for loop, run once per event per region it appears in
-         //Run once per event
-     /*   if (keid>=0 && hit_radius > hit_radius_min[vrtx_z]){
+     /**/    //Run once per event
+     /***   if (keid>=0 && hit_radius > hit_radius_min[vrtx_z]){
           //Fill vertex distribution 2D plots for all vertices using last index
           HistoVertex_RadDet[n_regions-1][pid][keid][0]->Fill(fGenDetHit.VX[j]*100,fGenDetHit.VY[j]*100,kineE/n_events);
           HistoVertex_RadDet[n_regions-1][pid][keid][1]->Fill(fGenDetHit.VZ[j]*100,TMath::Sqrt(TMath::Power(fGenDetHit.VX[j]*100,2)+TMath::Power(fGenDetHit.VY[j]*100,2)),kineE/n_events);
@@ -662,13 +656,14 @@ cout<<"echo "<<__LINE__<<endl;
             Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j]*100,kineE/n_events);//fill cyl. detector
           else if (detid==1 || detid==2)
             Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j]*100,fGenDetHit.X[j]*100,kineE/n_events);//fill cyl. detector
-        }*/
+        }***/
+    /*FIXME - wasn't commented*/
         }
 
         //else
         //printf("warning: vertex outside the ranges z = %4.3f cm \n",fGenDetHit.VZ[j]*100);
 	      //now repeat above set for three hall detectors to get totals for each detector
-      }
+      }/**/
 
       // FIXME New filling - measures how much radiation, and from where, each shielding block is absorbing.
       if((kShlds || kShldHits) && (fGenDetHit[j].det==SensVolume_v[3] || fGenDetHit[j].det==SensVolume_v[4] || fGenDetHit[j].det==SensVolume_v[5] || fGenDetHit[j].det==SensVolume_v[6] || fGenDetHit[j].det==SensVolume_v[7] || fGenDetHit[j].det==SensVolume_v[8] || fGenDetHit[j].det==SensVolume_v[9] || fGenDetHit[j].det==SensVolume_v[10] || fGenDetHit[j].det==SensVolume_v[11] || fGenDetHit[j].det==SensVolume_v[12] || fGenDetHit[j].det==SensVolume_v[13] || fGenDetHit[j].det==SensVolume_v[14] || fGenDetHit[j].det==SensVolume_v[15] || fGenDetHit[j].det==SensVolume_v[16] || fGenDetHit[j].det==SensVolume_v[17]) && (TMath::Abs(fGenDetHit[j].pid)==11 || fGenDetHit[j].pid==22 || fGenDetHit[j].pid==2112) ){//total into the hall
@@ -1341,7 +1336,8 @@ cout<<"echo "<<__LINE__<<endl;
   }
 
   if(kShowGraphic)
-    theApp.Run();
+    //theApp.Run();
+    theRint.Run();
 
   if (kSaveRootFile){
     rootfile->Close();
