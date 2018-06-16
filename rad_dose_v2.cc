@@ -424,13 +424,13 @@ int main(Int_t argc,Char_t* argv[]) {
     x_vertex_bin_counts[0] = 600;//0;
     y_vertex_bin_counts[0] = 350;//0;
     R_vertex_bin_counts[0] = 300;//0;
-    Double_t Hall_z_vertices_low = -3000;//0.;
-    Double_t Hall_z_vertices_up  =  3500;//0.;
-    Double_t Hall_x_vertices_low = -3000;//0.;
-    Double_t Hall_x_vertices_up  =  3000;//0.;
-    Double_t Hall_y_vertices_low = -1000;//0.;
-    Double_t Hall_y_vertices_up  =  2500;//0.;
-    Double_t Hall_R_vertices_up  =  3500;//0.;
+    Double_t Hall_z_vertices_low = -30000;//0.;
+    Double_t Hall_z_vertices_up  =  35000;//0.;
+    Double_t Hall_x_vertices_low = -30000;//0.;
+    Double_t Hall_x_vertices_up  =  30000;//0.;
+    Double_t Hall_y_vertices_low = -10000;//0.;
+    Double_t Hall_y_vertices_up  =  25000;//0.;
+    Double_t Hall_R_vertices_up  =  35000;//0.;
   }
 
   // OLD vertices
@@ -612,22 +612,22 @@ int out_count = 0;
               // FIXME edit the histograms to be filled here.
               //following if is a redundant check I already checked  vrtx for negative values up
               Histo_kineE[vrtx][pid][keid]->Fill(kineE);
-              Histo_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE/n_events);
+              Histo_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE);
               Histo_vertex_noWeight[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,1);
               if (detid==0){
-                Histo_RadDet[vrtx][pid][0]->Fill(phi,fGenDetHit[j].y,kineE/n_events);//fill cyl. phi detector
+                Histo_RadDet[vrtx][pid][0]->Fill(phi,fGenDetHit[j].y,kineE);//fill cyl. phi detector
                 if (fGenDetHit[j].z>=0)
-                  Histo_RadDet[vrtx][pid][3]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE/n_events);//fill cyl. detector	forward
+                  Histo_RadDet[vrtx][pid][3]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE);//fill cyl. detector	forward
                 else
-                  Histo_RadDet[vrtx][pid][4]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE/n_events);//fill cyl. detector	backward
+                  Histo_RadDet[vrtx][pid][4]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE);//fill cyl. detector	backward
               }	
               else if (detid==1 || detid==2)
-                Histo_RadDet[vrtx][pid][detid]->Fill(fGenDetHit[j].z,fGenDetHit[j].x,kineE/n_events);//fill roof detector
+                Histo_RadDet[vrtx][pid][detid]->Fill(fGenDetHit[j].z,fGenDetHit[j].x,kineE);//fill roof detector
 
               //Fill vertex 2D plots
-              HistoVertex_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE/n_events);
-              //HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE/n_events);
-              HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE/n_events);
+              HistoVertex_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE);
+              //HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE);
+              HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE);
  
               //printf("success: energy inside the ranges %4.3f \n",kineE);
             }
@@ -637,25 +637,25 @@ int out_count = 0;
      /**/    //Run once per event
      /***   if (keid>=0 && hit_radius > hit_radius_min[vrtx_z]){
           //Fill vertex distribution 2D plots for all vertices using last index
-          HistoVertex_RadDet[n_regions-1][pid][keid][0]->Fill(fGenDetHit.VX[j],fGenDetHit.VY[j],kineE/n_events);
-          HistoVertex_RadDet[n_regions-1][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE/n_events);
-          HistoVertex_RadDet[n_regions-1][pid][keid][2]->Fill(fGenDetHit.VZ[j],fGenDetHit.VY[j],kineE/n_events);
+          HistoVertex_RadDet[n_regions-1][pid][keid][0]->Fill(fGenDetHit.VX[j],fGenDetHit.VY[j],kineE);
+          HistoVertex_RadDet[n_regions-1][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE);
+          HistoVertex_RadDet[n_regions-1][pid][keid][2]->Fill(fGenDetHit.VZ[j],fGenDetHit.VY[j],kineE);
           Histo_kineE[n_regions][pid][keid]->Fill(kineE);
             
           if (detid==0){
-            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector //index 5 will fill all the vertices (vrtx from 0 to 6)
+            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE);//fill cyl. detector //index 5 will fill all the vertices (vrtx from 0 to 6)
             if (fGenDetHit.Z[j]>=0)		
-              Histo_RadDet[n_regions-1][pid][3]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector	
+              Histo_RadDet[n_regions-1][pid][3]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE);//fill cyl. detector	
             else
-              Histo_RadDet[n_regions-1][pid][4]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector	
+              Histo_RadDet[n_regions-1][pid][4]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE);//fill cyl. detector	
           }	
           else if (detid==1 || detid==2)
-            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE/n_events);//fill cyl. detector //index n_regions-1 will fill all the vertices (vrtx from 0 to n_regions-1)
+            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE);//fill cyl. detector //index n_regions-1 will fill all the vertices (vrtx from 0 to n_regions-1)
             //index n_regions-1 will fill all the vertices (vrtx from 0 to n_regions-1) if used here
           if (detid==0)
-            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector
+            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE);//fill cyl. detector
           else if (detid==1 || detid==2)
-            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE/n_events);//fill cyl. detector
+            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE);//fill cyl. detector
         }***/
     /*FIXME - wasn't commented*/
         }
@@ -696,16 +696,16 @@ int out_count = 0;
             // FIXME edit the histograms to be filled here.
             //following if is a redundant check I already checked  vrtx for negative values up
             Histo_shld_kineE[vrtx][pid][keid]->Fill(kineE);
-            Histo_shld_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE/n_events);
+            Histo_shld_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE);
             Histo_shld_vertex_noWeight[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,1);
-            Histo_shld_hit[vrtx][pid][keid]->Fill(fGenDetHit[j].z,kineE/n_events);
+            Histo_shld_hit[vrtx][pid][keid]->Fill(fGenDetHit[j].z,kineE);
             Histo_shld_hit_noWeight[vrtx][pid][keid]->Fill(fGenDetHit[j].z,1);
 
             //Fill vertex 2D plots
-            HistoVertex_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE/n_events);
-            HistoVertex_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE/n_events);
-            HistoHit_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE/n_events);
-            HistoHit_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].z,fGenDetHit[j].y,kineE/n_events);
+            HistoVertex_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE);
+            HistoVertex_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE);
+            HistoHit_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE);
+            HistoHit_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].z,fGenDetHit[j].y,kineE);
           }
         }
       }
@@ -1168,14 +1168,14 @@ int out_count = 0;
       for(Int_t k=0;k<2;k++){//detector                             // number of hall (roof, walls) detectors present
 	      for (Int_t s=0;s<n_regions;s++)
 	        sum+=power_local[s][k][i][j];//sum over all the vertices
-        printf("%12.3E",sum/n_events);
-	      sprintf(line1,"%s %12.3E",line1,sum/n_events);
+        printf("%12.3E",sum);
+	      sprintf(line1,"%s %12.3E",line1,sum);
 	      sum=0;
       }
       for(Int_t k=0;k<n_shlds;k++){
 	      shld_sum+=shld_power_local[k][i][j];
-        printf("%12.3E",shld_sum/n_events);
-	      sprintf(line1,"%s %12.3E",line1,shld_sum/n_events);
+        printf("%12.3E",shld_sum);
+	      sprintf(line1,"%s %12.3E",line1,shld_sum);
 	      shld_sum=0;
       }
       printf("\n");
@@ -1200,8 +1200,8 @@ int out_count = 0;
 	      sprintf(line," %20s %20s %20s",svertex[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line1," ");//empty previous values
 	      for(Int_t l=0;l<2;l++){//detector                             // number of hall (roof, wall) detectors present
-	        printf("%12.3E",power_local[i][l][j][k]/n_events);
-          sprintf(line1,"%s %12.3E",line1,power_local[i][l][j][k]/n_events);
+	        printf("%12.3E",power_local[i][l][j][k]);
+          sprintf(line1,"%s %12.3E",line1,power_local[i][l][j][k]);
 	      }
 	      printf("\n");
 	      sprintf(line," %s %s",line,line1);
@@ -1226,8 +1226,8 @@ int out_count = 0;
 	      printf(" %20s %20s %20s",svertex_shld[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line," %20s %20s %20s",svertex_shld[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line1," ");//empty previous values
-	      printf("%12.3E",shld_power_local[i][j][k]/n_events);
-        sprintf(line1,"%s %12.3E",line1,shld_power_local[i][j][k]/n_events);
+	      printf("%12.3E",shld_power_local[i][j][k]);
+        sprintf(line1,"%s %12.3E",line1,shld_power_local[i][j][k]);
 	      printf("\n");
 	      sprintf(line," %s %s",line,line1);
 	      list_power->Add(new TObjString(line));
