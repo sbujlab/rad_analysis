@@ -190,6 +190,7 @@ int main(Int_t argc,Char_t* argv[]) {
 
   //remoll Tree
   TChain * Tmol =new TChain("T");
+  Tmol->SetMakeClass(1);
   //Cameron Clarke runs:
   //input info:
   const int n_mills = 10;// FIXME number of million events
@@ -286,18 +287,30 @@ int main(Int_t argc,Char_t* argv[]) {
 
 
   //generic hit (for sens detectors)
+  Tmol->SetBranchStatus("*",0);
   Tmol->SetBranchAddress("rate",&fEvRate);
-  Tmol->SetBranchAddress("hit.n",&fNGenDetHit);
+  Tmol->SetBranchStatus("rate",1);
+  Tmol->SetBranchAddress("hit",&fNGenDetHit);
   Tmol->SetBranchAddress("hit.det",&fGenDetHit_det);
   Tmol->SetBranchAddress("hit.pid",&fGenDetHit_pid);
   Tmol->SetBranchAddress("hit.trid",&fGenDetHit_trid);
+  Tmol->SetBranchStatus("hit.det",1);
+  Tmol->SetBranchStatus("hit.pid",1);
+  Tmol->SetBranchStatus("hit.trid",1);
   Tmol->SetBranchAddress("hit.p",&fGenDetHit_P);
+  Tmol->SetBranchStatus("hit.p",1);
   Tmol->SetBranchAddress("hit.x",&fGenDetHit_X);
   Tmol->SetBranchAddress("hit.y",&fGenDetHit_Y);
   Tmol->SetBranchAddress("hit.z",&fGenDetHit_Z);
+  Tmol->SetBranchStatus("hit.x",1);
+  Tmol->SetBranchStatus("hit.y",1);
+  Tmol->SetBranchStatus("hit.z",1);
   Tmol->SetBranchAddress("hit.vx",&fGenDetHit_VX);
   Tmol->SetBranchAddress("hit.vy",&fGenDetHit_VY);
   Tmol->SetBranchAddress("hit.vz",&fGenDetHit_VZ);
+  Tmol->SetBranchStatus("hit.vx",1);
+  Tmol->SetBranchStatus("hit.vy",1);
+  Tmol->SetBranchStatus("hit.vz",1);
 
   Int_t nentries = (Int_t)Tmol->GetEntries();
 
