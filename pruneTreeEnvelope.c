@@ -11,15 +11,15 @@
 struct remollGenericDetectorHit_t {
   int det;
   int id;
-    int trid ;
+  int trid ;
   int pid;
     int gen;
     int mtrid;
     double t;
-  double x, y, z;
+    double x, y, z;
     double xl, yl, zl;
     double r, ph;
-  double px, py, pz;
+    double px, py, pz;
     double pxl, pyl, pzl;
     double sx, sy, sz;
     double p, e, m;
@@ -38,7 +38,7 @@ struct remollEventParticle_t {
     double sx, sy, sz;
     double th, ph, p;
     double tpx, tpy, tpz;
-    std::vector<double> tjx, tjy, tjz; //Trajectory information
+  std::vector<double> tjx, tjy, tjz; //Trajectory information
     remollEventParticle_t() : vx(0), vy(0), vz(0),px(0),py(0),pz(0),
     sx(0),sy(0),sz(0),th(0),ph(0),p(0),tpx(0),tpy(0),tpz(0)
     {}
@@ -55,6 +55,7 @@ remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
     newHit.det = hit.det;
     newHit.id = hit.id;
     newHit.pid = hit.pid;
+    newHit.trid = hit.trid;
     return newHit; 
 }
 
