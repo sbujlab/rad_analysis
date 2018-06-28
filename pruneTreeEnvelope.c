@@ -206,8 +206,8 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
 
             }
         }
-
-        newTree->Fill();
+        if (hitCopy->size() > 0)
+            newTree->Fill();
         hitCopy->clear();
         partCopy->clear();
     }
