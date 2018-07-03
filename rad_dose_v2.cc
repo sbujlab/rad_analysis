@@ -149,7 +149,7 @@ Double_t kineE;
 Bool_t earlybreak=kFALSE;              //exit early from the main tree entries loop
 
 Bool_t kSaveRootFile=kTRUE;           //save histograms and canvases into a rootfile
-Bool_t kShowGraphic=kTRUE;            //Show canvases and they will be saved the rootfile. Set this to false to show no graphics but save them to rootfile
+Bool_t kShowGraphic=kFALSE;            //Show canvases and they will be saved the rootfile. Set this to false to show no graphics but save them to rootfile
 
 //Boolean parameter to disable/enable saving histograms as png
 Bool_t kVertices=kTRUE;// Governs the cut region plotting
@@ -498,7 +498,7 @@ int main(Int_t argc,Char_t* argv[]) {
 	        HistoVertex_RadDet[i][j][k][1]=new TH2D(Form("HistoVertex_RadDet_v%d_p%d_k%d_2",i+1,j+1,k+1),Form(" %s from %s Area in %s MeV Range; z (mm); y (mm); (MeV)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),z_vertex_bin_counts[i],Hall_z_vertices_low-1,Hall_z_vertices_up+1,y_vertex_bin_counts[i],Hall_y_vertices_low-1,Hall_y_vertices_up+1);
         }
       }
-	    Histo_RadDet[i][j][0]=new TH2D(Form("Histo_RadDet_%d_%d_0",i+1,j+1),Form("Cyl. Det: %s from %s Area; #phi (Deg.); y (mm); (MeV)",spid[j].Data(),svertex[i].Data()),90,-90,90,100,-800,800);//default bin sizes 360 and 400
+	    Histo_RadDet[i][j][0]=new TH2D(Form("Histo_RadDet_%d_%d_0",i+1,j+1),Form("Cyl. Det: %s from %s Area; #phi (Deg.); y (mm); (MeV)",spid[j].Data(),svertex[i].Data()),90,-90,90,100,-8000,8000);//default bin sizes 360 and 400
 	    Histo_RadDet[i][j][1]=new TH2D(Form("Histo_RadDet_%d_%d_1",i+1,j+1),Form("Top Disk. Det: %s from %s Area; z (mm); x (mm); (MeV)",spid[j].Data(),svertex[i].Data()),100,-30000,30000,100,-30000,30000);//default bin sizes 300, 300
 	    Histo_RadDet[i][j][2]=new TH2D(Form("Histo_RadDet_%d_%d_2",i+1,j+1),Form("Bottom Disk. Det: %s from %s Area; z (mm); x (mm); (MeV)",spid[j].Data(),svertex[i].Data()),100,-30000,30000,100,-30000,30000);//default bin sizes 300, 300
 	    Histo_RadDet[i][j][3]=new TH2D(Form("Histo_RadDet_%d_%d_3f",i+1,j+1),Form("Cyl. Det: %s from %s Area : Forward; x (mm); y (mm); (MeV)",spid[j].Data(),svertex[i].Data()),260,-26000,26000,100,-8000,8000);//default bin sizes 520, 400
