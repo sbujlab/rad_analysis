@@ -1,0 +1,12 @@
+HDRS    =   remolltypes.hh  LinkDef.h
+SRCS    =   remolltypes.cc  hallRad.cc
+OBJS    =   remolltypes.o   hallRad.o
+OPTS	=	-std=c++11	`root-config --cflags --glibs`
+hallrad: $(OBJS)
+	rootcint remolltypes.cc -c remolltypes.hh LinkDef.h
+	g++ hallRad.o -o hallRad $(OPTS) 
+hallRad.o:
+	g++ -c hallRadiation.cc -o hallRad.o $(OPTS)
+clean:  
+	rm ./*.o
+	rm ./fom
