@@ -168,6 +168,7 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
             //Get all track ids that hit into desired det
             if (hit.det == detid)
             {
+                //std::cout << "good trid" << hit.trid << std::endl;
                 goodTRID.push_back(hit.trid);
             }
         }
@@ -177,12 +178,13 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
             remollEventParticle_t part = fPart->at(i);
             for (size_t k = 0; k < goodTRID.size(); k++)
             {
-                //Assume vector index of part vector is the track id
-                //Trid starts at 1 FIXME
+                //Assume vector index of part vector is the track id, trid starts at 1
                 //Of track ids that hit into desired det, get those that are saved
-                if (i == goodTRID.at(k))
+                int partTRID = i+1;
+                if (partTRID == goodTRID.at(k))
                 {
-                    worthyTRID.push_back(i);
+                    //std::cout << "good part TRID " << partTRID << std::endl;
+                    worthyTRID.push_back(partTRID);
                     if (forceSeptant) part = rotateVector(part);
                     partCopy->push_back(trim(part));
                     break;
