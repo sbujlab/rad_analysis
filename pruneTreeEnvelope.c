@@ -177,6 +177,8 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
             remollEventParticle_t part = fPart->at(i);
             for (size_t k = 0; k < goodTRID.size(); k++)
             {
+                //Assume vector index of part vector is the track id
+                //Trid starts at 1 FIXME
                 //Of track ids that hit into desired det, get those that are saved
                 if (i == goodTRID.at(k))
                 {
