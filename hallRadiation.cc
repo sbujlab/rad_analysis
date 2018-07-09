@@ -12,6 +12,7 @@
 #include <TNtuple.h>
 #include <TFile.h>
 #include <TDirectory.h>
+#include "TRint.h"
 #include "radDamage.hh"
 #include "remolltypes.hh"
 
@@ -46,7 +47,7 @@ void ProcessOne(string);
 radDamage radDmg;
 
 int main(int argc, char **argv){
-
+    TRint theRint("Rint",0,0);//,&argc,argv);
     int inputRes = processInput(argc,argv);
     if(inputRes)
         return inputRes;
