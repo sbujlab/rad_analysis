@@ -464,11 +464,11 @@ int main(Int_t argc,Char_t* argv[]) {
   };
   // FIXME add more, make more clear
   //                                       { hall**,  target , collar, coll1shld,+magnet ,coll4shld,dump,hybshld,other} -> Hall is an inverted volume in x and z, not y.
-  Int_t vertex_bin_ranges_low[n_regions] = {-30000. , -2350.-800., 2951.-100.-100., 4030., 7700., 8120., 9920.    ,  32000., -5000. , -30000.};//last index store vertices outside of other ranges 
-  Int_t vertex_bin_ranges_up[n_regions]  = { 30000. ,  2350.+800., 2951.+100.+100., 7700., 8120., 9920., 18218.37,  70000.,  20000.,  30000.};
-  Int_t vertex_bin_counts[n_regions]     = { 2000  ,  500     , 50           , 500 , 500 , 500 , 500     ,  1900 ,  2500 ,  6000 };
-  //Int_t vertex_bin_ranges_low[n_regions] = {-235.-80 , -235.-80., 295.1-10.-10., 403., 770., 812., 992.    , -600. };//last index store vertices outside of other ranges 
-  //Int_t vertex_bin_ranges_up[n_regions]  = { 1781.837,  235.+80., 295.1+10.+10., 770., 812., 992., 1821.837,  1822.};
+  Double_t vertex_bin_ranges_low[n_regions] = {-30000. , -2350.-800., 2951.-100.-100., 4030., 7700., 8120., 9920.    ,  32000., -5000. , -30000.};//last index store vertices outside of other ranges 
+  Double_t vertex_bin_ranges_up[n_regions]  = { 30000. ,  2350.+800., 2951.+100.+100., 7700., 8120., 9920., 18218.37,  70000.,  20000.,  30000.};
+  Double_t vertex_bin_counts[n_regions]     = { 2000  ,  500     , 50           , 500 , 500 , 500 , 500     ,  1900 ,  2500 ,  6000 };
+  //Double_t vertex_bin_ranges_low[n_regions] = {-235.-80 , -235.-80., 295.1-10.-10., 403., 770., 812., 992.    , -600. };//last index store vertices outside of other ranges 
+  //Double_t vertex_bin_ranges_up[n_regions]  = { 1781.837,  235.+80., 295.1+10.+10., 770., 812., 992., 1821.837,  1822.};
   TString ke_range[n_energy_ranges] = {"KE<10","10<KE<30","30<KE"};
   TString spid[n_particles]={"e-","#gamma","n0"};
   // The Hall, the target hut, the lead collar, the first and second shielding blocks around the 1st collimator, the shielding block in front of the hybrid and collimator 4 (and 3), the hybrid shielding hut or roof, everything else, everything.

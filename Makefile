@@ -4,12 +4,14 @@ make rad_dose:
 	rm rad_dose.o
 
 make hallRad:
-	g++ -c hallRadiation.cc -o hallRad.o `root-config --cflags --glibs`
+	g++ -g -c hallRadiation.cc -o hallRad.o `root-config --cflags --glibs`
 	g++ -c radDamage.cc -o radDamage.o `root-config --cflags --glibs`
 	g++ hallRad.o radDamage.o -o hallRad `root-config --cflags --glibs`
 	rm hallRad.o
 	rm radDamage.o
 
 clean:
+	rm rad_dose
+	rm hallRad
 	rm ./*.o
 	rm ./fom
