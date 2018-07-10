@@ -41,12 +41,14 @@ iterator () {
     cp -rp "${BUILD}"/geometry/schema "./geometry/"
     cp -rp "${BUILD}"/remoll "./remoll"
     cp -rp "${BUILD}"/macros/runscript_${mod}.sh "./runscript_${mod}.sh"
+    cp -rp "${BUILD}"/macros/runscript_${mod}.xml "./runscript_${mod}.xml"
     cp -rp "${BUILD}"/macros/runexample_${mod}.mac "./runexample_${mod}.mac"
     if [ $changeInclude -eq 0 ];
       then
       changeIncludes $i $mod $min $max $final
     fi
-    qsub ./runscript_${mod}.sh
+    swif add-jsub -workflow remoll -script runscript_${mod}.xml
+    #qsub ./runscript_${mod}.sh
     sleep 1
     cd ..
   done
@@ -68,22 +70,27 @@ modReader(){
 # Set the current build directory by looking up at most 3 directories (including the current working directory) and searching in each one for a directory named build who position is assigned to a variable $BUILD
 setBuildDir () {
 
-if [ -d ./build ]
-  then
-    pushd ./build > /dev/null
-    BUILD=$PWD
-    popd > /dev/null
-  elif [ -d ../build ]
-  then
-    pushd ../build > /dev/null
-    BUILD=$PWD;
-    popd > /dev/null
-  elif [ -d ../../build ]
-  then
-    pushd ../../build > /dev/null
-    BUILD=$PWD;
-    popd > /dev/null
-  fi
+sourceDir = /work/halla/parity/disk1/moller12gev/cameronc/remoll
+outputDir = /lustre/expphy/volatile/halla/parity/cameronc/remoll/output/${mod}
+cd $sourceDir/build
+BUILD=$PWD
+OUTDIR=$outputDir
+#if [ -d ./build ]
+#  then
+#    pushd ./build > /dev/null
+#    BUILD=$PWD
+#    popd > /dev/null
+#  elif [ -d ../build ]
+#  then
+#    pushd ../build > /dev/null
+#    BUILD=$PWD;
+#    popd > /dev/null
+#  elif [ -d ../../build ]
+#  then
+#    pushd ../../build > /dev/null
+#    BUILD=$PWD;
+#    popd > /dev/null
+#  fi
 }
 
 #####
@@ -145,7 +152,54 @@ runscriptPrinter () {
   setBuildDir
   cd $BUILD
   modReader 
+  mkdir -p xmlJobs
 
+  xmlFileName="xmlJobs/${mod}.xml"
+vi $xmlFileName <<EndOfCommands
+i
+<Request>
+  <Email email="cameronc@jlab.org" request="false" job="true"/>
+  <Project name="moller12gev"/>
+  <Track name="simulation"/>
+
+  <Name name="${mod}"/>
+  <OS name="centos7"/>
+  <Memory space="3500" unit="MB"/>
+
+  <Command><![CDATA[
+    pwd
+    tar -zxvf z_config.tar.gz
+    ./remoll runexample_${mod}.mac
+  ]]></Command>
+^[
+ZZ
+EndOfCommands
+
+for nr in `seq $initial $final`;
+do
+vi $xmlFileName <<EndOfCommands
+i
+    idName=$OUTDIR/${mod}_$nr
+    <Job>
+      <Input src="$idName/runexample_${mod}.mac" dest="runexample_${mod}.mac"/>
+      <Input src="$idName/z_config.tar.gz" dest="z_config.tar.gz"/>
+      <Output src="remoll_${mod}_1M.root" dest="$idName/remoll_${mod}_1M.root"/>
+      <Stdout dest="$idName/log/log.out"/>
+      <Stderr dest="$idName/log/log.err"/>
+    </Job>
+^[
+ZZ
+EndOfCommands
+done
+
+vi $xmlFileName <<EndOfCommands
+i
+</Request>
+^[
+ZZ
+EndOfCommands
+
+# now print mocha qsub .sh file
   qsubFileName="macros/runscript_${mod}.sh"
   
 /bin/cat <<EOM >$qsubFileName
