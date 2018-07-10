@@ -64,7 +64,7 @@ Plots added for y vs z vertex distributions
 
 using namespace std;
 
-#define __IO_MAXHIT 10000
+#define __IO_MAXHIT 100000
 
 
 //for generic hits
@@ -192,7 +192,7 @@ int main(Int_t argc,Char_t* argv[]) {
   TChain * Tmol =new TChain("T");
   //Cameron Clarke runs:
   //input info:
-  const int n_mills = 10;// FIXME number of million events
+  const int n_mills = 1;// FIXME number of million events
 
   Int_t n_events = n_mills*1e6;
   Int_t beamcurrent = 85;//uA
@@ -287,7 +287,7 @@ int main(Int_t argc,Char_t* argv[]) {
 
   //generic hit (for sens detectors)
   Tmol->SetBranchAddress("rate",&fEvRate);
-  Tmol->SetBranchAddress("hit.n",&fNGenDetHit);
+//  Tmol->SetBranchAddress("hit.n",&fNGenDetHit);
   Tmol->SetBranchAddress("hit.det",&fGenDetHit_det);
   Tmol->SetBranchAddress("hit.pid",&fGenDetHit_pid);
   Tmol->SetBranchAddress("hit.trid",&fGenDetHit_trid);
@@ -517,7 +517,16 @@ int main(Int_t argc,Char_t* argv[]) {
   Double_t phi;
   printf("Normalized to %d events \n",n_events);
   for (int i=0; i<nentries ; i++) {
+    for (int unused_iterator = 0; unused_iterator < __IO_MAXHIT; unused_iterator++)
+      fGenDetHit_pid[unused_iterator] = 0;    
     Tmol->GetEntry(i);
+    for (int u = 0; u < __IO_MAXHIT; u++)
+    {  if(fGenDetHit_P[u] == 0)
+      {  
+        fNGenDetHit = u;
+        break;
+      }
+    }
     for (int j = 0; j<fNGenDetHit; j++){
 
       //for rate weighted simulations

@@ -207,7 +207,7 @@ int main(Int_t argc,Char_t* argv[]) {
   TChain * Tmol =new TChain("T");
   //Cameron Clarke runs:
   //input info:
-  const int n_mills = 1;// FIXME number of million events
+  const int n_mills = 10;// FIXME number of million events
 
   Int_t n_events = n_mills*1e6;
   Int_t beamcurrent = 85;//uA
@@ -388,13 +388,13 @@ int main(Int_t argc,Char_t* argv[]) {
   //                                      { change the binning to reflect the opposite nature, good, all binned in one spot, decent-needs better boundaries->775?, 775?, decent, decent, seems to miss a whole lot }
   //                                      { hall**            ,  target       ,  collar        ,  coll1shld , +magnet    ,  coll4shld,  hybshld         ,  dump ,  other,  all  }; -> Hall is an inverted volume in x and z, not y.
   //                                was   {-315 tp 1781.837   , -315 to 315   ,  275.1 to 315.1,  397.45-775,  775.55-812,  812-992  ,  992-1821.837    ,  dump ,  other,  all  }; -> Hall is an inverted volume in x and z, not y.
-  Double_t z_vertex_cuts_low[n_regions] = {-2350.-800.           , -2350.-800.     ,  2851.+100.-200. ,  3151.     ,  7750.5+5.,  8120.     ,  9920.            ,  28000., -5000. , -30000.}; //last index store vertices outside of other ranges 
-  Double_t z_vertex_cuts_up[n_regions]  = { 18218.37          ,  2350.+800.     ,  2851.+100.+200. ,  8120.      ,  8120.      ,  9920.     ,  18218.37        ,  60000.,  20000.,  60000.};
-  Double_t x_vertex_cuts_low[n_regions] = {-2965.             ,  915.-2960.-800., -185.-200.      , -2130.-10.   , -3868.4-10. , -3868.4-10.,  915.-2857.5-400. , -5000. , -5000. , -30000.};
-  Double_t x_vertex_cuts_up[n_regions]  = { 2965.             ,  915.+2960.+800.,  185.+200.      ,  2130.+10.   ,  3868.4+10. ,  3868.4+10.,  915.+2857.5+400. ,  5000. ,  5000. ,  30000.};
+  Double_t z_vertex_cuts_low[n_regions] = {-2350.-800.           , -2350.-800.     ,  2851.+100.-200. ,  3151.     ,  7750.5+5.,  8120.     ,  9920.            ,  32000., -5000. , -25000.}; //last index store vertices outside of other ranges 
+  Double_t z_vertex_cuts_up[n_regions]  = { 18218.37          ,  2350.+800.     ,  2851.+100.+200. ,  8120.      ,  8120.      ,  9920.     ,  18218.37        ,  70000.,  32000.,  32000.};
+  Double_t x_vertex_cuts_low[n_regions] = {-2965.             ,  915.-2960.-800., -185.-200.      , -2130.-10.   , -3868.4-10. , -3868.4-10.,  915.-2857.5-400. , -5000. , -5000. , -20000.};
+  Double_t x_vertex_cuts_up[n_regions]  = { 2965.             ,  915.+2960.+800.,  185.+200.      ,  2130.+10.   ,  3868.4+10. ,  3868.4+10.,  915.+2857.5+400. ,  5000. ,  5000. ,  20000.};
   Double_t y_vertex_cuts_low[n_regions] = {-3300.              , -400.-2500.-400. , -185.-200.      , -2130.-10.   , -2900.-10.   , -2900.-10.  , -400.-2500.-400.    , -5000. , -5000. , -10000.};
-  Double_t y_vertex_cuts_up[n_regions]  = { 3300.              , -400.+2500.+400. ,  185.+200.      ,  2130.+10.   ,  2900.+10.   ,  2900.+10.  , -400.+2500.+400.    ,  5000. ,  5000. ,  25000.};
-  Double_t R_vertex_cuts_up[n_regions]  = { 50000.             ,  5000.         ,  750.           ,  3500.      ,  5000.      ,  5000.     ,  4500.            ,  5000. ,  5000. ,  35000.};
+  Double_t y_vertex_cuts_up[n_regions]  = { 3300.              , -400.+2500.+400. ,  185.+200.      ,  2130.+10.   ,  2900.+10.   ,  2900.+10.  , -400.+2500.+400.    ,  5000. ,  5000. ,  20000.};
+  Double_t R_vertex_cuts_up[n_regions]  = { 50000.             ,  5000.         ,  750.           ,  3500.      ,  5000.      ,  5000.     ,  4500.            ,  5000. ,  5000. ,  25000.};
   Int_t    x_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1000, 1000, 1000}; // default, overridden below
   Int_t    y_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1000, 1000, 1000};
   Int_t    z_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1200, 1000, 1000};
@@ -418,19 +418,19 @@ int main(Int_t argc,Char_t* argv[]) {
   Double_t Hall_x_vertices_up  =  5000.;
   Double_t Hall_y_vertices_low = -5000.;
   Double_t Hall_y_vertices_up  =  5000.;
-  Double_t Hall_R_vertices_up  =  35000.;
+  Double_t Hall_R_vertices_up  =  25000.;
   if(kVertices==kTRUE && kShlds==kFALSE){
     z_vertex_bin_counts[0] = 650;//0;
     x_vertex_bin_counts[0] = 600;//0;
     y_vertex_bin_counts[0] = 350;//0;
     R_vertex_bin_counts[0] = 300;//0;
-    Double_t Hall_z_vertices_low = -30000;//0.;
-    Double_t Hall_z_vertices_up  =  35000;//0.;
-    Double_t Hall_x_vertices_low = -30000;//0.;
-    Double_t Hall_x_vertices_up  =  30000;//0.;
-    Double_t Hall_y_vertices_low = -10000;//0.;
-    Double_t Hall_y_vertices_up  =  25000;//0.;
-    Double_t Hall_R_vertices_up  =  35000;//0.;
+    Double_t Hall_z_vertices_low = -3000;//0.;
+    Double_t Hall_z_vertices_up  =  3500;//0.;
+    Double_t Hall_x_vertices_low = -3000;//0.;
+    Double_t Hall_x_vertices_up  =  3000;//0.;
+    Double_t Hall_y_vertices_low = -1000;//0.;
+    Double_t Hall_y_vertices_up  =  2500;//0.;
+    Double_t Hall_R_vertices_up  =  3500;//0.;
   }
 
   // OLD vertices
@@ -612,50 +612,50 @@ int out_count = 0;
               // FIXME edit the histograms to be filled here.
               //following if is a redundant check I already checked  vrtx for negative values up
               Histo_kineE[vrtx][pid][keid]->Fill(kineE);
-              Histo_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE);
+              Histo_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE/n_events);
               Histo_vertex_noWeight[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,1);
               if (detid==0){
-                Histo_RadDet[vrtx][pid][0]->Fill(phi,fGenDetHit[j].y,kineE);//fill cyl. phi detector
+                Histo_RadDet[vrtx][pid][0]->Fill(phi,fGenDetHit[j].y,kineE/n_events);//fill cyl. phi detector
                 if (fGenDetHit[j].z>=0)
-                  Histo_RadDet[vrtx][pid][3]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE);//fill cyl. detector	forward
+                  Histo_RadDet[vrtx][pid][3]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE/n_events);//fill cyl. detector	forward
                 else
-                  Histo_RadDet[vrtx][pid][4]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE);//fill cyl. detector	backward
+                  Histo_RadDet[vrtx][pid][4]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE/n_events);//fill cyl. detector	backward
               }	
               else if (detid==1 || detid==2)
-                Histo_RadDet[vrtx][pid][detid]->Fill(fGenDetHit[j].z,fGenDetHit[j].x,kineE);//fill roof detector
+                Histo_RadDet[vrtx][pid][detid]->Fill(fGenDetHit[j].z,fGenDetHit[j].x,kineE/n_events);//fill roof detector
 
               //Fill vertex 2D plots
-              HistoVertex_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE);
-              //HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE);
-              HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE);
+              HistoVertex_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE/n_events);
+              //HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE/n_events);
+              HistoVertex_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE/n_events);
  
-              //printf("success: energy inside the ranges %4.3f \n",kineE);
+              //printf("success: energy inside the ranges %4.3f \n",kineE/n_events);
             }
             //else if (hit_radius > hit_radius_min[vrtx_z])//without this condition warning will print for tracks going to the dump
-            //  printf("warning: energy outside the ranges %4.3f \n",kineE);
+            //  printf("warning: energy outside the ranges %4.3f \n",kineE/n_events);
           }// end for loop, run once per event per region it appears in
      /**/    //Run once per event
      /***   if (keid>=0 && hit_radius > hit_radius_min[vrtx_z]){
           //Fill vertex distribution 2D plots for all vertices using last index
-          HistoVertex_RadDet[n_regions-1][pid][keid][0]->Fill(fGenDetHit.VX[j],fGenDetHit.VY[j],kineE);
-          HistoVertex_RadDet[n_regions-1][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE);
-          HistoVertex_RadDet[n_regions-1][pid][keid][2]->Fill(fGenDetHit.VZ[j],fGenDetHit.VY[j],kineE);
-          Histo_kineE[n_regions][pid][keid]->Fill(kineE);
+          HistoVertex_RadDet[n_regions-1][pid][keid][0]->Fill(fGenDetHit.VX[j],fGenDetHit.VY[j],kineE/n_events);
+          HistoVertex_RadDet[n_regions-1][pid][keid][1]->Fill(fGenDetHit.VZ[j],TMath::Sqrt(TMath::Power(fGenDetHit.VX[j],2)+TMath::Power(fGenDetHit.VY[j],2)),kineE/n_events);
+          HistoVertex_RadDet[n_regions-1][pid][keid][2]->Fill(fGenDetHit.VZ[j],fGenDetHit.VY[j],kineE/n_events);
+          Histo_kineE[n_regions][pid][keid]->Fill(kineE/n_events);
             
           if (detid==0){
-            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE);//fill cyl. detector //index 5 will fill all the vertices (vrtx from 0 to 6)
+            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector //index 5 will fill all the vertices (vrtx from 0 to 6)
             if (fGenDetHit.Z[j]>=0)		
-              Histo_RadDet[n_regions-1][pid][3]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE);//fill cyl. detector	
+              Histo_RadDet[n_regions-1][pid][3]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector	
             else
-              Histo_RadDet[n_regions-1][pid][4]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE);//fill cyl. detector	
+              Histo_RadDet[n_regions-1][pid][4]->Fill(fGenDetHit.X[j],fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector	
           }	
           else if (detid==1 || detid==2)
-            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE);//fill cyl. detector //index n_regions-1 will fill all the vertices (vrtx from 0 to n_regions-1)
+            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE/n_events);//fill cyl. detector //index n_regions-1 will fill all the vertices (vrtx from 0 to n_regions-1)
             //index n_regions-1 will fill all the vertices (vrtx from 0 to n_regions-1) if used here
           if (detid==0)
-            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE);//fill cyl. detector
+            Histo_RadDet[n_regions-1][pid][0]->Fill(phi,fGenDetHit.Y[j],kineE/n_events);//fill cyl. detector
           else if (detid==1 || detid==2)
-            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE);//fill cyl. detector
+            Histo_RadDet[n_regions-1][pid][detid]->Fill(fGenDetHit.Z[j],fGenDetHit.X[j],kineE/n_events);//fill cyl. detector
         }***/
     /*FIXME - wasn't commented*/
         }
@@ -696,16 +696,16 @@ int out_count = 0;
             // FIXME edit the histograms to be filled here.
             //following if is a redundant check I already checked  vrtx for negative values up
             Histo_shld_kineE[vrtx][pid][keid]->Fill(kineE);
-            Histo_shld_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE);
+            Histo_shld_vertex[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,kineE/n_events);
             Histo_shld_vertex_noWeight[vrtx][pid][keid]->Fill(fGenDetHit[j].vz,1);
-            Histo_shld_hit[vrtx][pid][keid]->Fill(fGenDetHit[j].z,kineE);
+            Histo_shld_hit[vrtx][pid][keid]->Fill(fGenDetHit[j].z,kineE/n_events);
             Histo_shld_hit_noWeight[vrtx][pid][keid]->Fill(fGenDetHit[j].z,1);
 
             //Fill vertex 2D plots
-            HistoVertex_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE);
-            HistoVertex_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE);
-            HistoHit_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE);
-            HistoHit_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].z,fGenDetHit[j].y,kineE);
+            HistoVertex_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].vx,fGenDetHit[j].vy,kineE/n_events);
+            HistoVertex_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].vz,fGenDetHit[j].vy,kineE/n_events);
+            HistoHit_shld_RadDet[vrtx][pid][keid][0]->Fill(fGenDetHit[j].x,fGenDetHit[j].y,kineE/n_events);
+            HistoHit_shld_RadDet[vrtx][pid][keid][1]->Fill(fGenDetHit[j].z,fGenDetHit[j].y,kineE/n_events);
           }
         }
       }
@@ -1026,7 +1026,8 @@ int out_count = 0;
   }
 
   //end of plots for hall roof and wall detector, begin plots of shielding block detectors
-  
+
+
   if (kShow2DShldVertexPlots){
     Double_t hallrad_shld_color_max[2];
     Double_t hallrad_shld_color_min[2];
@@ -1120,6 +1121,7 @@ int out_count = 0;
     }
   }
 
+
   // Textfile outputs
   const char * detector[2+n_shlds];
   detector[0]="Side";detector[1]="Top";
@@ -1168,14 +1170,14 @@ int out_count = 0;
       for(Int_t k=0;k<2;k++){//detector                             // number of hall (roof, walls) detectors present
 	      for (Int_t s=0;s<n_regions;s++)
 	        sum+=power_local[s][k][i][j];//sum over all the vertices
-        printf("%12.3E",sum);
-	      sprintf(line1,"%s %12.3E",line1,sum);
+        printf("%12.3E",sum/n_events);
+	      sprintf(line1,"%s %12.3E",line1,sum/n_events);
 	      sum=0;
       }
       for(Int_t k=0;k<n_shlds;k++){
 	      shld_sum+=shld_power_local[k][i][j];
-        printf("%12.3E",shld_sum);
-	      sprintf(line1,"%s %12.3E",line1,shld_sum);
+        printf("%12.3E",shld_sum/n_events);
+	      sprintf(line1,"%s %12.3E",line1,shld_sum/n_events);
 	      shld_sum=0;
       }
       printf("\n");
@@ -1200,8 +1202,8 @@ int out_count = 0;
 	      sprintf(line," %20s %20s %20s",svertex[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line1," ");//empty previous values
 	      for(Int_t l=0;l<2;l++){//detector                             // number of hall (roof, wall) detectors present
-	        printf("%12.3E",power_local[i][l][j][k]);
-          sprintf(line1,"%s %12.3E",line1,power_local[i][l][j][k]);
+	        printf("%12.3E",power_local[i][l][j][k]/n_events);
+          sprintf(line1,"%s %12.3E",line1,power_local[i][l][j][k]/n_events);
 	      }
 	      printf("\n");
 	      sprintf(line," %s %s",line,line1);
@@ -1226,8 +1228,8 @@ int out_count = 0;
 	      printf(" %20s %20s %20s",svertex_shld[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line," %20s %20s %20s",svertex_shld[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line1," ");//empty previous values
-	      printf("%12.3E",shld_power_local[i][j][k]);
-        sprintf(line1,"%s %12.3E",line1,shld_power_local[i][j][k]);
+	      printf("%12.3E",shld_power_local[i][j][k]/n_events);
+        sprintf(line1,"%s %12.3E",line1,shld_power_local[i][j][k]/n_events);
 	      printf("\n");
 	      sprintf(line," %s %s",line,line1);
 	      list_power->Add(new TObjString(line));
@@ -1241,7 +1243,7 @@ int out_count = 0;
   shld_sum=0;
   TList * list_flux = new TList;
   printf(" \n Total_Radiation_Flux_into_the_specified_detector_(Counts, for %d events)\n",n_events);
-  sprintf(line2,"Total_Radiation_Flux_into_the_specified_detector_(Counts, for %d events",n_events);
+  sprintf(line2,"Total_Radiation_Flux_into_the_specified_detector_(Counts, for %d events)",n_events);
   list_flux->Add(new TObjString(line2));
   list_outputs << line2 << endl;
   printf(" %20s %20s","Type","E_Range_(MeV)");
@@ -1261,14 +1263,14 @@ int out_count = 0;
       for(Int_t k=0;k<2;k++){//detector                             // number of hall (roof, walls) detectors present
 	      for (Int_t s=0;s<n_regions;s++)
 	        sum+=flux_local[s][k][i][j];//sum over all the vertices
-        printf("%12.3E",sum);
-	      sprintf(line1,"%s %12.3E",line1,sum);
+        printf("%12.3E",sum/n_events);
+	      sprintf(line1,"%s %12.3E",line1,sum/n_events);
 	      sum=0;
       }
       for(Int_t k=0;k<n_shlds;k++){
         shld_sum+=shld_flux_local[k][i][j];
-        printf("%12.3E",shld_sum);
-	      sprintf(line1,"%s %12.3E",line1,shld_sum);
+        printf("%12.3E",shld_sum/n_events);
+	      sprintf(line1,"%s %12.3E",line1,shld_sum/n_events);
 	      shld_sum=0;
       }
       printf("\n");
@@ -1293,8 +1295,8 @@ int out_count = 0;
         sprintf(line," %20s %20s %20s",svertex[i].Data(),chpid[j],chenrange[k]);
         sprintf(line1," ");//empty previous values
         for(Int_t l=0;l<2;l++){//detector                             // number of hall (roof, walls) detectors present
-          printf("%12.3E",flux_local[i][l][j][k]);
-          sprintf(line1,"%s %12.3E",line1,flux_local[i][l][j][k]);
+          printf("%12.3E",flux_local[i][l][j][k]/n_events);
+          sprintf(line1,"%s %12.3E",line1,flux_local[i][l][j][k]/n_events);
         }
         printf("\n");
         sprintf(line," %s %s",line,line1);
@@ -1319,8 +1321,8 @@ int out_count = 0;
 	      printf(" %20s %20s %20s",svertex_shld[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line," %20s %20s %20s",svertex_shld[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line1," ");//empty previous values
-	      printf("%12.3E",shld_flux_local[i][j][k]);
-        sprintf(line1,"%s %12.3E",line1,shld_flux_local[i][j][k]);
+	      printf("%12.3E",shld_flux_local[i][j][k]/n_events);
+        sprintf(line1,"%s %12.3E",line1,shld_flux_local[i][j][k]/n_events);
 	      printf("\n");
 	      sprintf(line," %s %s",line,line1);
 	      list_flux->Add(new TObjString(line));
@@ -1335,10 +1337,10 @@ int out_count = 0;
     rootfile->Write();
   }
 
-  if(kShowGraphic)
+  if(kShowGraphic){
     //theApp.Run();
     theRint.Run();
-
+  }
   if (kSaveRootFile){
     rootfile->Close();
   }
