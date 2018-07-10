@@ -7,37 +7,35 @@ def main():
 #FIXME Update these
     email = "cameronc@jlab.org"
 
+    configuration = "moller"
     #configuration = "prexI"
     #configuration = "crex5"
-    configuration = "prexII"
+    #configuration = "prexII"
     #configuration = "moller"
     #configuration = "happex2"
 
-    stage = "improved"
-    varied = "off_thickness"
-    geo = raw_input("Please enter the can geometry (sph or cyl): ")
-    offset = raw_input("Please enter the offset in mm (integers up to 360): ")
-    thickness = raw_input("Please enter the thickness in mm (integers up to 15): ")
-    identifier = "SAMs_"+geo+"_"+offset+varied#raw_input("Please enter the identifier: ")
+    varied = "benchmark"
+    #thickness = raw_input("Please enter the thickness in mm (integers up to 15): ")
+    identifier = varied#raw_input("Please enter the identifier: ")
 
-    f = open('../geometry/'+identifier+'.xml', 'w')
-    fileout = '    <constant name="full_sam_r_outward_offset" value="' + offset + '.0/10"/>\n    <constant name="sam_mid_dist" value="full_sam_r_outward_offset + sam_bot_face_sep + sam_can_length/2."/>\n    <constant name="sam_quartz_mid_dist" value="full_sam_r_outward_offset + sam_quartz_bot_face + sam_quartz_length/2."/>\n    <constant name="sam_quartz_height" value="' + thickness + '.0/10"/>'
-    f.write(fileout)
-    f.close()
+    #f = open('../geometry/'+identifier+'.xml', 'w')
+    #fileout = '    <constant name="full_sam_r_outward_offset" value="' + offset + '.0/10"/>\n    <constant name="sam_mid_dist" value="full_sam_r_outward_offset + sam_bot_face_sep + sam_can_length/2."/>\n    <constant name="sam_quartz_mid_dist" value="full_sam_r_outward_offset + sam_quartz_bot_face + sam_quartz_length/2."/>\n    <constant name="sam_quartz_height" value="' + thickness + '.0/10"/>'
+    #f.write(fileout)
+    #f.close()
 
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
-    sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/prexSim"
-    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/prexSim/output/SAM_"+stage+"_tests"
+    sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
+    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+varied
     nrEv   = 900000 #900000
-    nrStart= 100
-    nrStop = 400 #60
+    nrStart= 1
+    nrStop = 11 #60
     ###format should be Name (removed _)
     #"SAMs_noAl" #6inDonut_SAMs"  (spherical, cylindrical, noFace, noAl, noQ, noQnoAl)
 #</FIXME>
 
     print('Running ' + str(nrEv*(nrStop - nrStart)) + ' events...')
 
-    jobName=configuration + '_' + identifier + '_' + thickness + 'mm' + '_%03dkEv'%(nrEv/1000)
+    jobName=configuration + '_' + identifier + '_%03dkEv'%(nrEv/1000)
 
     ###tar exec+geometry
     make_tarfile(sourceDir,configuration,identifier)
@@ -63,57 +61,37 @@ def createMacFiles(config,outDir,sourceDir,nrEv,jobNr,identifier):
         os.makedirs(outDir+"/log")
 
     f=open(outDir+"/"+"/myRun.mac",'w')
-    f.write("/moller/ana/rootfilename ./o_prexSim\n")
+    if identifier=="benchmark":
+      f.write("/remoll/setgeofile geometry/mollerMother_merged.gdml\n")
+    elif:
+      f.write("/remoll/setgeofile geometry/mollerMother_"+config+".gdml\n")
+    f.write("/run/initialize\n")
+    f.write("/remoll/addfield map_directory/blockyHybrid_rm_3.0.txt\n")
+    f.write("/remoll/addfield map_directory/blockyUpstream_rm_1.1.txt\n")
+    f.write("/remoll/oldras true\n")
+    f.write("/remoll/rasx 5 mm\n")
+    f.write("/remoll/rasy 5 mm\n")
+    f.write("/remoll/evgen/set beam\n")
+    f.write("/remoll/beamene 11 GeV\n")
+    f.write("/remoll/kryptonite/set false\n")
+    f.write("/process/list\n")
+    f.write("/remoll/filename remollout.root\n")
     f.write("/run/beamOn "+str(nrEv)+"\n")
     f.close()
-
-    f=open(outDir+"/"+"/preRun.mac",'w')
-    f.write("/moller/det/readGeometryFromFile true\n")
-    f.write("/gun/particle e-\n")
-    f.write("/moller/gun/gen 7\n")
-    seedA=long(time.time()+jobNr)
-    seedB=long(time.time()*100+jobNr)
-    f.write("/random/setSeeds "+str(seedA)+" "+str(seedB)+"\n")
-
-    if config=="crex5":
-        f.write("/gun/energy 2. GeV\n")
-        f.write("/moller/field/setConfiguration crex\n")
-        f.write("/moller/det/setDetectorFileName geometry/crex5_"+identifier+".gdml\n")
-    elif config=="prexII":
-    	f.write("/gun/energy 1. GeV\n")
-        f.write("/moller/field/setConfiguration prex2\n")
-        f.write("/moller/det/setDetectorFileName geometry/prexII_"+identifier+".gdml\n")
-    elif config=="prexI":
-    	f.write("/gun/energy 1. GeV\n")
-        f.write("/moller/field/setConfiguration prex1\n")
-        f.write("/moller/det/setDetectorFileName geometry/prexI_"+identifier+".gdml\n")
-    elif config=="moller":
-    	f.write("/gun/energy 11. GeV\n")
-        f.write("/moller/field/setConfiguration moller\n")
-        f.write("/moller/det/setDetectorFileName geometry/moller_"+identifier+".gdml\n")
-    elif config=="happex2":
-    	f.write("/gun/energy 3. GeV\n")
-        f.write("/moller/field/setConfiguration happex2\n")
-        f.write("/moller/det/setDetectorFileName geometry/happex2_"+identifier+".gdml\n")
-
-    f.write("/moller/field/useQ1fringeField false\n")
-
-    f.write("/moller/det/setShieldMaterial polyethylene\n")
-    f.write("/testhadr/CutsAll 0.7 mm\n")
-    f.write("/run/initialize\n")
-    f.close()
-
+    #seedA=long(time.time()+jobNr)
+    #seedB=long(time.time()*100+jobNr)
+    #f.write("/random/setSeeds "+str(seedA)+" "+str(seedB)+"\n")
     return 0
 
 def createXMLfile(source,writeDir,idRoot,nStart,nStop,email):
 
-    if not os.path.exists(source+"/scripts/jobs"):
-        os.makedirs(source+"/scripts/jobs")
+    if not os.path.exists(source+"/rad_analysis/jobs"):
+        os.makedirs(source+"/rad_analysis/jobs")
 
     f=open(source+"/scripts/jobs/"+idRoot+".xml","w")
     f.write("<Request>\n")
     f.write("  <Email email=\""+email+"\" request=\"false\" job=\"true\"/>\n")
-    f.write("  <Project name=\"prex\"/>\n")
+    f.write("  <Project name=\"moller12gev\"/>\n")
 
 #    f.write("  <Track name=\"debug\"/>\n")
     f.write("  <Track name=\"simulation\"/>\n")
@@ -125,17 +103,16 @@ def createXMLfile(source,writeDir,idRoot,nStart,nStop,email):
     f.write("  <Command><![CDATA[\n")
     f.write("    pwd\n")
     f.write("    tar -zxvf z_config.tar.gz\n")
-    f.write("    ./prexsim preRun.mac myRun.mac\n")
+    f.write("    ./remoll myRun.mac\n")
     f.write("  ]]></Command>\n")
 
     for nr in range(nStart,nStop): # repeat for nr jobs
         idName= writeDir+"/"+idRoot+'_%05d'%(nr)
         f.write("  <Job>\n")
-        f.write("    <Input src=\""+idName+"/preRun.mac\" dest=\"preRun.mac\"/>\n")
         f.write("    <Input src=\""+idName+"/myRun.mac\" dest=\"myRun.mac\"/>\n")
         f.write("    <Input src=\""+idName+"/z_config.tar.gz\" dest=\"z_config.tar.gz\"/>\n")
 
-        f.write("    <Output src=\"o_prexSim.root\" dest=\""+idName+"/o_prexSim.root\"/>\n")
+        f.write("    <Output src=\"remollout.root\" dest=\""+idName+"/remollout.root\"/>\n")
         f.write("    <Stdout dest=\""+idName+"/log/log.out\"/>\n")
         f.write("    <Stderr dest=\""+idName+"/log/log.err\"/>\n")
         f.write("  </Job>\n\n")
