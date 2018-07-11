@@ -1,3 +1,7 @@
+To use the make commands to compile rad_dose or hallRad to work with remoll v2.0.0 output you need to copy a libremoll.so dictionary from a recent remoll build directory.
+
+
+
 old_rad_dose.cc is Rakitha's old analysis script and the new one is the one I'm working on updating.
 
 I have updated the energy ranges to look at 0-10, 10-30, and 30-infinity energies of particles.
