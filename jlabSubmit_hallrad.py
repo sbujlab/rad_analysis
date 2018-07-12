@@ -8,7 +8,8 @@ def main():
     email = "cameronc@jlab.org"
 
     stage = raw_input("Please enter the stage (merged, etc.): ")
-    identifier = "moller_"+stage#raw_input("Please enter the identifier: ")
+    number = raw_input("Please enter the number (100M, etc.): ")
+    identifier = "moller_"+stage+"_"+number#raw_input("Please enter the identifier: ")
     parameter = "null"#raw_input("Please enter the parameter: ")
 
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
@@ -17,22 +18,21 @@ def main():
     outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+stage+"_hallRad"
     if not os.path.exists(outputDir):
         os.makedirs(outputDir)
-    nrEv=100000
 
-    jobName=identifier + '_%03dkEv'%(nrEv/1000)
+    jobName=identifier
     listName='list_' + identifier
 
     if not os.path.exists(outputDir+"/"+jobName+"/log"):
         os.makedirs(outputDir+"/"+jobName+"/log")
-    createXMLfile(sourceDir,outputDir,jobName,identifier,listName,parameter,email)
+    createXMLfile(sourceDir,outputDir,jobName,identifier,listName,parameter,stage,email)
 
-    call(["cp",sourceDir+"/output/ls_mod.sh",
+    call(["cp",sourceDir+"/rad_analysis/ls_mod.sh",
               outputDir+"/"+jobName+"/ls_mod.sh"])
-    call(["cp",sourceMasterDir+"/build/hallRad",
+    call(["cp",sourceMasterDir+"/rad_analysis/hallRad",
               outputDir+"/"+jobName+"/hallRad"])
-    print "All done for configuration ",configuration,"_",identifier,"for parameter search: ",parameter
+    print "All done for configuration ",identifier,"for parameter search: ",parameter
 
-def createXMLfile(source,writeDir,idRoot,name,listname,par,email):
+def createXMLfile(source,writeDir,idRoot,name,listname,par,stag,email):
 
     if not os.path.exists(source+"/output/jobs"):
         os.makedirs(source+"/output/jobs")
@@ -51,7 +51,7 @@ def createXMLfile(source,writeDir,idRoot,name,listname,par,email):
 
     f.write("  <Command><![CDATA[\n")
     f.write("    pwd\n")
-    f.write("    ./ls_mod.sh "+name+"\n")
+    f.write("    ./ls_mod.sh "+stag+"\n")
     
     f.write("  ]]></Command>\n")
 

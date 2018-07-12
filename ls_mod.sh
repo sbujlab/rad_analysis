@@ -1,8 +1,6 @@
 #!/bin/bash
-if [ "$#" -eq 2 ]; then
+if [ "$#" -eq 1 ]; then
   mod=$1
-  par=$2
-  unit="mm"
 else
   read -p "job name (merged, etc.): " mod
 fi
