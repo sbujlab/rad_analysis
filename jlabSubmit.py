@@ -26,9 +26,9 @@ def main():
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
     sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
     outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+varied
-    nrEv   = 1000 #900000
+    nrEv   = 100000 #900000
     nrStart= 1
-    nrStopActual = 10 #60
+    nrStopActual = 1000 #60
     nrStop = nrStopActual+1 #60
     ###format should be Name (removed _)
     #"SAMs_noAl" #6inDonut_SAMs"  (spherical, cylindrical, noFace, noAl, noQ, noQnoAl)
@@ -36,7 +36,7 @@ def main():
 
     print('Running ' + str(nrEv*(nrStop - nrStart)) + ' events...')
 
-    jobName=configuration + '_' + identifier + '_%04dkEv'%(nrEv/1000)
+    jobName=configuration + '_' + identifier + '_%03dkEv'%(nrEv/1000)
 
     ###tar exec+geometry
     make_tarfile(sourceDir,identifier)
@@ -130,6 +130,7 @@ def make_tarfile(sourceDir,ident):
     tar.add(sourceDir+"/map_directory",arcname="map_directory")
     tar.add(sourceDir+"/build/geometry/schema",arcname="geometry/schema")
     tar.add(sourceDir+"/build/geometry/materials.xml",arcname="geometry/materials.xml")
+    tar.add(sourceDir+"/build/geometry/mollerParallel.gdml" ,arcname="geometry/mollerParallel.gdml") 
     tar.add(sourceDir+"/build/geometry/mollerMother_"+ident+".gdml" ,arcname="geometry/mollerMother_"+ident+".gdml") 
     tar.add(sourceDir+"/build/geometry/targetDaughter_"+ident+".gdml" ,arcname="geometry/targetDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/build/geometry/hallDaughter_"+ident+".gdml" ,arcname="geometry/hallDaughter_"+ident+".gdml")

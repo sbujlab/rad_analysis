@@ -170,7 +170,6 @@ void ProcessOne(string fnm){
             //    energy = Edeposit;
             //else //vacuum detectors
                 energy = kinE;
-	std::cout << "check1" << std::endl;
             //logX(Energy)
             hTotal[nHist][nPart][0]->Fill(energy);
             valAvg[nHist][nPart][0]->Fill(energy);
