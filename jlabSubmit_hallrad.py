@@ -14,7 +14,9 @@ def main():
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
     sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
     sourceMasterDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
-    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+stage
+    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+stage+"_hallRad"
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
     nrEv=100000
 
     jobName=identifier + '_%03dkEv'%(nrEv/1000)
