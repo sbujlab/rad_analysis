@@ -28,6 +28,8 @@ def main():
 
     call(["cp",sourceDir+"/rad_analysis/ls_mod.sh",
               outputDir+"/"+jobName+"/ls_mod.sh"])
+    call(["cp",sourceDir+"/rad_analysis/libremoll.so",
+              outputDir+"/"+jobName+"/libremoll.so"])
     call(["cp",sourceMasterDir+"/rad_analysis/hallRad",
               outputDir+"/"+jobName+"/hallRad"])
     print "All done for configuration ",identifier,"for parameter search: ",parameter
@@ -47,7 +49,7 @@ def createXMLfile(source,writeDir,idRoot,name,listname,par,stag,email):
 
     f.write("  <Name name=\""+name+"_hallRad\"/>\n")
     f.write("  <OS name=\"centos7\"/>\n")
-    f.write("  <Memory space=\"3500\" unit=\"MB\"/>\n")
+    f.write("  <Memory space=\"7500\" unit=\"MB\"/>\n")
 
     f.write("  <Command><![CDATA[\n")
     f.write("    pwd\n")
@@ -59,6 +61,7 @@ def createXMLfile(source,writeDir,idRoot,name,listname,par,stag,email):
     f.write("  <Job>\n")
     f.write("    <Input src=\""+idName+"/hallRad\" dest=\"hallRad\"/>\n")
     f.write("    <Input src=\""+idName+"/ls_mod.sh\" dest=\"ls_mod.sh\"/>\n")
+    f.write("    <Input src=\""+idName+"/libremoll.so\" dest=\"libremoll.so\"/>\n")
     #f.write("    <Input src=\""+idName+"/"+listname+".txt\" dest=\""+listname+".txt\"/>\n")
     f.write("    <Output src=\""+listname+".txt\" dest=\""+idName+"/"+listname+".txt\"/>\n")
     f.write("    <Output src=\""+listname+"_hallRad.root\" dest=\""+idName+"/"+listname+"_hallRad.root\"/>\n")

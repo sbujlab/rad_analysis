@@ -18,6 +18,7 @@ def main():
     #varied = raw_input("Please enter the thickness in mm (integers up to 15): ")
     identifier = varied#raw_input("Please enter the identifier: ")
 
+    # To print an xml file that allows for parameter space searches do this here
     #f = open('../geometry/'+identifier+'.xml', 'w')
     #fileout = '    <constant name="full_sam_r_outward_offset" value="' + offset + '.0/10"/>\n    <constant name="sam_mid_dist" value="full_sam_r_outward_offset + sam_bot_face_sep + sam_can_length/2."/>\n    <constant name="sam_quartz_mid_dist" value="full_sam_r_outward_offset + sam_quartz_bot_face + sam_quartz_length/2."/>\n    <constant name="sam_quartz_height" value="' + thickness + '.0/10"/>'
     #f.write(fileout)
