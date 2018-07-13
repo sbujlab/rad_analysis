@@ -8,15 +8,8 @@ def main():
     email = "cameronc@jlab.org"
 
     configuration = "moller"
-    #configuration = "prexI"
-    #configuration = "crex5"
-    #configuration = "prexII"
-    #configuration = "moller"
-    #configuration = "happex2"
 
-    varied = "merged"
-    #varied = raw_input("Please enter the thickness in mm (integers up to 15): ")
-    identifier = varied#raw_input("Please enter the identifier: ")
+    identifier = raw_input("Please enter the identifier: ")
 
     # To print an xml file that allows for parameter space searches do this here
     #f = open('../geometry/'+identifier+'.xml', 'w')
@@ -26,7 +19,9 @@ def main():
 
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
     sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
-    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+varied
+    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+identifier
+    if not os.path.exists(outputDir):
+        os.makedirs(outputDir)
     nrEv   = 100000 #900000
     nrStart= 1
     nrStopActual = 1000 #60
