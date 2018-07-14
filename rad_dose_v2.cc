@@ -68,7 +68,6 @@ update remolltypes.hh inheritance for simpler vector style variable reading (whi
 #include <TLatex.h>
 
 #include "remolltypes.hh"
-
 using namespace std;
 
 //#define __IO_MAXHIT 10000
@@ -1149,8 +1148,8 @@ int out_count = 0;
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
   printf(" \n Total_Radiation_Power_into_the_specified_detector_(MeV/event) \n");
-  printf(" %20s %20s","Type","E_Range_(MeV/event)");
-  sprintf(line," %20s %20s","Type","E_Range_(MeV/event)");
+  printf(" %20s %20s","Type","E_Range_(MeV)");
+  sprintf(line," %20s %20s","Type","E_Range_(MeV)");
   for(Int_t t=0;t<2+n_shlds;t++){
     printf(" %13s",detector[t]);
     sprintf(line,"%s %13s",line,detector[t]);
@@ -1191,8 +1190,8 @@ int out_count = 0;
   strline="Vertex_Cut:Radiation_Power_into_the_hall_(MeV/event)";
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
-  printf(" %20s %20s %20s \t %13s \t %13s \n","Vertex","Type","E_Range_(MeV/event)",detector[0],detector[1]);
-  sprintf(line," %20s %20s %20s \t %13s \t %13s ","Vertex","Type","E_Range_(MeV/event)",detector[0],detector[1]);
+  printf(" %20s %20s %20s \t %13s \t %13s \n","Vertex","Type","E_Range_(MeV)",detector[0],detector[1]);
+  sprintf(line," %20s %20s %20s \t %13s \t %13s ","Vertex","Type","E_Range_(MeV)",detector[0],detector[1]);
   list_power->Add(new TObjString(line));
   list_outputs << line << endl;
   for (Int_t i=0;i<n_regions;i++){
@@ -1217,8 +1216,8 @@ int out_count = 0;
   strline="ShldBlock_Cut:Radiation_Power_into_the_Shielding_Blocks_(MeV/event)";
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
-  printf(" %20s %20s %20s","ShldBlock","Type","E_Range_(MeV/event)");
-  sprintf(line," %20s %20s %20s","ShldBlock","Type","E_Range_(MeV/event)");
+  printf(" %20s %20s %20s","ShldBlock","Type","E_Range_(MeV)");
+  sprintf(line," %20s %20s %20s","ShldBlock","Type","E_Range_(MeV)");
   printf(" \n");
   list_power->Add(new TObjString(line));
   list_outputs << line << endl;
