@@ -2,6 +2,8 @@ To use the make commands to compile rad_dose or hallRad to work with remoll v2.0
 --- Use this command
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`
 ---
+or use in tcsh
+setenv LD_PRELOAD ..../..path.../libremoll.so
 
 
 old_rad_dose.cc is Rakitha's old analysis script and the new one is the one I'm working on updating.

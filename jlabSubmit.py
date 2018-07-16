@@ -5,7 +5,7 @@ import sys, os, time, tarfile
 def main():
 
 #FIXME Update these
-    email = "cameronc@jlab.org"
+    email = "chandan@jlab.org"
 
     configuration = "moller"
 
@@ -18,13 +18,13 @@ def main():
     #f.close()
 
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
-    sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
-    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+identifier
+    sourceDir = "/work/halla/parity/disk1/chandan/gitdir"
+    outputDir = "/lustre/expphy/volatile/halla/parity/chandan/sim_out/"+identifier
     if not os.path.exists(outputDir):
         os.makedirs(outputDir)
-    nrEv   = 100000 #900000
+    nrEv   = 1000 #900000
     nrStart= 1
-    nrStopActual = 1000 #60
+    nrStopActual = 1 #60
     nrStop = nrStopActual+1 #60
     ###format should be Name (removed _)
     #"SAMs_noAl" #6inDonut_SAMs"  (spherical, cylindrical, noFace, noAl, noQ, noQnoAl)
@@ -88,6 +88,7 @@ def createXMLfile(source,writeDir,idRoot,modification,nStart,nStop,email):
     f.write("  <Project name=\"moller12gev\"/>\n")
 
 #    f.write("  <Track name=\"debug\"/>\n")
+#    f.write("  <Track name=\"analysis\"/>\n")
     f.write("  <Track name=\"simulation\"/>\n")
 
     f.write("  <Name name=\""+idRoot+"\"/>\n")
@@ -120,21 +121,21 @@ def make_tarfile(sourceDir,ident):
     if os.path.isfile(sourceDir+"/rad_analysis/z_config.tar.gz"):
         os.remove(sourceDir+"/rad_analysis/z_config.tar.gz")
     tar = tarfile.open(sourceDir+"/rad_analysis/z_config.tar.gz","w:gz")
-    tar.add(sourceDir+"/build/remoll",arcname="remoll")
-    #tar.add(sourceDir+"/build/macros/runexample_"+ident+".mac",arcname="runexample_"+ident+".mac") 
+    tar.add(sourceDir+"/remoll/build/remoll",arcname="remoll")
+    #tar.add(sourceDir+"/macros/runexample_"+ident+".mac",arcname="runexample_"+ident+".mac") 
     #runexample overwrite could crash
-    tar.add(sourceDir+"/map_directory",arcname="map_directory")
-    tar.add(sourceDir+"/build/geometry/schema",arcname="geometry/schema")
-    tar.add(sourceDir+"/build/geometry/materials.xml",arcname="geometry/materials.xml")
-    tar.add(sourceDir+"/build/geometry/mollerParallel.gdml" ,arcname="geometry/mollerParallel.gdml") 
-    tar.add(sourceDir+"/build/geometry/mollerMother_"+ident+".gdml" ,arcname="geometry/mollerMother_"+ident+".gdml") 
-    tar.add(sourceDir+"/build/geometry/targetDaughter_"+ident+".gdml" ,arcname="geometry/targetDaughter_"+ident+".gdml")
-    tar.add(sourceDir+"/build/geometry/hallDaughter_"+ident+".gdml" ,arcname="geometry/hallDaughter_"+ident+".gdml")
-    tar.add(sourceDir+"/build/geometry/detectorDaughter_"+ident+".gdml" ,arcname="geometry/detectorDaughter_"+ident+".gdml")
-    tar.add(sourceDir+"/build/geometry/upstreamDaughter_"+ident+".gdml" ,arcname="geometry/upstreamDaughter_"+ident+".gdml")
-    tar.add(sourceDir+"/build/geometry/hybridDaughter_"+ident+".gdml" ,arcname="geometry/hybridDaughter_"+ident+".gdml")
-    tar.add(sourceDir+"/build/geometry/dumpDaughter_"+ident+".gdml" ,arcname="geometry/dumpDaughter_"+ident+".gdml")
-    #tar.add(sourceDir+"/build/geometry/"+ident+".xml",arcname="geometry/"+ident+".xml")
+    tar.add(sourceDir+"/remoll/map_directory",arcname="map_directory")
+    tar.add(sourceDir+"/remoll/geometry/schema",arcname="geometry/schema")
+    tar.add(sourceDir+"/remoll/geometry/materials.xml",arcname="geometry/materials.xml")
+    tar.add(sourceDir+"/remoll/geometry/mollerParallel.gdml" ,arcname="geometry/mollerParallel.gdml") 
+    tar.add(sourceDir+"/remoll/geometry/mollerMother_"+ident+".gdml" ,arcname="geometry/mollerMother_"+ident+".gdml") 
+    tar.add(sourceDir+"/remoll/geometry/targetDaughter_"+ident+".gdml" ,arcname="geometry/targetDaughter_"+ident+".gdml")
+    tar.add(sourceDir+"/remoll/geometry/hallDaughter_"+ident+".gdml" ,arcname="geometry/hallDaughter_"+ident+".gdml")
+    tar.add(sourceDir+"/remoll/geometry/detectorDaughter_"+ident+".gdml" ,arcname="geometry/detectorDaughter_"+ident+".gdml")
+    tar.add(sourceDir+"/remoll/geometry/upstreamDaughter_"+ident+".gdml" ,arcname="geometry/upstreamDaughter_"+ident+".gdml")
+    tar.add(sourceDir+"/remoll/geometry/hybridDaughter_"+ident+".gdml" ,arcname="geometry/hybridDaughter_"+ident+".gdml")
+    tar.add(sourceDir+"/remoll/geometry/dumpDaughter_"+ident+".gdml" ,arcname="geometry/dumpDaughter_"+ident+".gdml")
+    #tar.add(sourceDir+"/remoll/geometry/"+ident+".xml",arcname="geometry/"+ident+".xml")
 
     tar.close()
 
