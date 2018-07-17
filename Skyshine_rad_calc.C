@@ -63,12 +63,13 @@ void Skyshine_rad_calc(string modifier = "thickness"){//,string units = "mm",int
   prexSim 1006 == remoll 101
 
 */
-  Double_t bench_NEIL_101 = 0.01*1.05303e-5;
-  Double_t bench_NEIL_101_error = 0.01*3.83341e-07;  // error propagation = sigma = value after modification * relative error of subparts added in quadratures (sigma/previous value)
-  Double_t bench_Flux_101 = 1.27087e-05;
-  Double_t bench_Flux_101_error = sqrt(bench_Flux_101/54e6);//54M is the number of beam events per run that the averages normalize to
-  Double_t bench_Energy_101 = 0.01*0.0112639;
-  Double_t bench_Energy_101_error = 0.01*1.69927e-05;
+  //Absolute per event: Neil in LHRS 1001 = 1.0121e-05(1.28749e-07), Flux of neutrons to 1006, per million events (E>25.12 MeV) = 1.27963e-05(1.6863e-07), Energy in 3201 = 0.0113008(5.94492e-06)
+  Double_t bench_NEIL_101 = 4.9331e-4;
+  Double_t bench_NEIL_101_error = 9.51624e-07;  // error propagation = sigma = value after modification * relative error of subparts added in quadratures (sigma/previous value)
+  Double_t bench_Flux_101 = 1.27963e-05;
+  Double_t bench_Flux_101_error = 1.6863e-07 ;//54M is the number of beam events per run that the averages normalize to
+  Double_t bench_Energy_101 = 0.0934535;
+  Double_t bench_Energy_101_error = 1.61385e-06;
 
   Double_t NEIL_101_ratio = NEIL_101/bench_NEIL_101;
   Double_t NEIL_101_ratio_error = NEIL_101_ratio*sqrt(pow(NEIL_101_error/NEIL_101,2)+pow(bench_NEIL_101_error/bench_NEIL_101,2));
@@ -106,9 +107,9 @@ void Skyshine_rad_calc(string modifier = "thickness"){//,string units = "mm",int
     Energy_101_out<<modifier<<","<<ben<<","<<ben<<","<<Energy_101_ratio<<","<<Energy_101_ratio_error<<std::endl;
   }
   std::cout<<"Absolute per event: Neil in 101 = "<<NEIL_101<<"("<<NEIL_101_error<<"), Flux of neutrons to 101, per million events (E>25.12 MeV) = "<<Flux_101<<"("<<Flux_101_error<<"), Energy in 101 = "<<Energy_101<<"("<<Energy_101_error<<")"<<std::endl;
-  std::cout<<"Relative per event: Neil in 101 = "<<NEIL_101_ratio<<"("<<NEIL_101_ratio_error<<"), Flux of neutrons to 101, per million events (E>25.12 MeV) = "<<Flux_101_ratio<<"("<<Flux_101_ratio_error<<"), Energy 101 = "<<Energy_101_ratio<<"("<<Energy_101_ratio_error<<")"<<std::endl;
+  std::cout<<"Relative per event: Neil in 101 = "<<NEIL_101_ratio<<"("<<NEIL_101_ratio_error<<"), Flux of neutrons to 101, per million events (E>25.12 MeV) = "<<Flux_101_ratio<<"("<<Flux_101_ratio_error<<"), Energy in 101 = "<<Energy_101_ratio<<"("<<Energy_101_ratio_error<<")"<<std::endl;
   file_out<<"Absolute per event: Neil in 101 = "<<NEIL_101<<", Flux of neutrons to 101, per million events (E>25.12 MeV) = "<<Flux_101<<", Energy in 101 = "<<Energy_101<<std::endl;
-  file_out<<"Relative per event: Neil in 101 = "<<NEIL_101_ratio<<", Flux of neutrons to 101, per million events (E>25.12 MeV) = "<<Flux_101_ratio<<", Energy 101 = "<<Energy_101_ratio<<std::endl;
+  file_out<<"Relative per event: Neil in 101 = "<<NEIL_101_ratio<<", Flux of neutrons to 101, per million events (E>25.12 MeV) = "<<Flux_101_ratio<<", Energy in 101 = "<<Energy_101_ratio<<std::endl;
 //print the output and ratio wrt benchmark into the outfile (append)
   file_out.close();
  
