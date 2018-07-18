@@ -39,7 +39,7 @@ int processInput(int,char**);
 string suffix;
 string finNm("0");
 int nAvg(100000);
-int detsNrs[]={1001, 1002, 1003, 1004, 1005, 1006, 1101, 1102, 2101, 2105, 2110, 2112, 3120, 3121, 3201, 2401, 2411};
+int detsNrs[]={28,101,99};
 vector<int> detNr(detsNrs, detsNrs + sizeof(detsNrs)/sizeof(int));
 
 long currentEv(0),prevEv(0),processedEv(0);
@@ -47,7 +47,7 @@ void ProcessOne(string);
 radDamage radDmg;
 
 int main(int argc, char **argv){
-    TRint theRint("Rint",0,0);//,&argc,argv);
+    //TRint theRint("Rint",0,0);//,&argc,argv);
     int inputRes = processInput(argc,argv);
     if(inputRes)
         return inputRes;
@@ -104,12 +104,12 @@ void ProcessOne(string fnm){
       t->SetBranchAddress("PDGid",&pdgID);
       t->SetBranchAddress("Edeposit",&Edeposit);
       t->SetBranchAddress("kineE",&kinE);
-     */
+      */
     TTree *tree = (TTree*)fin->Get("T"); 
     std::vector< remollGenericDetectorHit_t > *fGenDetHit = 0; 
     std::vector< remollGenericDetectorSum_t > *fGenDetSum = 0; 
     tree->SetBranchAddress("hit", &fGenDetHit);
-    tree->SetBranchAddress("sum", &fGenDetSum);
+    //tree->SetBranchAddress("sum", &fGenDetSum);
 
     long nEntries= tree->GetEntries();
 
@@ -124,8 +124,8 @@ void ProcessOne(string fnm){
             //type = fGenDetHit->pid;
             volume = fGenDetHit->at(j).det;
             evNr = fGenDetHit->at(j).id;
-            Edeposit = fGenDetSum->at(j).edep;
-            kinE = fGenDetHit->at(j).e;
+            //Edeposit = fGenDetSum->at(j).edep;
+            kinE = fGenDetHit->at(j).edep;
             //x0 = fGenDetHit->at(j).x;
             //y0 = fGenDetHit->at(j).y;
             //z0 = fGenDetHit->at(j).z;
@@ -166,11 +166,10 @@ void ProcessOne(string fnm){
             //if(z0>= 26000) continue;
 
             double energy(-1);
-            if( (volume < 2000 && volume > 1000) || volume==3201 ) //Kryptonite detectors or the o-ring
-                energy = Edeposit;
-            else //vacuum detectors
-                energy = kinE;
-
+            //if( (volume < 2000 && volume > 1000) || volume==3201 ) //Kryptonite detectors or the o-ring
+            //    energy = Edeposit;
+            //else //vacuum detectors
+            energy = kinE;
             //logX(Energy)
             hTotal[nHist][nPart][0]->Fill(energy);
             valAvg[nHist][nPart][0]->Fill(energy);
@@ -375,7 +374,7 @@ void niceLogBins(TH1*h)
         new_bins[i] = pow(10, from + i * width);
     }
     axis->Set(bins, new_bins);
-    delete new_bins;
+    delete[] new_bins;
 }
 
 int processInput(int argc, char **argv){
