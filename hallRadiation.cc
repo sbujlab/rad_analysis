@@ -107,7 +107,7 @@ void ProcessOne(string fnm){
       */
     TTree *tree = (TTree*)fin->Get("T"); 
     std::vector< remollGenericDetectorHit_t > *fGenDetHit = 0; 
-    std::vector< remollGenericDetectorSum_t > *fGenDetSum = 0; 
+    //std::vector< remollGenericDetectorSum_t > *fGenDetSum = 0; 
     tree->SetBranchAddress("hit", &fGenDetHit);
     //tree->SetBranchAddress("sum", &fGenDetSum);
 
@@ -192,10 +192,11 @@ void ProcessOne(string fnm){
             if(val!=-999){
                 hTotal[nHist][nPart][2]->Fill(energy,val);
                 valAvg[nHist][nPart][2]->Fill(energy,val);
-            }
-        }
+           }
+        }     
+        delete fGenDetHit;
+        fGenDetHit = 0;
     }
-
     processedEv += ceil(prevEv/1000.)*1000;
     prevEv = 0;
     fin->Close();
