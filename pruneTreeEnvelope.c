@@ -127,6 +127,45 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 
     return newHit;
 }
+
+remollEventParticle_t interpolate(remollEventParticle_t part){
+    remollEventParticle_t newPart;
+    newPart.pid = part.pid;
+
+    for(size_t z = 4500; z <= 30000; z+=10){
+	newPart.tjz.push_back(z);
+    	for(size_t i = 0; i < (part.tjx).size()-1; i++){
+	    double x, y, dx, dy, dz;
+	    double xi = part.tjx[i];
+	    double yi = part.tjy[i];
+	    double zi = part.tjz[i];
+	    double xf = part.tjx[i+1];
+	    double yf = part.tjy[i+1];
+	    double zf = part.tjz[i+1];
+	    
+	    if(z==zi){
+		newPart.tjx.push_back(xi);
+		newPart.tjy.push_back(yi);
+	    }
+	    else if(z==zf){
+		newPart.tjx.push_back(xf);
+		newPart.tjy.push_back(yf);
+	    }
+	    else if(z>zi && z <zf){
+		dx = xf - xi;
+		dy = yf - yi;
+		dz = zf - zi;
+		x = xi + (dx/dz)*(z-zi);
+		y = yi + (dy/dz)*(z-zi);
+		newPart.tjx.push_back(x);
+		newPart.tjy.push_back(y);	
+	    }
+	    else {}
+	}
+    }
+    return newPart;    
+}
+
 void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forceSeptant=true)
 {
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
@@ -143,13 +182,15 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     oldTree->SetBranchAddress("part", &fPart); 
     std::vector < remollGenericDetectorHit_t > *hitCopy = new std::vector < remollGenericDetectorHit_t > ;
     std::vector < remollEventParticle_t > *partCopy = new std::vector < remollEventParticle_t > ;
+    std::vector < remollEventParticle_t > *partInterp = new std::vector < remollEventParticle_t > ;
 
     newTree->Branch("hit", &hitCopy);
-    newTree->Branch("part", &partCopy);
+    newTree->Branch("part", &partInterp);
     //newTree->AutoSave();
     //oldTree->Print();
     for (size_t j = 0; j < oldTree->GetEntries(); j++)
     {
+	cout << "Processing entry: " << j << endl;
         if (j%10000 == 0) 
         {
             std::cerr << "\r" <<  j << "/" << oldTree->GetEntries() << " - " << (j*1.0)/oldTree->GetEntries() * 100 << "%";
@@ -210,10 +251,16 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
 
             }
         }
-        if (hitCopy->size() > 0)
+	//Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
+        if (hitCopy->size() > 0){
+	    for(size_t i = 0; i < partCopy->size(); i++){
+		partInterp->push_back(interpolate(partCopy->at(i)));
+	    }
             newTree->Fill();
+	}
         hitCopy->clear();
         partCopy->clear();
+	partInterp->clear();
     }
     newTree->Write("", TObject::kOverwrite);
     newTree->Print();
