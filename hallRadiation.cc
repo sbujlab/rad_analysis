@@ -125,7 +125,7 @@ void ProcessOne(string fnm){
             volume = fGenDetHit->at(j).det;
             evNr = fGenDetHit->at(j).id;
             //Edeposit = fGenDetSum->at(j).edep;
-            kinE = fGenDetHit->at(j).edep;
+            kinE = fGenDetHit->at(j).e;
             //x0 = fGenDetHit->at(j).x;
             //y0 = fGenDetHit->at(j).y;
             //z0 = fGenDetHit->at(j).z;
@@ -192,7 +192,7 @@ void ProcessOne(string fnm){
             if(val!=-999){
                 hTotal[nHist][nPart][2]->Fill(energy,val);
                 valAvg[nHist][nPart][2]->Fill(energy,val);
-           }
+            }
         }     
         delete fGenDetHit;
         fGenDetHit = 0;
