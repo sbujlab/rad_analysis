@@ -87,7 +87,8 @@ void ProcessOne(string fnm){
         return;
     }
 
-    Float_t type, volume, evNr;
+    Int_t evNr = 0;
+    Float_t type, volume; 
     Float_t Edeposit,kinE;
     Float_t x0,y0,z0,xd,yd,zd;
     Float_t pdgID;
@@ -123,7 +124,7 @@ void ProcessOne(string fnm){
         {
             //type = fGenDetHit->pid;
             volume = fGenDetHit->at(j).det;
-            evNr = fGenDetHit->at(j).id;
+            //evNr = fGenDetHit->at(j).id;
             //Edeposit = fGenDetSum->at(j).edep;
             kinE = fGenDetHit->at(j).e;
             //x0 = fGenDetHit->at(j).x;
@@ -194,6 +195,7 @@ void ProcessOne(string fnm){
                 valAvg[nHist][nPart][2]->Fill(energy,val);
             }
         }     
+        evNr++;
         delete fGenDetHit;
         fGenDetHit = 0;
     }
