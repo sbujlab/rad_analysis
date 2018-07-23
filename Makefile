@@ -10,8 +10,12 @@ make hallRad:
 	rm hallRad.o
 	rm radDamage.o
 
+make pruneTree:
+	g++ -g -c pruneTree.c -o pruneTree.o `root-config --cflags --glibs`
+	g++ pruneTree.o libremoll.so -o pruneTree `root-config --cflags --glibs`
+	rm pruneTree.o
+
 clean:
-	rm rad_dose
-	rm hallRad
+	rm hallRad;rm rad_dose; rm pruneTree;
 	rm ./*.o
 	rm ./fom

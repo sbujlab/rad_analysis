@@ -1,53 +1,60 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #include "TTree.h"
 #include "TFile.h"
-#include "TApplication.h"
+#include "remolltypes.hh"
 #include <vector> 
 
-
-struct remollGenericDetectorHit_t {
-  int det;
-  int id;
-    int trid;
-  int pid;
-    int gen;
-    int mtrid;
-    double t;
-  double x, y, z;
-    double xl, yl, zl;
-    double r, ph;
-  double px, py, pz;
-    double pxl, pyl, pzl;
-    double sx, sy, sz;
-    double p, e, m;
-    double vx, vy, vz;
-
-    remollGenericDetectorHit_t() : det(0), id(0), trid(0), pid(0), gen(0), mtrid(0),
-    t(0), x(0),y(0),z(0),xl(0),yl(0),zl(0),r(0),ph(0),px(0),py(0),pz(0),pxl(0),pyl(0),
-    pzl(0),sx(0),sy(0),sz(0),p(0),e(0),m(0),vx(0),vy(0),vz(0)
-    {}
-};
   
-#ifdef __MAKECINT__ 
-#pragma link C++ class vector< remollGenericDetectorHit_t >+; 
-#endif
 # define pi 3.141592653589793238462643383279502884L
 remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
 {
     remollGenericDetectorHit_t newHit;
     newHit.det = hit.det;
     newHit.id = hit.id;
+    newHit.trid=0;
     newHit.pid = hit.pid;
+    newHit.gen=0;
+    newHit.mtrid=0;
     newHit.x = hit.x;
     newHit.y = hit.y;
     newHit.z = hit.z;
+    newHit.xl=0;
+    newHit.yl=0;
+    newHit.zl=0;
+    newHit.r=0;
+    newHit.ph=0;
     newHit.px = hit.px;
     newHit.py = hit.py;
     newHit.pz = hit.pz;
+    newHit.pxl=0;
+    newHit.pyl=0;
+    newHit.pzl=0;
+    newHit.sx=0;
+    newHit.sy=0;
+    newHit.sz=0;
+    newHit.p=0;
+    newHit.e=0;
+    newHit.m=0;
+    newHit.vx=0;
+    newHit.vy=0;
+    newHit.vz=0;
     return newHit; 
+}
+
+void trim(remollEvent_t* newEv, remollEvent_t *ev)
+{
+    //For externalGenerator only xs, Q2, W2, A
+    newEv->A = ev->A;
+    newEv->Am = 0;//ev->Am;
+    newEv->xs = ev->xs;
+    newEv->Q2 = ev->Q2;
+    newEv->W2 = ev->W2;
+    newEv->thcom = 0;//ev->thcom;
+    newEv->beamp = 0;//ev->beamp;
 }
 
 const double septantVal = 2*pi / 14.0; 
@@ -59,12 +66,7 @@ double getAngle(remollGenericDetectorHit_t hit)
 
 remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 {
-    remollGenericDetectorHit_t newHit;// = new remollGenericDetectorHit_t();
-    newHit.z = hit.z;
-    newHit.pz = hit.pz;
-    newHit.id = hit.id;
-    newHit.det = hit.det;
-    newHit.pid = hit.pid;
+    remollGenericDetectorHit_t newHit = trim(hit);
 
     double s = sin(2 * pi / 7.0);
     double c = cos(2 * pi / 7.0);
@@ -79,72 +81,105 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 }
 
 void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant=true)
-{
+{   
+    int len = file.size();
+    int dotPos = file.rfind(".");   
+    std::vector< std::string > fileList;
+    if (file.substr(dotPos) != ".root")
+    {
+        ifstream inFile(file.c_str()); 
+        std::string temp;
+        while (inFile >> temp)
+        {
+            std::cout << "Found: " << temp << std::endl;
+            fileList.push_back(temp);
+        }
+    }
+    else
+    {
+        fileList.push_back(file);
+    }
+
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
+    remollEvent_t *fEv = 0;
     std::ostringstream os;
-    os << "remollin_optimized_det" << detid << ".root";
+    os << file.substr(0, dotPos) << "_optimized_det" << detid << ".root";
     std::string fileName = os.str();
-    TFile *old = new TFile(file.c_str());
-    TTree *oldTree = (TTree*)old->Get("T");
-    TFile *newFile = new TFile(fileName.c_str(),"RECREATE", "", 1);
-    const int numBranches = 5;
-    const char* const branchNames[] ={
-        //"hit", "hit.det", "hit.pid", 
-        //"hit.x", "hit.y", "hit.z", 
-        //"hit.px", "hit.py", "hit.pz", 
-        "ev", "xs", "Q2", "W2", "A" };
-
-    oldTree->SetBranchStatus("*", 0);
-    oldTree->SetBranchStatus("*.*", 0);
-    for (int i = 0; i < numBranches; i++)
-    {
-        oldTree->SetBranchStatus(branchNames[i],1);
-    }
     
-    TTree* newTree = (TTree*)oldTree->CloneTree(0);
-    //TTree* newTree = new TTree();
-    oldTree->SetBranchStatus("*", 1);
-    oldTree->SetBranchStatus("*.*", 1);
-    oldTree->SetBranchAddress("hit", &fHit); 
+    TFile *newFile = new TFile(fileName.c_str(),"RECREATE", "", 1);
     std::vector < remollGenericDetectorHit_t > *hitCopy = new std::vector < remollGenericDetectorHit_t > ;
-   
-    //std::cout << hitCopy->size() << std::endl;
-    newTree->Branch("hit", &hitCopy, 32000, 0);
-    //newTree->AutoSave();
-    for (size_t j = 0; j < oldTree->GetEntries(); j++)
+    remollEvent_t *eventCopy = new remollEvent_t();
+    TTree* newTree = new TTree("T", "Tree with greatly reduced file space");
+    
+    newTree->Branch("hit", &hitCopy);
+    newTree->Branch("ev", &eventCopy);
+    
+    for (size_t i = 0; i < fileList.size(); i++)
     {
-        if (j%10000 == 0) 
-        {
-            std::cerr << "\r" <<  j << "/" << oldTree->GetEntries() << " - " << (j*1.0)/oldTree->GetEntries() * 100 << "%";
-        }
-        oldTree->GetEntry(j);
-        for (size_t i = 0; i < fHit->size(); i++)
-        {
-            //std::cout << "\t" << i << "/" << fHit->size() << std::endl;
-            remollGenericDetectorHit_t hit = fHit->at(i); 
-            //std::cout << "\t\thc" << hitCopy->size() << std::endl; //all the cout keeps it from breaking :)
-            if (hit.det == detid)
-            {
-                //std::cout << "good hit" << std::endl;
-                while (forceSeptant && abs(getAngle(hit)) >= septantVal)
-                {
-                    //std::cout << "Rotating..." << std::endl;   
-                    hit = rotateVector(hit);
-                    //std::cout << "\tto seventh #" << getAngle(hit) * -7/(2.0 * pi)<< std::endl;   
-                }
-                //std::cout << "Done!" << std::endl;   
-                hitCopy->push_back(trim(hit));
-            }
-        }
+        TFile *old = new TFile(fileList.at(i).c_str());
+        TTree *oldTree = (TTree*)old->Get("T");
 
-        if (hitCopy->size() > 0)
-            newTree->Fill();
-        //std::cout << "entries" << newTree->GetEntries() << std::endl;
-        hitCopy->clear();
+        oldTree->SetBranchAddress("hit", &fHit); 
+        oldTree->SetBranchAddress("ev", &fEv); 
+         
+        for (size_t j = 0; j < oldTree->GetEntries(); j++)
+        {
+            if (j%10000 == 0) 
+            {
+                std::cerr << "\r" << "File " << i << "/" << fileList.size() << ", Entry " <<  j << "/" << oldTree->GetEntries() << " - " << (j*1.0)/oldTree->GetEntries() * 100 << "%";
+            }
+            oldTree->GetEntry(j);
+            trim(eventCopy, fEv);
+            for (size_t i = 0; i < fHit->size(); i++)
+            {
+                remollGenericDetectorHit_t hit = fHit->at(i); 
+                if (hit.det == detid)
+                {
+                    while (forceSeptant && TMath::Abs(getAngle(hit)) >= septantVal)
+                    {
+                        //std::cout << "Rotating..." << std::endl;   
+                        hit = rotateVector(hit);
+                        //std::cout << "\tto seventh #" << getAngle(hit) * -7/(2.0 * pi)<< std::endl;   
+                    }
+                    hitCopy->push_back(trim(hit));
+                }
+            }
+
+            if (hitCopy->size() > 0)
+                newTree->Fill();
+            hitCopy->clear();
+        }
+        oldTree->ResetBranchAddresses();
+        old->Close();
     }
-    newTree->Write("", TObject::kOverwrite);
+    newTree->Write("");
     newTree->Print();
-    old->Close();
     newFile->Close();
+}
+
+int main(int argc, char **argv)
+{
+    std::string fileString = "remollin.root";
+    int detid = 28;
+    bool forceSeptant = true;
+    if (argc <= 1 || argc > 4)
+    {
+        std::cerr << "Usage: ./pruneTree char*:filename int:detid y/n:rotateIntoSeptant" << std::endl;
+        exit(0);
+    }
+    if (argc >= 2) 
+    {
+        std::string fileName(argv[1]); 
+        fileString = fileName;
+    }
+    if (argc >= 3)
+    {
+        detid = atoi(argv[2]);    
+    }
+    if (argc >= 4)
+    {
+        forceSeptant = (argv[3][0] == 'y');
+    }
+    pruneTree(fileString, detid, forceSeptant);
 }
 
