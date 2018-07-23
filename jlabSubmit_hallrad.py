@@ -49,7 +49,7 @@ def createXMLfile(source,writeDir,idRoot,name,listname,par,stag,email):
 
     f.write("  <Name name=\""+name+"_hallRad\"/>\n")
     f.write("  <OS name=\"centos7\"/>\n")
-    f.write("  <Memory space=\"7500\" unit=\"MB\"/>\n")
+    f.write("  <Memory space=\"3500\" unit=\"MB\"/>\n")
 
     f.write("  <Command><![CDATA[\n")
     f.write("    pwd\n")
