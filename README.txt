@@ -1,4 +1,5 @@
-To use the make commands to compile rad_dose or hallRad to work with remoll v2.0.0 output you need to copy a libremoll.so dictionary from a recent remoll build directory. libremoll.so must be in one of the directories pointed to by LD_LIBRARY_PATH.
+To use the make commands to compile rad_dose or hallRad to work with remoll v2.0.0 output you need to copy a libremoll.so dictionary from the same build of remoll the output file is from. libremoll.so must be in this directory or one of the directories pointed to by LD_LIBRARY_PATH
+If you want to store libremoll.so elsewhere,
 --- Use this command
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:`pwd`
 ---

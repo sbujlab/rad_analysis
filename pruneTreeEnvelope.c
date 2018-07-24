@@ -133,35 +133,37 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     newPart.pid = part.pid;
 
     for(size_t z = 4500; z <= 30000; z+=10){
-	newPart.tjz.push_back(z);
-    	for(size_t i = 0; i < (part.tjx).size()-1; i++){
-	    double x, y, dx, dy, dz;
-	    double xi = part.tjx[i];
-	    double yi = part.tjy[i];
-	    double zi = part.tjz[i];
-	    double xf = part.tjx[i+1];
-	    double yf = part.tjy[i+1];
-	    double zf = part.tjz[i+1];
-	    
-	    if(z==zi){
-		newPart.tjx.push_back(xi);
-		newPart.tjy.push_back(yi);
-	    }
-	    else if(z==zf){
-		newPart.tjx.push_back(xf);
-		newPart.tjy.push_back(yf);
-	    }
-	    else if(z>zi && z <zf){
-		dx = xf - xi;
-		dy = yf - yi;
-		dz = zf - zi;
-		x = xi + (dx/dz)*(z-zi);
-		y = yi + (dy/dz)*(z-zi);
-		newPart.tjx.push_back(x);
-		newPart.tjy.push_back(y);	
-	    }
-	    else {}
-	}
+        for(size_t i = 0; i < (part.tjx).size()-1; i++){
+            double x, y, dx, dy, dz;
+            double xi = part.tjx[i];
+            double yi = part.tjy[i];
+            double zi = part.tjz[i];
+            double xf = part.tjx[i+1];
+            double yf = part.tjy[i+1];
+            double zf = part.tjz[i+1];
+
+            if(z==zi){
+                newPart.tjx.push_back(xi);
+                newPart.tjy.push_back(yi);
+                newPart.tjz.push_back(z);
+            }
+            else if(z==zf){
+                newPart.tjx.push_back(xf);
+                newPart.tjy.push_back(yf);
+                newPart.tjz.push_back(z);
+            }
+            else if(z>zi && z <zf){
+                dx = xf - xi;
+                dy = yf - yi;
+                dz = zf - zi;
+                x = xi + (dx/dz)*(z-zi);
+                y = yi + (dy/dz)*(z-zi);
+                newPart.tjx.push_back(x);
+                newPart.tjy.push_back(y);	
+                newPart.tjz.push_back(z);
+            }
+            else {}
+        }
     }
     return newPart;    
 }
