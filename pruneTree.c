@@ -61,7 +61,7 @@ const double septantVal = 2*pi / 14.0;
 
 double getAngle(remollGenericDetectorHit_t hit)
 {
-    return atan2(hit.y, -1 * hit.x);
+    return atan2(hit.y, -1*hit.x);
 }
 
 remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
@@ -109,7 +109,7 @@ void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant
     TFile *newFile = new TFile(fileName.c_str(),"RECREATE", "", 1);
     std::vector < remollGenericDetectorHit_t > *hitCopy = new std::vector < remollGenericDetectorHit_t > ;
     remollEvent_t *eventCopy = new remollEvent_t();
-    TTree* newTree = new TTree("T", "Tree with greatly reduced file space");
+    TTree* newTree = new TTree("T", "Reduced Tree");
     
     newTree->Branch("hit", &hitCopy);
     newTree->Branch("ev", &eventCopy);
@@ -118,7 +118,7 @@ void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant
     {
         TFile *old = new TFile(fileList.at(i).c_str());
         TTree *oldTree = (TTree*)old->Get("T");
-
+    
         oldTree->SetBranchAddress("hit", &fHit); 
         oldTree->SetBranchAddress("ev", &fEv); 
          
@@ -141,6 +141,7 @@ void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant
                         hit = rotateVector(hit);
                         //std::cout << "\tto seventh #" << getAngle(hit) * -7/(2.0 * pi)<< std::endl;   
                     }
+                    //std::cout << "Done!" << std::endl;
                     hitCopy->push_back(trim(hit));
                 }
             }
@@ -151,9 +152,11 @@ void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant
         }
         oldTree->ResetBranchAddresses();
         old->Close();
+        delete old;
     }
-    newTree->Write("");
-    newTree->Print();
+    newFile = newTree->GetCurrentFile();
+    //newTree->Write("", TObject::kOverwrite);
+    newFile->Write();
     newFile->Close();
 }
 
