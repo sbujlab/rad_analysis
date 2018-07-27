@@ -4,58 +4,44 @@
 
 #include "TTree.h"
 #include "TFile.h"
-#include "TApplication.h"
+#include "remolltypes.hh"
 #include <vector> 
 
-//From remolltypes.hh
-struct remollGenericDetectorHit_t {
-  int det;
-  int id;
-  int trid ;
-  int pid;
-    int gen;
-    int mtrid;
-    double t;
-    double x, y, z;
-    double xl, yl, zl;
-    double r, ph;
-    double px, py, pz;
-    double pxl, pyl, pzl;
-    double sx, sy, sz;
-    double p, e, m;
-    double vx, vy, vz;
-    
-    remollGenericDetectorHit_t() : det(0), id(0), trid(0), pid(0), gen(0), mtrid(0),
-    t(0), x(0),y(0),z(0),xl(0),yl(0),zl(0),r(0),ph(0),px(0),py(0),pz(0),pxl(0),pyl(0),
-    pzl(0),sx(0),sy(0),sz(0),p(0),e(0),m(0),vx(0),vy(0),vz(0)
-    {}
-};
 
-struct remollEventParticle_t {
-  int pid;
-    double vx, vy, vz;
-    double px, py, pz;
-    double sx, sy, sz;
-    double th, ph, p;
-    double tpx, tpy, tpz;
-  std::vector<double> tjx, tjy, tjz; //Trajectory information
-    remollEventParticle_t() : vx(0), vy(0), vz(0),px(0),py(0),pz(0),
-    sx(0),sy(0),sz(0),th(0),ph(0),p(0),tpx(0),tpy(0),tpz(0)
-    {}
-};
-
-#ifdef __MAKECINT__ 
-#pragma link C++ class vector< remollGenericDetectorHit_t >+; 
-#pragma link C++ class vector< remollEventParticle_t >+; 
-#endif
 #define pi 3.141592653589793238462643383279502884L
+
 remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
 {
     remollGenericDetectorHit_t newHit;
     newHit.det = hit.det;
     newHit.id = hit.id;
+    newHit.trid=0;
     newHit.pid = hit.pid;
-    newHit.trid = hit.trid;
+    newHit.gen=0;
+    newHit.mtrid=hit.mtrid;
+    newHit.x=0;
+    newHit.y=0;
+    newHit.z=0;
+    newHit.xl=0;
+    newHit.yl=0;
+    newHit.zl=0;
+    newHit.r=0;
+    newHit.ph=0;
+    newHit.px=0;
+    newHit.py=0;
+    newHit.pz=0;
+    newHit.pxl=0;
+    newHit.pyl=0;
+    newHit.pzl=0;
+    newHit.sx=0;
+    newHit.sy=0;
+    newHit.sz=0;
+    newHit.p=0;
+    newHit.e=0;
+    newHit.m=0;
+    newHit.vx=0;
+    newHit.vy=0;
+    newHit.vz=0;
     return newHit; 
 }
 
@@ -63,22 +49,32 @@ remollEventParticle_t trim(remollEventParticle_t part)
 {
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
+    newPart.vx=0;
+    newPart.vy=0;
+    newPart.vz=0;
+    newPart.px=0;
+    newPart.py=0;
+    newPart.pz=0;
+    newPart.sx=0;
+    newPart.sy=0;
+    newPart.sz=0;
+    newPart.th=0;
+    newPart.ph=0;
+    newPart.p=0;
+    newPart.tpx=0;
+    newPart.tpy=0;
+    newPart.tpz=0;
     newPart.tjx = part.tjx;
     newPart.tjy = part.tjy;
     newPart.tjz = part.tjz;
     return newPart;
 }
 
-
 const double septantVal = 2*pi / 14.0; 
 
-double getAngle(remollGenericDetectorHit_t hit)
-{
-    return atan2(hit.y, -1 * hit.x);
-}
 double getAngle(double x, double y)
 {
-    return atan2(y, -1 * x);
+    return atan2(y, -1*x);
 }
 
 remollEventParticle_t rotateVector(remollEventParticle_t part)
@@ -94,7 +90,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
     {
         x = part.tjx.at(i);   
         y = part.tjy.at(i);   
-        while (abs(getAngle(x, y) >= septantVal))
+        while (abs(getAngle(x, y)) >= septantVal)
         {
             double tX = x * c - y * s;
             double tY = x * s + y * c;
@@ -119,12 +115,19 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
     newHit.det = hit.det;
     newHit.pid = hit.pid;
 
-    newHit.x = hit.x * c - hit.y * s;
-    newHit.px = hit.px * c - hit.py * s;
-
-    newHit.y = hit.x * s + hit.y * c;
-    newHit.py = hit.px * s + hit.py * c;
-
+    double x, y;
+    x = hit.x;
+    y = hit.y;
+    while (abs(getAngle(x, y)) >= septantVal)
+    {
+        double tX, tY;
+        tX = x * c - y * s;
+        tY = x * s + y * c;
+        x = tX;
+        y  = tY;
+    }
+    newHit.x = x;
+    newHit.y = y;
     return newHit;
 }
 
@@ -132,7 +135,7 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
 
-    for(size_t z = 4500; z <= 30000; z+=10){
+    for(size_t z = 4500; z <= 30000; z+=20){
         for(size_t i = 0; i < (part.tjx).size()-1; i++){
             double x, y, dx, dy, dz;
             double xi = part.tjx[i];
@@ -170,6 +173,7 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
 
 void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forceSeptant=true)
 {
+    TTree::SetMaxTreeSize(Long64_t(1024)*1024*1024*200); //200 GB tree
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
     std::vector < remollEventParticle_t > *fPart = 0;
     std::ostringstream os;
@@ -192,7 +196,6 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     //oldTree->Print();
     for (size_t j = 0; j < oldTree->GetEntries(); j++)
     {
-	cout << "Processing entry: " << j << endl;
         if (j%10000 == 0) 
         {
             std::cerr << "\r" <<  j << "/" << oldTree->GetEntries() << " - " << (j*1.0)/oldTree->GetEntries() * 100 << "%";
@@ -243,10 +246,7 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
                 //and save the corresponding hit aswell
                 if (trid == hit.trid)
                 {
-                    while (forceSeptant && abs(getAngle(hit)) >= septantVal)
-                    {
-                        hit = rotateVector(hit);
-                    }
+                    if (forceSeptant) hit = rotateVector(hit);
                     hitCopy->push_back(trim(hit));
                     break;
                 }
@@ -264,9 +264,36 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
         partCopy->clear();
 	partInterp->clear();
     }
+    newFile = newTree->GetCurrentFile();
     newTree->Write("", TObject::kOverwrite);
     newTree->Print();
     old->Close();
     newFile->Close();
+}
+
+int main(int argc, char **argv)
+{
+    std::string fileString = "tracking.root";
+    int detid = 28;
+    bool forceSeptant = true;
+    if (argc <= 1 || argc > 4)
+    {
+        std::cerr << "Usage: ./pruneTreeEnvelope char*:filename int:detid y/n:rotateIntoSeptant" << std::endl;
+        exit(0);
+    }
+    if (argc >= 2) 
+    {
+        std::string fileName(argv[1]); 
+        fileString = fileName;
+    }
+    if (argc >= 3)
+    {
+        detid = atoi(argv[2]);    
+    }
+    if (argc >= 4)
+    {
+        forceSeptant = (argv[3][0] == 'y');
+    }
+    pruneTreeEnvelope(fileString, detid, forceSeptant);
 }
 
