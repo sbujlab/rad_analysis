@@ -98,7 +98,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
             y = tY;
         }
         newPart.tjx.push_back(x);
-        newPart.tjy.push_back(y);
+        newPart.tjy.push_back((y < 0 )? -y : y);
         newPart.tjz.push_back(part.tjz.at(i));
     }
     //std::cout << "Rotated " << std::endl;
@@ -127,7 +127,7 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
         y  = tY;
     }
     newHit.x = x;
-    newHit.y = y;
+    newHit.y = (y < 0)? -y : y;
     return newHit;
 }
 
@@ -190,6 +190,9 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     std::vector < remollEventParticle_t > *partCopy = new std::vector < remollEventParticle_t > ;
     std::vector < remollEventParticle_t > *partInterp = new std::vector < remollEventParticle_t > ;
 
+    //TODO reading data into envelopes downstream could be sped up
+    //by storing the data by Z instead of by hit
+    
     newTree->Branch("hit", &hitCopy);
     newTree->Branch("part", &partInterp);
     //newTree->AutoSave();
