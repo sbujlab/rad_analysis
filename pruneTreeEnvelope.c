@@ -182,8 +182,9 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     TTree::SetMaxTreeSize(Long64_t(1024)*1024*1024*200); //200 GB tree
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
     std::vector < remollEventParticle_t > *fPart = 0;
+    int dotPos = file.rfind(".");   
     std::ostringstream os;
-    os << "tracking_optimized_det" << detid << ".root";
+    os << file.substr(0, dotPos) << "_envelope_det" << detid << ".root";
     std::string fileName = os.str();
     TFile *old = new TFile(file.c_str());
     TTree *oldTree = (TTree*)old->Get("T");
