@@ -69,12 +69,14 @@ remollEventParticle_t trim(remollEventParticle_t part)
     newPart.tjz = part.tjz;
     return newPart;
 }
-
-const double septantVal = 2*pi / 14.0; 
+const double septant = (2*pi/7.0);
+const double septantStart = 3 * septant; 
+const double septantStop = septantStart + septant; 
 
 double getAngle(double x, double y)
 {
-    return atan2(y, -1*x);
+    double angle = atan2(y, x);
+    return (angle < 0) ? (2*pi)+angle : angle;
 }
 
 remollEventParticle_t rotateVector(remollEventParticle_t part)
@@ -90,13 +92,15 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
     {
         x = part.tjx.at(i);   
         y = part.tjy.at(i);   
-        while (abs(getAngle(x, y)) >= septantVal)
+        //std::cout << "From " << getAngle(x, y) / septant << std::endl;
+        while (getAngle(x, y) <= septantStart || getAngle(x, y) >= septantStop)
         {
             double tX = x * c - y * s;
             double tY = x * s + y * c;
             x = tX;
             y = tY;
         }
+        //std::cout << "To " << getAngle(x, y) / septant << std::endl;
         newPart.tjx.push_back(x);
         newPart.tjy.push_back((y < 0 )? -y : y);
         newPart.tjz.push_back(part.tjz.at(i));
@@ -118,14 +122,16 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
     double x, y;
     x = hit.x;
     y = hit.y;
-    while (abs(getAngle(x, y)) >= septantVal)
+    //std::cout << "From " << getAngle(x, y) / (2 * pi) * 7 << std::endl;
+    while (getAngle(x, y) <= septantStart || getAngle(x, y) >= septantStop)
     {
         double tX, tY;
         tX = x * c - y * s;
         tY = x * s + y * c;
         x = tX;
-        y  = tY;
+        y = tY;
     }
+    //std::cout << "To " << getAngle(x, y) / (2 * pi) * 7 << std::endl;
     newHit.x = x;
     newHit.y = (y < 0)? -y : y;
     return newHit;
@@ -297,6 +303,7 @@ int main(int argc, char **argv)
     {
         forceSeptant = (argv[3][0] == 'y');
     }
+    std::cout << "Running with file=" << fileString << ", detid=" << detid <<", forceSeptant=" << forceSeptant << std::endl; 
     pruneTreeEnvelope(fileString, detid, forceSeptant);
 }
 
