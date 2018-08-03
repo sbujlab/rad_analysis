@@ -86,21 +86,48 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
     newPart.pid = part.pid;
     const double s = sin(2 * pi / 7.0);
     const double c = cos(2 * pi / 7.0);
-
+    double startZ = 1000;
+    double startIndex;
     double x, y;
-    for (int i = 0; i < part.tjx.size(); i++)
+
+    for (int i = 0; i < part.tjz.size(); i++)
+    {
+        double z = part.tjz.at(i);
+        if (z >= startZ)
+        {
+            startIndex = i;
+            x = part.tjx.at(i);   
+            y = part.tjy.at(i);   
+            break;
+        }
+    }
+    
+    //std::cout << "From " << getAngle(x, y) / septant << std::endl;
+    int numSep = 0;
+    while (getAngle(x, y) <= septantStart || getAngle(x, y) >= septantStop)
+    {
+        numSep++;
+        double tX = x * c - y * s;
+        double tY = x * s + y * c;
+        x = tX;
+        y = tY; 
+    }
+    //std::cout << "To " << getAngle(x, y) / septant << std::endl;
+    newPart.tjx.push_back(x);
+    newPart.tjy.push_back((y < 0 )? -y : y);
+    newPart.tjz.push_back(part.tjz.at(startIndex));
+
+    for (int i = startIndex+1; i < part.tjx.size(); i++)
     {
         x = part.tjx.at(i);   
         y = part.tjy.at(i);   
-        //std::cout << "From " << getAngle(x, y) / septant << std::endl;
-        while (getAngle(x, y) <= septantStart || getAngle(x, y) >= septantStop)
+        for (int j = 0; j < numSep; j++)
         {
             double tX = x * c - y * s;
             double tY = x * s + y * c;
             x = tX;
             y = tY;
         }
-        //std::cout << "To " << getAngle(x, y) / septant << std::endl;
         newPart.tjx.push_back(x);
         newPart.tjy.push_back((y < 0 )? -y : y);
         newPart.tjz.push_back(part.tjz.at(i));
@@ -141,7 +168,7 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
 
-    for(size_t z = 4500; z <= 30000; z+=20){
+    for(size_t z = 4500; z <= 30000; z+=100){
         for(size_t i = 0; i < (part.tjx).size()-1; i++){
             double x, y, dx, dy, dz;
             double xi = part.tjx[i];
@@ -265,14 +292,14 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
         }
 	//Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
         if (hitCopy->size() > 0){
-	    for(size_t i = 0; i < partCopy->size(); i++){
-		partInterp->push_back(interpolate(partCopy->at(i)));
-	    }
+	        for(size_t i = 0; i < partCopy->size(); i++){
+		        partInterp->push_back(interpolate(partCopy->at(i)));
+	        }   
             newTree->Fill();
-	}
+	    }
         hitCopy->clear();
         partCopy->clear();
-	partInterp->clear();
+	    partInterp->clear();
     }
     newFile = newTree->GetCurrentFile();
     newTree->Write("", TObject::kOverwrite);
