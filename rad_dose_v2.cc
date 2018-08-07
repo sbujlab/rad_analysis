@@ -119,7 +119,7 @@ Int_t AlCan = 6030;             // Aluminum can around hybrid magnet
 
 const int n_shlds = 13;
                                 // Set these to 99, 101, and 103 to restore wall, ceiling, floor functionality FIXME - may have already been taken care of by detid feature
-Int_t SensVolume_v[n_detectors] = {101,101,101,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};//Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
+Int_t SensVolume_v[n_detectors] = {99,101,103,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};//Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
 
 const int n_energy_ranges = 3;
 const int n_particles = 3;
