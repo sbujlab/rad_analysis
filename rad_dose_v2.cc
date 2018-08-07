@@ -225,15 +225,15 @@ int main(Int_t argc,Char_t* argv[]) {
     temp_str_stream2<<v;
     TString vS;
     vS=temp_str_stream2.str();
-    //temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M.root";
-    temp_str_stream3<<"remollin.root";
+    temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M.root";
+    //temp_str_stream3<<"remollin.root";
     added_file_array[v]=temp_str_stream3.str();
     Tmol->Add(added_file_array[v]);
   }
   
   ostringstream temp_str_stream4;
   //temp_str_stream4<<"/home/cameronc/gitdir/remoll/output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
-  temp_str_stream4<<"output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
+  temp_str_stream4<<"/home/cameronc/gitdir/remoll/output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
   TString plotsFolder=temp_str_stream4.str();//Name of folder for saving plots
   //TString plotsFolder="/home/cameronc/gitdir/remoll/output/Plots_"+modifier+"_"+nmills+"/";//Name of folder for saving plots
 
@@ -1229,8 +1229,8 @@ int out_count = 0;
       printf(" Total %20s %20s",chpid[j],chenrange[k]);
       sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
       sprintf(line1," ");//empty previous values
-      printf("%12.3E",power_total[0][j][k]/n_events);
-      sprintf(line1,"%s %12.3E",line1,power_total[0][j][k]/n_events);
+      printf("%12.3E",power_total[1][j][k]/n_events);
+      sprintf(line1,"%s %12.3E",line1,power_total[1][j][k]/n_events);
     }
   }
   printf("\n");
@@ -1315,8 +1315,8 @@ int out_count = 0;
       printf(" Total %20s %20s",chpid[j],chenrange[k]);
       sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
       sprintf(line1," ");//empty previous values
-      printf("%12.3E",flux_total[0][j][k]/n_events);
-      sprintf(line1,"%s %12.3E",line1,flux_total[0][j][k]/n_events);
+      printf("%12.3E",flux_total[1][j][k]/n_events);
+      sprintf(line1,"%s %12.3E",line1,flux_total[1][j][k]/n_events);
     }
   }
   printf("\n");
