@@ -118,8 +118,8 @@ Int_t lead_shldtube = 6028;     // Lead shielding tube in front of collimator 4
 Int_t AlCan = 6030;             // Aluminum can around hybrid magnet
 
 const int n_shlds = 13;
-
-Int_t SensVolume_v[n_detectors] = {99,101,103,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};//Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
+                                // Set these to 99, 101, and 103 to restore wall, ceiling, floor functionality FIXME - may have already been taken care of by detid feature
+Int_t SensVolume_v[n_detectors] = {101,101,101,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};//Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
 
 const int n_energy_ranges = 3;
 const int n_particles = 3;
@@ -130,7 +130,10 @@ const int n_sources = 10; // used for mapping total radiation versus which sensi
 ////Flux and power parameters Full range //indices [region][detector][energy range][pid] = [8][16][3][3] - 3 energy ranges for e,gamma, n for three hall detectors. 
 Double_t flux_local[n_regions][2][n_particles][n_energy_ranges]={{{{0}}}}; // The last index is for the shieldings: target, shielding blocks 1 to 4, and other vertices
 Double_t power_local[n_regions][2][n_particles][n_energy_ranges]={{{{0}}}};
-// NEW
+// New New
+Double_t flux_total[2][n_particles][n_energy_ranges]={{{0}}}; // The last index is for the shieldings: target, shielding blocks 1 to 4, and other vertices
+Double_t power_total[2][n_particles][n_energy_ranges]={{{0}}};
+// New
 Double_t shld_flux_local[n_shlds][n_particles][n_energy_ranges]={{{0}}};  // The last index is for mapping where the radiation lands specifically, xyz coordinates are the origin vertices.
 Double_t shld_power_local[n_shlds][n_particles][n_energy_ranges]={{{0}}};
 
@@ -389,13 +392,13 @@ int main(Int_t argc,Char_t* argv[]) {
   //                                      { change the binning to reflect the opposite nature, good, all binned in one spot, decent-needs better boundaries->775?, 775?, decent, decent, seems to miss a whole lot }
   //                                      { hall**            ,  target       ,  collar        ,  coll1shld , +magnet    ,  coll4shld,  hybshld         ,  dump ,  other,  all  }; -> Hall is an inverted volume in x and z, not y.
   //                                was   {-315 tp 1781.837   , -315 to 315   ,  275.1 to 315.1,  397.45-775,  775.55-812,  812-992  ,  992-1821.837    ,  dump ,  other,  all  }; -> Hall is an inverted volume in x and z, not y.
-  Double_t z_vertex_cuts_low[n_regions] = {-2350.-800.           , -2350.-800.     ,  2851.+100.-200. ,  3151.     ,  7750.5+5.,  8120.     ,  9920.            ,  32000., -5000. , -25000.}; //last index store vertices outside of other ranges 
-  Double_t z_vertex_cuts_up[n_regions]  = { 18218.37          ,  2350.+800.     ,  2851.+100.+200. ,  8120.      ,  8120.      ,  9920.     ,  18218.37        ,  70000.,  32000.,  32000.};
+  Double_t z_vertex_cuts_low[n_regions] = {-2370.-800.           , -2370.-800.     ,  2851.+100.-200. ,  3151.     ,  7750.5+5.,  8030.     ,  9930.            ,  32000., -5000. , -25000.}; //last index store vertices outside of other ranges 
+  Double_t z_vertex_cuts_up[n_regions]  = { 18218.37          ,  2350.+800.     ,  2851.+100.+200. ,  8120.      ,  8120.      ,  9930.     ,  18218.37        ,  70000.,  32000.,  35000.};
   Double_t x_vertex_cuts_low[n_regions] = {-2965.             ,  915.-2960.-800., -185.-200.      , -2130.-10.   , -3868.4-10. , -3868.4-10.,  915.-2857.5-400. , -5000. , -5000. , -20000.};
   Double_t x_vertex_cuts_up[n_regions]  = { 2965.             ,  915.+2960.+800.,  185.+200.      ,  2130.+10.   ,  3868.4+10. ,  3868.4+10.,  915.+2857.5+400. ,  5000. ,  5000. ,  20000.};
   Double_t y_vertex_cuts_low[n_regions] = {-3300.              , -400.-2500.-400. , -185.-200.      , -2130.-10.   , -2900.-10.   , -2900.-10.  , -400.-2500.-400.    , -5000. , -5000. , -10000.};
   Double_t y_vertex_cuts_up[n_regions]  = { 3300.              , -400.+2500.+400. ,  185.+200.      ,  2130.+10.   ,  2900.+10.   ,  2900.+10.  , -400.+2500.+400.    ,  5000. ,  5000. ,  20000.};
-  Double_t R_vertex_cuts_up[n_regions]  = { 50000.             ,  5000.         ,  750.           ,  3500.      ,  5000.      ,  5000.     ,  4500.            ,  5000. ,  5000. ,  25000.};
+  Double_t R_vertex_cuts_up[n_regions]  = { 25000.             ,  5000.         ,  750.           ,  3500.      ,  5000.      ,  5000.     ,  4500.            ,  5000. ,  5000. ,  25000.};
   Int_t    x_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1000, 1000, 1000}; // default, overridden below
   Int_t    y_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1000, 1000, 1000};
   Int_t    z_vertex_bin_counts[n_regions]={ 1000, 300, 50, 300, 300, 300, 300, 1200, 1000, 1000};
@@ -413,8 +416,8 @@ int main(Int_t argc,Char_t* argv[]) {
   }
 
   // If in classic mode these values will be used (smaller bin ranges):
-  Double_t Hall_z_vertices_low = -3500.;
-  Double_t Hall_z_vertices_up  =  18000.;
+  Double_t Hall_z_vertices_low = -25000.;
+  Double_t Hall_z_vertices_up  =  35000.;
   Double_t Hall_x_vertices_low = -5000.;
   Double_t Hall_x_vertices_up  =  5000.;
   Double_t Hall_y_vertices_low = -5000.;
@@ -445,32 +448,32 @@ int main(Int_t argc,Char_t* argv[]) {
   Double_t R_vertex_cuts_up[n_regions] =  {hall,300. , collar,50.0, 160.0, 180.0, 450., 300.};
   */
 
-  Double_t energy_cut_low[n_energy_ranges]={0,10,30};
-  Double_t energy_cut_up[n_energy_ranges]={10,30,12000};
+  Double_t energy_cut_low[n_energy_ranges]={0,10,25};
+  Double_t energy_cut_up[n_energy_ranges]={10,25,12000};
   // FIXME why these energy upper limits? Ask Rakitha?
   //Int_t bin_ranges[n_regions+1][n_particles][n_energy_ranges+1]={
   Int_t bin_ranges[n_regions][n_particles][n_energy_ranges+1]={
-           {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},    // Hall               (elec,gamma,neutron)
-           {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},    // target 
-           {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},    // lead collar 
+           {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},    // Hall               (elec,gamma,neutron)
+           {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},    // target 
+           {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},    // lead collar 
 			   // >>
-           {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},     // Shielding Block 1 and 2
-			     {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},     // Shielding Block 3
-			     {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},     // +Magnet region
-           {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},     // Shielding Block 4
-			   // << these were only up to 1000 energy range, changed to match
-			     {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},    // dump
-			     {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}},    // other
-			     {{0,10,30,12000},{0,10,30,4000},{0,10,30,4000}}     // all
+           {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},     // Shielding Block 1 and 2
+			     {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},     // Shielding Block 3
+			     {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},     // +Magnet region
+           {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},     // Shielding Block 4
+			   // << the25 were only up 25 1000 energy 25nge, changed to match
+			     {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},    // dump
+			     {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}},    // other
+			     {{0,10,25,12000},{0,10,25,4000},{0,10,25,4000}}     // all
   };
   // FIXME add more, make more clear
   //                                       { hall**,  target , collar, coll1shld,+magnet ,coll4shld,dump,hybshld,other} -> Hall is an inverted volume in x and z, not y.
-  Double_t vertex_bin_ranges_low[n_regions] = {-30000. , -2350.-800., 2951.-100.-100., 4030., 7700., 8120., 9920.    ,  32000., -5000. , -30000.};//last index store vertices outside of other ranges 
-  Double_t vertex_bin_ranges_up[n_regions]  = { 30000. ,  2350.+800., 2951.+100.+100., 7700., 8120., 9920., 18218.37,  70000.,  20000.,  30000.};
+  Double_t vertex_bin_ranges_low[n_regions] = {-30000. , -2370.-800., 2951.-100.-100., 3151., 7705.5, 8030., 9930.    ,  32000., -5000. , -25000.};//last index store vertices outside of other ranges 
+  Double_t vertex_bin_ranges_up[n_regions]  = { 30000. ,  2350.+800., 2951.+100.+100., 8120., 8120.0, 9930., 18218.37,  70000.,  32000.,  35000.};
   Double_t vertex_bin_counts[n_regions]     = { 2000  ,  500     , 50           , 500 , 500 , 500 , 500     ,  1900 ,  2500 ,  6000 };
   //Double_t vertex_bin_ranges_low[n_regions] = {-235.-80 , -235.-80., 295.1-10.-10., 403., 770., 812., 992.    , -600. };//last index store vertices outside of other ranges 
   //Double_t vertex_bin_ranges_up[n_regions]  = { 1781.837,  235.+80., 295.1+10.+10., 770., 812., 992., 1821.837,  1822.};
-  TString ke_range[n_energy_ranges] = {"KE<10","10<KE<30","30<KE"};
+  TString ke_range[n_energy_ranges] = {"KE<10","10<KE<25","25<KE"};
   TString spid[n_particles]={"e-","#gamma","n0"};
   // The Hall, the target hut, the lead collar, the first and second shielding blocks around the 1st collimator, the shielding block in front of the hybrid and collimator 4 (and 3), the hybrid shielding hut or roof, everything else, everything.
   TString svertex[n_regions]={"Hall","ShTarget","LeadCollar","Coll1Shld","+Magnet","Coll4Shld","HybridShld","Dump","Other","All"};     
@@ -572,7 +575,22 @@ int out_count = 0;
         //  hit_radius = TMath::Sqrt(TMath::Power(fGenDetHit[j].x,2)+TMath::Power(fGenDetHit[j].y,2));//for the cyclindrical detector to ignore the flux going into the beam dump
         //else
         //  hit_radius = 999;
+        
         pid=pidmap[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
+
+        for (Int_t ke_i=0;ke_i<n_energy_ranges;ke_i++){
+          kineE = TMath::Sqrt(TMath::Power(fGenDetHit[j].p,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
+          if (kineE > energy_cut_low[ke_i] && kineE <= energy_cut_up[ke_i]){
+            keid=ke_i;
+            break;
+          }
+          else{
+            keid=-1;
+          }      
+        }
+        flux_total[detid][pid][keid]++;
+        power_total[detid][pid][keid]+=kineE;
+       
         //use a nested if to get the vertex range using fGenDetHit.VZ[j]
         //for (Int_t vrt_i=0;vrt_i<n_regions+1;vrt_i++){
         for (Int_t vrt_i=0;vrt_i<n_regions;vrt_i++){
@@ -593,17 +611,7 @@ int out_count = 0;
 //        } // Old end of for-loop, not it will add the event to any region's histgrams that may or may not overlap (before it was exclusive to just the first region that got it -> removed the 'breaks'). CSC 7/26/2017 EDIT
 
           if(vrtx>=0){
-            kineE = TMath::Sqrt(TMath::Power(fGenDetHit[j].p,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
             //cout<<"kinetic energy = "<<kineE<<endl;
-            for (Int_t ke_i=0;ke_i<n_energy_ranges;ke_i++){
-              if (kineE > energy_cut_low[ke_i] && kineE <= energy_cut_up[ke_i]){
-                keid=ke_i;
-                break;
-              }
-              else{
-                keid=-1;
-              }      
-            }
             //cout<<"keid = "<<keid<<endl;
             if (keid>=0) {// && hit_radius > hit_radius_min[vrtx_z] ){// FIXME Should I make all the plots have an ALL region at vrtx = n_regions (an n_regions+1 index) and make the n_regions-1 index function as a catchall? YES FIXME ->>>> && vrtx<n_regions-1){
               flux_local[vrtx][detid][pid][keid]++;
@@ -678,17 +686,17 @@ int out_count = 0;
           }
           else vrtx=-1;
         }
+        kineE = TMath::Sqrt(TMath::Power(fGenDetHit[j].p,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
+        for (Int_t ke_i=0;ke_i<n_energy_ranges;ke_i++){
+          if (kineE > energy_cut_low[ke_i] && kineE <= energy_cut_up[ke_i]){
+            keid=ke_i;
+            break;
+        }
+          else{
+            keid=-1;
+          }      
+        }
         if(vrtx>=0){
-          kineE = TMath::Sqrt(TMath::Power(fGenDetHit[j].p,2) + TMath::Power(pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)],2) ) - pidmass[(Int_t)TMath::Abs(fGenDetHit[j].pid)];
-          for (Int_t ke_i=0;ke_i<n_energy_ranges;ke_i++){
-            if (kineE > energy_cut_low[ke_i] && kineE <= energy_cut_up[ke_i]){
-              keid=ke_i;
-              break;
-          }
-            else{
-              keid=-1;
-            }      
-          }
           if (keid>=0){
             shld_flux_local[vrtx][pid][keid]++;
             shld_power_local[vrtx][pid][keid]+=kineE;
@@ -1162,7 +1170,6 @@ int out_count = 0;
   Double_t sum=0;
   Double_t shld_sum=0;
  
-  // FIXME Add a variable that gets += every time a unique count of radiation gets printed in order to sum up all the radiation being produced/absorbed across all regions
   for(Int_t i=0;i<n_particles;i++){//pid
     for(Int_t j=0;j<n_energy_ranges;j++){//energy range
       printf(" %20s %20s",chpid[i],chenrange[j]);
@@ -1203,7 +1210,7 @@ int out_count = 0;
 	      sprintf(line," %20s %20s %20s",svertex[i].Data(),chpid[j],chenrange[k]);
 	      sprintf(line1," ");//empty previous values
 	      for(Int_t l=0;l<2;l++){//detector                             // number of hall (roof, wall) detectors present
-	        printf("%12.3E",power_local[i][l][j][k]/n_events);
+          printf("%12.3E",power_local[i][l][j][k]/n_events);
           sprintf(line1,"%s %12.3E",line1,power_local[i][l][j][k]/n_events);
 	      }
 	      printf("\n");
@@ -1213,7 +1220,26 @@ int out_count = 0;
       }
     }
   }
-  
+  printf(" \n Total_Radiation_Power_into_the_Roof_(MeV/event) \n");
+  strline="Total_Radiation_Power_into_the_Roof_(MeV/event)";
+  list_power->Add(new TObjString(strline));
+  list_outputs << strline << endl;
+  for(Int_t j=0;j<n_particles;j++){//pid
+    for(Int_t k=0;k<n_energy_ranges;k++){//energy range
+      printf(" Total %20s %20s",chpid[j],chenrange[k]);
+      sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
+      sprintf(line1," ");//empty previous values
+      printf("%12.3E",power_total[0][j][k]/n_events);
+      sprintf(line1,"%s %12.3E",line1,power_total[0][j][k]/n_events);
+    }
+  }
+  printf("\n");
+  sprintf(line," %s %s",line,line1);
+  list_power->Add(new TObjString(line));
+  list_outputs << line << endl;
+ 
+
+
   printf(" \n ShldBlock_Cut:Radiation_Power_into_the_Shielding_Blocks_(MeV/event) \n");
   strline="ShldBlock_Cut:Radiation_Power_into_the_Shielding_Blocks_(MeV/event)";
   list_power->Add(new TObjString(strline));
@@ -1280,6 +1306,25 @@ int out_count = 0;
       list_outputs << line << endl;
     }
   }
+  printf(" \n Total_Radiation_Flux_into_the_Roof_(MeV/event) \n");
+  strline="Total_Radiation_Flux_into_the_Roof_(MeV/event)";
+  list_power->Add(new TObjString(strline));
+  list_outputs << strline << endl;
+  for(Int_t j=0;j<n_particles;j++){//pid
+    for(Int_t k=0;k<n_energy_ranges;k++){//energy range
+      printf(" Total %20s %20s",chpid[j],chenrange[k]);
+      sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
+      sprintf(line1," ");//empty previous values
+      printf("%12.3E",flux_total[0][j][k]/n_events);
+      sprintf(line1,"%s %12.3E",line1,flux_total[0][j][k]/n_events);
+    }
+  }
+  printf("\n");
+  sprintf(line," %s %s",line,line1);
+  list_flux->Add(new TObjString(line));
+  list_outputs << line << endl;
+
+
 
   printf(" \n Vertex_Cut:Radiation_Flux_into_the_hall_(Counts, for %d events)\n",n_events);
   sprintf(line2,"Vertex_Cut:Radiation_Flux_into_the_hall_(Counts, for %d events)",n_events);
