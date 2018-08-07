@@ -21,6 +21,6 @@ make pruneTreeEnvelope:
 	rm pruneTreeEnvelope.o
 
 clean:
-	rm hallRad;rm rad_dose; rm pruneTree;
 	rm ./*.o
 	rm ./fom
+	rm hallRad; rm rad_dose; rm pruneTree; rm pruneTreeEnvelope;
