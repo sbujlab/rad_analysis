@@ -81,12 +81,11 @@ double getAngle(double x, double y)
 
 remollEventParticle_t rotateVector(remollEventParticle_t part)
 {
-    //std::cout << "Rotating " << std::endl;
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
     const double s = sin(2 * pi / 7.0);
     const double c = cos(2 * pi / 7.0);
-    double startZ = 1000;
+    double startZ = 5980; //right after the end of the acceptance defining collimator
     double startIndex;
     double x, y;
 
@@ -112,12 +111,8 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
         x = tX;
         y = tY; 
     }
-    //std::cout << "To " << getAngle(x, y) / septant << std::endl;
-    newPart.tjx.push_back(x);
-    newPart.tjy.push_back((y < 0 )? -y : y);
-    newPart.tjz.push_back(part.tjz.at(startIndex));
 
-    for (int i = startIndex+1; i < part.tjx.size(); i++)
+    for (int i = 0; i < part.tjx.size(); i++)
     {
         x = part.tjx.at(i);   
         y = part.tjy.at(i);   
@@ -135,6 +130,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
     //std::cout << "Rotated " << std::endl;
     return newPart;
 }
+
 remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 {
     const double s = sin(2 * pi / 7.0);
@@ -167,8 +163,13 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 remollEventParticle_t interpolate(remollEventParticle_t part){
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
-
-    for(size_t z = 4500; z <= 30000; z+=100){
+    int stepSize = 500;
+    for(size_t z = 4500; z <= 30000; z+=stepSize){
+        if (z >= 12500)
+            stepSize = 500;
+        else if (z >= 10500)
+            stepSize = 200;
+        
         for(size_t i = 0; i < (part.tjx).size()-1; i++){
             double x, y, dx, dy, dz;
             double xi = part.tjx[i];
