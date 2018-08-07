@@ -119,7 +119,7 @@ Int_t AlCan = 6030;             // Aluminum can around hybrid magnet
 
 const int n_shlds = 13;
                                 // Set these to 99, 101, and 103 to restore wall, ceiling, floor functionality FIXME - may have already been taken care of by detid feature
-Int_t SensVolume_v[n_detectors] = {101,101,101,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};//Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
+Int_t SensVolume_v[n_detectors] = {99,101,103,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};//Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
 
 const int n_energy_ranges = 3;
 const int n_particles = 3;
@@ -209,7 +209,7 @@ int main(Int_t argc,Char_t* argv[]) {
   TChain * Tmol =new TChain("T");
   //Cameron Clarke runs:
   //input info:
-  const int n_mills = 10;// FIXME number of million events
+  const int n_mills = 1;// FIXME number of million events
 
   Int_t n_events = n_mills*1e6;
   Int_t beamcurrent = 85;//uA
@@ -225,15 +225,15 @@ int main(Int_t argc,Char_t* argv[]) {
     temp_str_stream2<<v;
     TString vS;
     vS=temp_str_stream2.str();
-    //temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M.root";
-    temp_str_stream3<<"remollin.root";
+    temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M.root";
+    //temp_str_stream3<<"remollin.root";
     added_file_array[v]=temp_str_stream3.str();
     Tmol->Add(added_file_array[v]);
   }
   
   ostringstream temp_str_stream4;
   //temp_str_stream4<<"/home/cameronc/gitdir/remoll/output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
-  temp_str_stream4<<"output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
+  temp_str_stream4<<"/home/cameronc/gitdir/remoll/output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
   TString plotsFolder=temp_str_stream4.str();//Name of folder for saving plots
   //TString plotsFolder="/home/cameronc/gitdir/remoll/output/Plots_"+modifier+"_"+nmills+"/";//Name of folder for saving plots
 
@@ -1139,7 +1139,7 @@ int out_count = 0;
     //"Total","Side","Top","Hall","TargetHut","TargetHutPoly","LeadCollar","LeadCollarPoly","Coll1ShldUS","Coll1ShldDS","Coll1ShldPoly","Coll4Shld","Coll4ShldPoly","HybridShld"};
   }
   const char * chpid[n_particles]         = {"e+-","photon","n0"};
-  const char * chenrange[n_energy_ranges] = {"E<10","10<E<30","30<E"};
+  const char * chenrange[n_energy_ranges] = {"E<10","10<E<25","25<E"};
 
   TList * list_power = new TList;
   TString strline;
@@ -1224,13 +1224,13 @@ int out_count = 0;
   strline="Total_Radiation_Power_into_the_Roof_(MeV/event)";
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
+  sprintf(line1," ");//empty previous values
   for(Int_t j=0;j<n_particles;j++){//pid
     for(Int_t k=0;k<n_energy_ranges;k++){//energy range
       printf(" Total %20s %20s",chpid[j],chenrange[k]);
       sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
-      sprintf(line1," ");//empty previous values
-      printf("%12.3E",power_total[0][j][k]/n_events);
-      sprintf(line1,"%s %12.3E",line1,power_total[0][j][k]/n_events);
+      printf("%12.3E",power_total[1][j][k]/n_events);
+      sprintf(line1,"%s %12.3E",line1,power_total[1][j][k]/n_events);
     }
   }
   printf("\n");
@@ -1306,17 +1306,17 @@ int out_count = 0;
       list_outputs << line << endl;
     }
   }
-  printf(" \n Total_Radiation_Flux_into_the_Roof_(MeV/event) \n");
-  strline="Total_Radiation_Flux_into_the_Roof_(MeV/event)";
+  printf(" \n Total_Radiation_Flux_into_the_Roof_(Counts/n_events) \n");
+  strline="Total_Radiation_Flux_into_the_Roof_(Counts/n_events)";
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
-  for(Int_t j=0;j<n_particles;j++){//pid
-    for(Int_t k=0;k<n_energy_ranges;k++){//energy range
-      printf(" Total %20s %20s",chpid[j],chenrange[k]);
-      sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
-      sprintf(line1," ");//empty previous values
-      printf("%12.3E",flux_total[0][j][k]/n_events);
-      sprintf(line1,"%s %12.3E",line1,flux_total[0][j][k]/n_events);
+  sprintf(line1," ");//empty previous values
+  for(Int_t u=0;u<n_particles;u++){//pid
+    for(Int_t t=0;t<n_energy_ranges;t++){//energy range
+      printf(" Total %20s %20s",chpid[u],chenrange[t]);
+      sprintf(line," Total %20s %20s",chpid[u],chenrange[t]);
+      printf("%12.3E",flux_total[1][u][t]/n_events);
+      sprintf(line1,"%s %12.3E",line1,flux_total[1][u][t]/n_events);
     }
   }
   printf("\n");
