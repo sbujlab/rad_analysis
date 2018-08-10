@@ -1224,19 +1224,19 @@ int out_count = 0;
   strline="Total_Radiation_Power_into_the_Roof_(MeV/event)";
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
-  sprintf(line1," ");//empty previous values
-  for(Int_t j=0;j<n_particles;j++){//pid
-    for(Int_t k=0;k<n_energy_ranges;k++){//energy range
-      printf(" Total %20s %20s",chpid[j],chenrange[k]);
-      sprintf(line," Total %20s %20s",chpid[j],chenrange[k]);
-      printf("%12.3E",power_total[1][j][k]/n_events);
-      sprintf(line1,"%s %12.3E",line1,power_total[1][j][k]/n_events);
+  for(Int_t u=0;u<n_particles;u++){//pid
+    for(Int_t t=0;t<n_energy_ranges;t++){//energy range
+      printf(" Total %20s %20s",chpid[u],chenrange[t]);
+      sprintf(line," Total %20s %20s",chpid[u],chenrange[t]);
+      sprintf(line1," ");//empty previous values
+      printf("%12.3E",power_total[1][u][t]/n_events);
+      sprintf(line1,"%s %12.3E",line1,power_total[1][u][t]/n_events);
+      printf("\n");
+      sprintf(line," %s %s",line,line1);
+      list_power->Add(new TObjString(line));
+      list_outputs << line << endl;
     }
   }
-  printf("\n");
-  sprintf(line," %s %s",line,line1);
-  list_power->Add(new TObjString(line));
-  list_outputs << line << endl;
  
 
 
@@ -1310,19 +1310,19 @@ int out_count = 0;
   strline="Total_Radiation_Flux_into_the_Roof_(Counts/n_events)";
   list_power->Add(new TObjString(strline));
   list_outputs << strline << endl;
-  sprintf(line1," ");//empty previous values
   for(Int_t u=0;u<n_particles;u++){//pid
     for(Int_t t=0;t<n_energy_ranges;t++){//energy range
       printf(" Total %20s %20s",chpid[u],chenrange[t]);
       sprintf(line," Total %20s %20s",chpid[u],chenrange[t]);
+      sprintf(line1," ");//empty previous values
       printf("%12.3E",flux_total[1][u][t]/n_events);
       sprintf(line1,"%s %12.3E",line1,flux_total[1][u][t]/n_events);
+      printf("\n");
+      sprintf(line," %s %s",line,line1);
+      list_flux->Add(new TObjString(line));
+      list_outputs << line << endl;
     }
   }
-  printf("\n");
-  sprintf(line," %s %s",line,line1);
-  list_flux->Add(new TObjString(line));
-  list_outputs << line << endl;
 
 
 
