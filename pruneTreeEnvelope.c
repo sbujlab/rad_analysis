@@ -79,28 +79,41 @@ double getAngle(double x, double y)
     return (angle < 0) ? (2*pi)+angle : angle;
 }
 
+const double s = sin(2 * pi / 7.0);
+const double c = cos(2 * pi / 7.0);
 remollEventParticle_t rotateVector(remollEventParticle_t part)
 {
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
-    const double s = sin(2 * pi / 7.0);
-    const double c = cos(2 * pi / 7.0);
     double startZ = 5980; //right after the end of the acceptance defining collimator
-    double startIndex;
     double x, y;
-
-    for (int i = 0; i < part.tjz.size(); i++)
+    bool rot = false;
+    for (int i = 0; i < part.tjz.size()-1; i++)
     {
-        double z = part.tjz.at(i);
-        if (z >= startZ)
-        {
-            startIndex = i;
-            x = part.tjx.at(i);   
-            y = part.tjy.at(i);   
+        double zi = part.tjz.at(i);
+        double zf = part.tjz.at(i+1);
+        if(startZ == zi){
+            x = part.tjx.at(i); 
+            y = part.tjy.at(i); 
+            rot = true;
+            break;
+        }
+        else if(startZ == zf){
+            x = part.tjx.at(i+1); 
+            y = part.tjy.at(i+1); 
+            rot = true;
+            break;
+        }
+        else if(startZ < zi && startZ < zf){
+            double dx = part.tjx.at(i+1) - part.tjx.at(i);
+            double dy = part.tjy.at(i+1) - part.tjy.at(i);
+            double dz = zf - zi;
+            x = part.tjx.at(i) + (dx/dz)*(startZ-zi);
+            y = part.tjy.at(i) + (dy/dz)*(startZ-zi);
+            rot = true;
             break;
         }
     }
-    
     //std::cout << "From " << getAngle(x, y) / septant << std::endl;
     int numSep = 0;
     while (getAngle(x, y) <= septantStart || getAngle(x, y) >= septantStop)
@@ -112,7 +125,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
         y = tY; 
     }
 
-    for (int i = 0; i < part.tjx.size(); i++)
+    for (int i = 0; i < part.tjz.size(); i++)
     {
         x = part.tjx.at(i);   
         y = part.tjy.at(i);   
@@ -133,8 +146,6 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
 
 remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 {
-    const double s = sin(2 * pi / 7.0);
-    const double c = cos(2 * pi / 7.0);
     remollGenericDetectorHit_t newHit;// = new remollGenericDetectorHit_t();
     newHit.z = hit.z;
     newHit.pz = hit.pz;
@@ -223,13 +234,12 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     oldTree->SetBranchAddress("part", &fPart); 
     std::vector < remollGenericDetectorHit_t > *hitCopy = new std::vector < remollGenericDetectorHit_t > ;
     std::vector < remollEventParticle_t > *partCopy = new std::vector < remollEventParticle_t > ;
-    std::vector < remollEventParticle_t > *partInterp = new std::vector < remollEventParticle_t > ;
 
     //TODO reading data into envelopes downstream could be sped up
     //by storing the data by Z instead of by hit
     
     newTree->Branch("hit", &hitCopy);
-    newTree->Branch("part", &partInterp);
+    newTree->Branch("part", &partCopy);
     //newTree->AutoSave();
     //oldTree->Print();
     for (size_t j = 0; j < oldTree->GetEntries(); j++)
@@ -242,7 +252,6 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
         oldTree->GetEntry(j);
         //std::cout << "Hits: " << fHit->size() << std::endl;
         //std::cout << "Parts: " << fPart->size() << std::endl;
-
         std::vector<int> goodTRID;  
         std::vector<int> worthyTRID;
 
@@ -250,7 +259,7 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
         {
             remollGenericDetectorHit_t hit = fHit->at(i); 
             //Get all track ids that hit into desired det
-            if (hit.det == detid)
+            if (hit.det == detid && hit.e >= 1000)
             {
                 //std::cout << "good trid" << hit.trid << std::endl;
                 goodTRID.push_back(hit.trid);
@@ -269,7 +278,9 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
                 {
                     //std::cout << "good part TRID " << partTRID << std::endl;
                     worthyTRID.push_back(partTRID);
-                    if (forceSeptant) part = rotateVector(part);
+	                //Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
+                    if (forceSeptant) part = interpolate(rotateVector(part));
+                    else part = interpolate(part);
                     partCopy->push_back(trim(part));
                     break;
                 }
@@ -291,16 +302,11 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
 
             }
         }
-	//Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
         if (hitCopy->size() > 0){
-	        for(size_t i = 0; i < partCopy->size(); i++){
-		        partInterp->push_back(interpolate(partCopy->at(i)));
-	        }   
             newTree->Fill();
 	    }
         hitCopy->clear();
         partCopy->clear();
-	    partInterp->clear();
     }
     newFile = newTree->GetCurrentFile();
     newTree->Write("", TObject::kOverwrite);
