@@ -40,6 +40,7 @@ iterator () {
     cp -rp "${BUILD}"/geometry/materials.xml "./geometry/"
     cp -rp "${BUILD}"/geometry/schema "./geometry/"
     cp -rp "${BUILD}"/remoll "./remoll"
+    cp -rp "${BUILD}"/libremoll.so "./libremol.so"
     cp -rp "${BUILD}"/macros/runscript_${mod}.sh "./runscript_${mod}.sh"
     cp -rp "${BUILD}"/macros/runexample_${mod}.mac "./runexample_${mod}.mac"
     if [ $changeInclude -eq 0 ];
@@ -117,8 +118,8 @@ macroPrinter () {
 /remoll/setgeofile geometry/mollerMother_${mod}.gdml
 # This must be explicitly called
 /run/initialize
-/remoll/addfield $BUILD/map_directory/blockyHybrid_rm_3.0.txt
-/remoll/addfield $BUILD/map_directory/blockyUpstream_rm_1.1.txt
+/remoll/addfield map_directory/blockyHybrid_rm_3.0.txt
+/remoll/addfield map_directory/blockyUpstream_rm_1.1.txt
 # Raster and initial angle stuff
 /remoll/oldras false
 /remoll/rasx 5 mm
@@ -203,42 +204,34 @@ motherGDMLPrinter () {
       <solidref ref="boxMother"/>
 
       <physvol>
-      <file name="geometry/targetDaughter_${mod}.gdml"/>
+      <file name="targetDaughter_${mod}.gdml"/>
       <positionref ref="targetCenter"/>
       <rotationref ref="identity"/>
       </physvol>
 
       <physvol>
-      <file name="geometry/hallDaughter_${mod}.gdml"/>
+      <file name="hallDaughter_${mod}.gdml"/>
       <positionref ref="hallCenter"/>
       <rotationref ref="identity"/>
       </physvol>
 
       <physvol>
-      <file name="geometry/detectorDaughter_${mod}.gdml"/>
+      <file name="detectorDaughter_${mod}.gdml"/>
       <positionref ref="detectorCenter"/>
       <rotationref ref="identity"/>
       </physvol>
 
       <physvol>
-      <file name="geometry/upstreamDaughter_${mod}.gdml"/>
+      <file name="upstreamDaughter_${mod}.gdml"/>
       <positionref ref="upstreamCenter"/>
       <rotationref ref="identity"/>
       </physvol>
 
       <physvol>
-      <file name="geometry/hybridDaughter_${mod}.gdml"/>
+      <file name="hybridDaughter_${mod}.gdml"/>
       <positionref ref="hybridCenter"/>
       <rotationref ref="identity"/>
       </physvol>    
-
-<!--
-      <physvol>
-      <file name="geometry/dumpDaughter_${mod}.gdml"/>
-      <positionref ref="hybridCenter"/>
-      <rotationref ref="identity"/>
-      </physvol>    
--->
 
     </volume>
   </structure>
