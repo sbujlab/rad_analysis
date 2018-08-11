@@ -47,7 +47,8 @@ iterator () {
     cp -rp "${BUILD}"/geometry/materials.xml "./geometry/"
     cp -rp "${BUILD}"/geometry/schema "./geometry/"
     cp -rp "${BUILD}"/remoll "./remoll"
-    cp -rp "${BUILD}"/libremoll.so "./libremol.so"
+    cp -rp "${BUILD}"/pruneTree "./pruneTree"
+    cp -rp "${BUILD}"/libremoll.so "./libremoll.so"
     cp -rp "${BUILD}"/macros/runscript_${mod}.sh "./runscript_${mod}.sh"
     cp -rp "${BUILD}"/macros/runexample_${mod}.mac "./runexample_${mod}.mac"
     cp -rp "${BUILD}"/map_directory/* "./map_directory/"
@@ -164,6 +165,7 @@ runscriptPrinter () {
 #$ -j y
 #$ -S /bin/bash
 ./remoll ./runexample_${mod}.mac
+./pruneTree remoll_${mod}_1M.root 101 n
 EOM
 }
 
