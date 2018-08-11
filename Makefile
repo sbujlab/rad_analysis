@@ -1,5 +1,5 @@
 make rad_dose:
-	g++ -c rad_dose_v2.cc -o rad_dose.o `root-config --cflags --glibs`
+	g++ -c rad_dose_NEW.cc -o rad_dose.o `root-config --cflags --glibs`
 	g++ rad_dose.o libremoll.so -o rad_dose `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
 	rm rad_dose.o
 
