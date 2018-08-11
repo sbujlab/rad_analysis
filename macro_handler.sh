@@ -35,6 +35,13 @@ iterator () {
     mkdir $name
     cd $name
     mkdir geometry
+    mkdir map_directory
+    cp -rp "${BUILD}"/geometry/mollerMother_${mod}.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/hallDaughter*.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/targetDaughter*.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/upstreamDaughter*${mod}.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/hybridDaughter*${mod}.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/detectorDaughter*${mod}.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/*${mod}* "./geometry/"
     cp -rp "${BUILD}"/geometry/mollerParallel.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/materials.xml "./geometry/"
@@ -43,6 +50,7 @@ iterator () {
     cp -rp "${BUILD}"/libremoll.so "./libremol.so"
     cp -rp "${BUILD}"/macros/runscript_${mod}.sh "./runscript_${mod}.sh"
     cp -rp "${BUILD}"/macros/runexample_${mod}.mac "./runexample_${mod}.mac"
+    cp -rp "${BUILD}"/map_directory/* "./map_directory/"
     if [ $changeInclude -eq 0 ];
       then
       changeIncludes $i $mod $min $max $final
