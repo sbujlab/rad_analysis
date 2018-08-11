@@ -15,17 +15,17 @@ remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
     remollGenericDetectorHit_t newHit;
     newHit.det = hit.det;
     newHit.id = hit.id;
-    newHit.trid=0;
+    newHit.trid=hit.trid;
     newHit.pid = hit.pid;
+    newHit.mtrid=hit.mtrid;
     newHit.gen=0;
-    newHit.mtrid=0;
     newHit.x = hit.x;
     newHit.y = hit.y;
     newHit.z = hit.z;
     newHit.xl=0;
     newHit.yl=0;
     newHit.zl=0;
-    newHit.r=0;
+    newHit.r=hit.r;
     newHit.ph=0;
     newHit.px = hit.px;
     newHit.py = hit.py;
@@ -37,11 +37,11 @@ remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
     newHit.sy=0;
     newHit.sz=0;
     newHit.p=0;
-    newHit.e=0;
-    newHit.m=0;
-    newHit.vx=0;
-    newHit.vy=0;
-    newHit.vz=0;
+    newHit.e=hit.e;
+    newHit.m=hit.m;
+    newHit.vx=hit.vx;
+    newHit.vy=hit.vy;
+    newHit.vz=hit.vz;
     return newHit; 
 }
 
@@ -80,7 +80,7 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
     return newHit;
 }
 
-void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant=true)
+void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant=false)
 {   
     int len = file.size();
     int dotPos = file.rfind(".");   
