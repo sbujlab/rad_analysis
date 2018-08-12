@@ -210,17 +210,21 @@ int main(int argc,char** argv) {
                 printf("%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
                 sprintf(line,"%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
                 sprintf(line1," ");//empty previous values
-                printf(" %12.3E %12.3E \n",(1.0*Histo_kineE_vertices[i][j][k]->GetEntries())/n_entries,energy[i][j][k]/n_entries);
-                sprintf(line1,"%s %12.3E %12.3E ",line1,(1.0*Histo_kineE_vertices[i][j][k]->GetEntries())/n_entries,energy[i][j][k]/n_entries);
+                printf(" %20.3E %20.3E \n",(1.0*Histo_kineE_vertices[i][j][k]->GetEntries())/n_entries,energy[i][j][k]/n_entries);
+                sprintf(line1,"%s %20.3E %20.3E ",line1,(1.0*Histo_kineE_vertices[i][j][k]->GetEntries())/n_entries,energy[i][j][k]/n_entries);
                 sprintf(line," %s %s",line,line1);
                 list->Add(new TObjString(line));
                 list_outputs << line << endl;
-                if (i==n_regions-1) {
+            }
+        }
+        if (i==n_regions-1) {
+            for(int j=0;j<n_particles;j++){//pid
+                for(int k=0;k<n_energy_ranges;k++){//KE
                     printf("Total %20s %20s",spid[j].Data(),ke_range[k].Data());
                     sprintf(line,"Total %20s %20s",spid[j].Data(),ke_range[k].Data());
                     sprintf(line1," ");//empty previous values
-                    printf(" %12.3E %12.3E \n",1.0*counts[n_regions][j][k]/n_entries,energy[n_regions][j][k]/n_entries);
-                    sprintf(line1,"%s %12.3E %12.3E ",line1,1.0*counts[n_regions][j][k]/n_entries,energy[n_regions][j][k]/n_entries);
+                    printf(" %20.3E %20.3E \n",1.0*counts[n_regions][j][k]/n_entries,energy[n_regions][j][k]/n_entries);
+                    sprintf(line1,"%s %20.3E %20.3E ",line1,1.0*counts[n_regions][j][k]/n_entries,energy[n_regions][j][k]/n_entries);
                     sprintf(line," %s %s",line,line1);
                     list->Add(new TObjString(line));
                     list_outputs << line << endl;
