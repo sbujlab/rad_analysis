@@ -165,7 +165,7 @@ int main(int argc,char** argv) {
 
     TString ke_range[n_energy_ranges] = {"KE<10","10<KE<25","25<KE"};
     TString spid[n_particles]={"e+-","photon","n0"};
-    TString svertex[n_regions+1]={"Front","Target","Col1Shld","Coll4Shld","HybridShld","Downstream","All"};     
+    TString svertex[n_regions+1]={"Front","Target","Col1Shld","Coll4Shld","HybridShld","Downstream","Total"};     
 
     TList * list = new TList;
     Int_t counts[n_regions+1][n_particles][n_energy_ranges] = {{{0}}};
@@ -220,8 +220,8 @@ int main(int argc,char** argv) {
         if (i==n_regions-1) {
             for(int j=0;j<n_particles;j++){//pid
                 for(int k=0;k<n_energy_ranges;k++){//KE
-                    printf("Total %20s %20s",spid[j].Data(),ke_range[k].Data());
-                    sprintf(line,"Total %20s %20s",spid[j].Data(),ke_range[k].Data());
+                    printf("%20s %20s %20s",svertex[n_regions].Data(),spid[j].Data(),ke_range[k].Data());
+                    sprintf(line,"%20s %20s %20s",svertex[n_regions].Data(),spid[j].Data(),ke_range[k].Data());
                     sprintf(line1," ");//empty previous values
                     printf(" %20.3E %20.3E \n",1.0*counts[n_regions][j][k]/n_entries,energy[n_regions][j][k]/n_entries);
                     sprintf(line1,"%s %20.3E %20.3E ",line1,1.0*counts[n_regions][j][k]/n_entries,energy[n_regions][j][k]/n_entries);
