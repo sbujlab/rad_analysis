@@ -50,7 +50,7 @@ using namespace std;
 
 
 
-Double_t fEvRate;
+//Double_t fEvRate;
 
 //Detector numbers (wall, ceiling, floor, hall, lead target hut, poly target hut, lead collar, poly collar, block 1, block 2, blocks 1 and 2 poly shield, block 3, block 3's poly shield, hybrid concrete hut, hybrid poly hut, hybrid lead roof)//look at everything going out to the hall
 Int_t SensVolume_v[] = {99,101,103,6000,6003,6004,6007,6008,6010,6011,6012,6020,6021,6027,6028,6030};
@@ -64,7 +64,6 @@ Double_t power_local[n_regions+1][n_particles][n_energy_ranges]={{{0}}};
 Int_t detector;
 std::map<int,int> detectormap;
 std::map<int,int> pidmap;
-std::map<int,double> pidmass;
 
 Bool_t kSaveRootFile=kTRUE;           //save histograms and canvases into a rootfile
 
@@ -72,9 +71,11 @@ Bool_t kSaveRootFile=kTRUE;           //save histograms and canvases into a root
 void set_plot_style();
 
 TFile * rootfile;
-int main(Int_t argc,Char_t* argv[]) {
-    std::vector < remollGenericDetectorHit_t > *fGenDetHitHelper = new std::vector < remollGenericDetectorHit_t >; 
-    Double_t fEvRate;
+int main(int argc,char** argv) {
+    //TApplication app("ROOT Application", &argc, argv);
+    //app.Run();
+    //std::vector < remollGenericDetectorHit_t > *fGenDetHitHelper = new std::vector < remollGenericDetectorHit_t >; 
+    //Double_t fEvRate;
     ofstream list_outputs;
 
     //remoll Tree
@@ -91,7 +92,7 @@ int main(Int_t argc,Char_t* argv[]) {
         temp_str_stream2<<v;
         TString vS;
         vS=temp_str_stream2.str();
-        temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M.root";
+        temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M_optimized_det101.root";
         added_file_array[v]=temp_str_stream3.str();
         Tmol->Add(added_file_array[v]);
     }
@@ -113,7 +114,7 @@ int main(Int_t argc,Char_t* argv[]) {
 
     //Tmol->SetBranchAddress("rate",&fEvRate);
     //Tmol->SetBranchAddress("hit",&fGenDetHitHelper);
-    Int_t n_entries=Tmol->GetEntries();
+    Int_t n_entries=n_events;//Tmol->GetEntries();
 
     const Int_t nentries = (Int_t)Tmol->GetEntries();
     printf("Normalized to %d events \n",n_entries);
@@ -124,12 +125,13 @@ int main(Int_t argc,Char_t* argv[]) {
         rootfile->cd();
     }
 
-    set_plot_style();
 
     gROOT->SetStyle("Plain");
     //gStyle->SetOptStat(0); 
     gStyle->SetOptStat("eMR");
     gStyle->SetNumberContours(255);
+
+    set_plot_style();
 
     detector=101;
     //  //indices asigned to each detector
@@ -138,13 +140,9 @@ int main(Int_t argc,Char_t* argv[]) {
     //  detectormap[103]=2;   // Floor
 
     //indices asigned to pid numbers
-    pidmap[11]=0; //electron 
-    pidmap[22]=1; //photon
-    pidmap[2112]=2; //neutron
-
-    pidmass[11]=0.511;//MeV
-    pidmass[22]=0.0;
-    pidmass[2112]=939.565;//MeV
+    pidmap[0]=11; //electron 
+    pidmap[1]=22; //photon
+    pidmap[2]=2112; //neutron
 
     // Declaring histograms - counts and energy as a function of z vertex position
     TH1F *Histo_kineE_spectrum[n_regions+1][n_particles][n_energy_ranges]; // only one that was originally n_regions+1
@@ -209,8 +207,8 @@ int main(Int_t argc,Char_t* argv[]) {
         strline="Total_Radiation_Flux_into_the_Roof_(Counts/n_events)";
         list->Add(new TObjString(strline));
         list_outputs << strline << endl;
-        printf("%20s %20s %20s %20s","Type","E_Range_(MeV)","Counts","Energy");
-        sprintf(line,"%20s %20s %20s %20s","Type","E_Range_(MeV)","Counts","Energy");
+        printf("%20s %20s %20s %20s %20s \n","Region","Type","E_Range_(MeV)","Counts","Energy");
+        sprintf(line,"%20s %20s %20s %20s %20s","Region","Type","E_Range_(MeV)","Counts","Energy");
         list->Add(new TObjString(line));
         list_outputs << line << endl;
 
@@ -218,46 +216,76 @@ int main(Int_t argc,Char_t* argv[]) {
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[0][i]->cd(n_energy_ranges*j+1+k);
                 //1D radiation histograms
-                Histo_kineE_spectrum[i][j][k]=new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum (MeV)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
-                Tmol->Draw("(hit.e-hit.m)>>Histo_kineE_spectrum",Form("hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) < %f",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"goff");
+                TH1F* Histo_kineE_spectrum_temp = new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
+                Tmol->Draw("(hit.e-hit.m)>>+Histo_kineE_spectrum_temp",Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
+                Tmol->Draw("(hit.e-hit.m)",Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
+                //Tmol->Draw(Form("(hit.e-hit.m)>>+Histo_kineE_spectrum[%d][%d][%d]",i,j,k),Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
+                //Tmol->Draw(Form("(hit.e-hit.m)>>Histo_kineE_spectrum(\"Histo_kineE_spectrum_v%d_p%d_k%d\",\"%s from %s Area in %s MeV Range; KineE Spectrum in MeV\",%d,%d,%d)",i+1,j+1,k+1,spid[j].Data(),svertex[i].Data(),ke_range[k].Data(),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]),Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) < %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
+                //Tmol->Draw(Form("(hit.e-hit.m)>>Histo_kineE_spectrum(%d,%d,%d)",100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]),Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) < %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"AP");
+                //Histo_kineE_spectrum[i][j][k] = (TH1F*)gDirectory->Get("Histo_kineE_spectrum");
+                counts[j][k] = Histo_kineE_spectrum_temp->GetEntries();
+                printf(Form("%f",Histo_kineE_spectrum_temp->GetEntries()));
+                //counts[j][k] = Histo_kineE_spectrum[i][j][k]->GetEntries();
+                energy[j][k] = 0.; //add in energy loop integration
+                printf("%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
+                sprintf(line,"%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
+                sprintf(line1," ");//empty previous values
+                printf(" %f %f \n",counts[j][k]/n_entries,energy[j][k]/n_entries);
+                sprintf(line1,"%s %f %f ",line1,counts[j][k]/n_entries,energy[j][k]/n_entries);
+                //printf("%12.3E %12.3E \n",counts[j][k]/n_entries,energy[j][k]/n_entries);
+                //sprintf(line1,"%s %12.3E %12.3E ",line1,counts[j][k]/n_entries,energy[j][k]/n_entries);
+                sprintf(line," %s %s",line,line1);
+                list->Add(new TObjString(line));
+                list_outputs << line << endl;
                 //Double_t energy Histo_kineE_spectrum->
+                Histo_kineE_spectrum[i][j][k]=Histo_kineE_spectrum_temp;//new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
+                //Histo_kineE_spectrum[i][j][k]=new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
 
+            }
+        }
+        c1[0][i]->Write();
+        for(int j=0;j<n_particles;j++){//pid
+            for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[1][i]->cd(n_energy_ranges*j+1+k);
                 Histo_kineE_vertices[i][j][k]=new TH1F(Form("Histo_kineE_vertices_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; Z Vertices (mm)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
-                Tmol->Draw("hit.vz>>Histo_kineE_vertices",Form("(hit.e-hit.m)*(hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) < %f)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"goff");
+                Tmol->Draw("hit.vz>>Histo_kineE_vertices()",Form("(hit.e-hit.m)*(hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) <= %f)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
+
+            }
+        }
+        c1[1][i]->Write();
+        for(int j=0;j<n_particles;j++){//pid
+            for(int k=0;k<n_energy_ranges;k++){//KE
 
 
                 c1[2][i]->cd(n_energy_ranges*j+1+k);
                 Histo_counts_vertex[i][j][k]=new TH1F(Form("Histo_counts_vertices_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s Vertices from %s Area in %s MeV Range;Z vertex (mm);MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
-                Tmol->Draw("hit.vz>>Histo_counts_vertex",Form("hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f & (hit.e-hit.m) < %f",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"goff");
+                Tmol->Draw("hit.vz>>Histo_counts_vertex()",Form("hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f & (hit.e-hit.m) <= %f",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"COLZ");
+
+            }
+        }
+        c1[2][i]->Write();
+        for(int j=0;j<n_particles;j++){//pid
+            for(int k=0;k<n_energy_ranges;k++){//KE
 
 
                 //2D vertex distribution histograms
                 c1[3][i]->cd(n_energy_ranges*j+1+k);
                 HistoVertex_RadDet_side[i][j][k]=new TH2D(Form("HistoVertex_RadDet_v%d_p%d_k%d_side",i+1,j+1,k+1),Form("Side view %s Vertices from %s Area in %s MeV Range; y (mm); z (mm); (Counts)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),350,-3500.0,3500.0,z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
-                Tmol->Draw("hit.vy:hit.vz>>HistoVertex_RadDet_side",Form("(hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) < %f)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"COLZ");
+                Tmol->Draw("hit.vy:hit.vz>>HistoVertex_RadDet_side()",Form("(hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) <= %f)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"COLZ");
+
+            }
+        }
+        c1[3][i]->Write();
+        for(int j=0;j<n_particles;j++){//pid
+            for(int k=0;k<n_energy_ranges;k++){//KE
 
 
                 c1[4][i]->cd(n_energy_ranges*j+1+k);
                 HistoVertex_RadDet_roof[i][j][k]=new TH2D(Form("HistoVertex_RadDet_v%d_p%d_k%d_roof",i+1,j+1,k+1),Form("Roof hit %s Positions from %s Area in %s MeV Range; x (mm); z (mm); (Counts)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),350,-3500.0,3500.0,z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
-                Tmol->Draw("hit.x:hit.z>>HistoVertex_RadDet_roof",Form("(hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) < %f)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"COLZ");
+                Tmol->Draw("hit.x:hit.z>>HistoVertex_RadDet_roof()",Form("(hit.vz > %f && hit.vz < %f && hit.pid==%f && (hit.e-hit.m) > %f && (hit.e-hit.m) <= %f)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"COLZ");
 
-                counts[j][k] = Histo_kineE_spectrum[i][j][k]->GetEntries();
-                //energy = 0.; //add in energy loop integration
-                printf("%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
-                sprintf(line,"%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
-                sprintf(line1," ");//empty previous values
-                printf("%12.3E %12.3E \n",counts[j][k]/n_entries,energy[j][k]/n_entries);
-                sprintf(line1,"%s %12.3E %12.3E ",line1,counts[j][k]/n_entries,energy[j][k]/n_entries);
-                sprintf(line," %s %s",line,line1);
-                list->Add(new TObjString(line));
-                list_outputs << line << endl;
             }
         }
-        c1[0][i]->Write();
-        c1[1][i]->Write();
-        c1[2][i]->Write();
-        c1[3][i]->Write();
         c1[4][i]->Write();
         c1[0][i]->SaveAs(plotsFolder+Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
         c1[1][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
@@ -272,7 +300,7 @@ int main(Int_t argc,Char_t* argv[]) {
     }
 
     list_outputs.close();
-    return(1);
+    return(0);
 }
 void set_plot_style()
 {
