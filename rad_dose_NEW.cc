@@ -199,6 +199,7 @@ int main(int argc,char** argv) {
         for(int j=0;j<n_particles;j++){//pid
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[0][i]->cd(n_energy_ranges*j+1+k);
+                c1[0][i]->cd(n_energy_ranges*j+1+k)->SetLogy();
                 //1D radiation histograms
                 Histo_kineE_vertices[i][j][k]=new TH1F(Form("Histo_kineE_vertices[%d][%d][%d]",i,j,k),Form("%s from %s Area in %s MeV Range; Z Vertices (mm)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
                 Tmol->Draw(Form("hit.vz>>Histo_kineE_vertices[%d][%d][%d]",i,j,k),Form("(hit.e-hit.m)*(hit.vz > %f && hit.vz <= %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],energy_ranges[k],energy_ranges[k+1]));
@@ -233,6 +234,7 @@ int main(int argc,char** argv) {
         for(int j=0;j<n_particles;j++){//pid
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[1][i]->cd(n_energy_ranges*j+1+k);
+                c1[1][i]->cd(n_energy_ranges*j+1+k)->SetLogy();
                 Histo_kineE_spectrum[i][j][k] = new TH1F(Form("Histo_kineE_spectrum[%d][%d][%d]",i,j,k),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,energy_bin_ranges[k],energy_bin_ranges[k+1]);
                 Tmol->Draw(Form("(hit.e-hit.m)>>+Histo_kineE_spectrum[%d][%d][%d]",i,j,k),Form("hit.vz > %f && hit.vz <= %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],energy_ranges[k],energy_ranges[k+1]));
 
@@ -245,6 +247,7 @@ int main(int argc,char** argv) {
         for(int j=0;j<n_particles;j++){//pid
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[2][i]->cd(n_energy_ranges*j+1+k);
+                c1[2][i]->cd(n_energy_ranges*j+1+k)->SetLogy();
                 Histo_counts_vertex[i][j][k]=new TH1F(Form("Histo_counts_vertices[%d][%d][%d]",i,j,k),Form("%s Vertices from %s Area in %s MeV Range;Z vertex (mm);MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
                 Tmol->Draw(Form("hit.vz>>Histo_counts_vertex[%d][%d][%d]",i,j,k),Form("hit.vz > %f && hit.vz <= %f && hit.pid==%d && (hit.e-hit.m) > %d & (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],energy_ranges[k],energy_ranges[k+1]));
             }
@@ -257,6 +260,7 @@ int main(int argc,char** argv) {
             for(int k=0;k<n_energy_ranges;k++){//KE
                 //2D vertex distribution histograms
                 c1[3][i]->cd(n_energy_ranges*j+1+k);
+                c1[3][i]->cd(n_energy_ranges*j+1+k)->SetLogz();
                 HistoVertex_RadDet_side[i][j][k]=new TH2D(Form("HistoVertex_RadDet_side[%d][%d][%d]",i,j,k),Form("Side view %s Vertices from %s Area in %s MeV Range; y (mm); z (mm); (Counts)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),350,-3500.0,3500.0,z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
                 Tmol->Draw(Form("hit.vy:hit.vz>>HistoVertex_RadDet_side[%d][%d][%d]",i,j,k),Form("(hit.vz > %f && hit.vz <= %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],energy_ranges[k],energy_ranges[k+1]),"COLZ");
             }
@@ -268,6 +272,7 @@ int main(int argc,char** argv) {
         for(int j=0;j<n_particles;j++){//pid
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[4][i]->cd(n_energy_ranges*j+1+k);
+                c1[4][i]->cd(n_energy_ranges*j+1+k)->SetLogz();
                 HistoVertex_RadDet_roof[i][j][k]=new TH2D(Form("HistoVertex_RadDet_roof[%d][%d][%d]",i,j,k),Form("Roof hit %s Positions from %s Area in %s MeV Range; x (mm); z (mm); (Counts)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),350,-3500.0,3500.0,z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
                 Tmol->Draw(Form("hit.x:hit.z>>HistoVertex_RadDet_roof[%d][%d][%d]",i,j,k),Form("(hit.vz > %f && hit.vz <= %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d)",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],energy_ranges[k],energy_ranges[k+1]),"COLZ");
             }
