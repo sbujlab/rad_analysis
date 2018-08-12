@@ -216,22 +216,23 @@ int main(int argc,char** argv) {
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[0][i]->cd(n_energy_ranges*j+1+k);
                 //1D radiation histograms
-                TH1F* Histo_kineE_spectrum_temp = new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
-                Tmol->Draw("(hit.e-hit.m)>>+Histo_kineE_spectrum_temp",Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
-                Tmol->Draw("(hit.e-hit.m)",Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
+                TH1F* Histo_kineE_spectrum_temp = new TH1F("Histo_kineE_spectrum_temp",Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
+                //TH1F* Histo_kineE_spectrum_temp = new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
+                Tmol->Draw("(hit.e-hit.m)>>+Histo_kineE_spectrum_temp",Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"goff");
                 //Tmol->Draw(Form("(hit.e-hit.m)>>+Histo_kineE_spectrum[%d][%d][%d]",i,j,k),Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
                 //Tmol->Draw(Form("(hit.e-hit.m)>>Histo_kineE_spectrum(\"Histo_kineE_spectrum_v%d_p%d_k%d\",\"%s from %s Area in %s MeV Range; KineE Spectrum in MeV\",%d,%d,%d)",i+1,j+1,k+1,spid[j].Data(),svertex[i].Data(),ke_range[k].Data(),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]),Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) < %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]));
                 //Tmol->Draw(Form("(hit.e-hit.m)>>Histo_kineE_spectrum(%d,%d,%d)",100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]),Form("hit.vz > %f && hit.vz < %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) < %d",z_vertex_cuts[i],z_vertex_cuts[i+1],pidmap[j],bin_ranges[i][j][k],bin_ranges[i][j][k+1]),"AP");
                 //Histo_kineE_spectrum[i][j][k] = (TH1F*)gDirectory->Get("Histo_kineE_spectrum");
-                counts[j][k] = Histo_kineE_spectrum_temp->GetEntries();
-                printf(Form("%f",Histo_kineE_spectrum_temp->GetEntries()));
+                counts[j][k] = 1.0*Histo_kineE_spectrum_temp->GetEntries();
+                //printf(Form("%f \n",Histo_kineE_spectrum_temp->GetEntries()));
+                //printf(Form("%f \n",counts[j][k]));
                 //counts[j][k] = Histo_kineE_spectrum[i][j][k]->GetEntries();
                 energy[j][k] = 0.; //add in energy loop integration
                 printf("%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
                 sprintf(line,"%20s %20s %20s",svertex[i].Data(),spid[j].Data(),ke_range[k].Data());
                 sprintf(line1," ");//empty previous values
-                printf(" %f %f \n",counts[j][k]/n_entries,energy[j][k]/n_entries);
-                sprintf(line1,"%s %f %f ",line1,counts[j][k]/n_entries,energy[j][k]/n_entries);
+                printf(" %12.3E %12.3E \n",(1.0*Histo_kineE_spectrum_temp->GetEntries())/n_entries,energy[j][k]/n_entries);
+                sprintf(line1,"%s %12.3E %12.3E ",line1,(1.0*Histo_kineE_spectrum_temp->GetEntries())/n_entries,energy[j][k]/n_entries);
                 //printf("%12.3E %12.3E \n",counts[j][k]/n_entries,energy[j][k]/n_entries);
                 //sprintf(line1,"%s %12.3E %12.3E ",line1,counts[j][k]/n_entries,energy[j][k]/n_entries);
                 sprintf(line," %s %s",line,line1);
@@ -239,12 +240,14 @@ int main(int argc,char** argv) {
                 list_outputs << line << endl;
                 //Double_t energy Histo_kineE_spectrum->
                 Histo_kineE_spectrum[i][j][k]=Histo_kineE_spectrum_temp;//new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
+                Histo_kineE_spectrum[i][j][k]->Draw("same");
+                delete Histo_kineE_spectrum_temp;
                 //Histo_kineE_spectrum[i][j][k]=new TH1F(Form("Histo_kineE_spectrum_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; KineE Spectrum in MeV",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),100,bin_ranges[i][j][k],bin_ranges[i][j][k+1]);
 
             }
         }
         c1[0][i]->Write();
-        for(int j=0;j<n_particles;j++){//pid
+       /* for(int j=0;j<n_particles;j++){//pid
             for(int k=0;k<n_energy_ranges;k++){//KE
                 c1[1][i]->cd(n_energy_ranges*j+1+k);
                 Histo_kineE_vertices[i][j][k]=new TH1F(Form("Histo_kineE_vertices_v%d_p%d_k%d",i+1,j+1,k+1),Form("%s from %s Area in %s MeV Range; Z Vertices (mm)",spid[j].Data(),svertex[i].Data(),ke_range[k].Data()),z_vertex_bin_counts[i],z_vertex_cuts[i]-1,z_vertex_cuts[i+1]+1);
@@ -287,12 +290,12 @@ int main(int argc,char** argv) {
             }
         }
         c1[4][i]->Write();
-        c1[0][i]->SaveAs(plotsFolder+Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
-        c1[1][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
+  */      c1[0][i]->SaveAs(plotsFolder+Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
+    /*    c1[1][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
         c1[2][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_unweighted_region%02d.png",i+1));
         c1[3][i]->SaveAs(plotsFolder+Form("canvas_hallrad_yz_vrtx_region%02d.png",i+1));
         c1[4][i]->SaveAs(plotsFolder+Form("canvas_hallrad_xy_hits_region%02d.png",i+1));
-    } 
+   */ } 
     if (kSaveRootFile){
         rootfile->WriteObject(list,"text_output");
         rootfile->Write();
