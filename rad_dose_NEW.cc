@@ -154,11 +154,12 @@ int main(int argc,char** argv) {
     //                                      { change the binning to reflect the opposite nature, good, all binned in one spot, decent-needs better boundaries->775?, 775?, decent, decent, seems to miss a whole lot }
     //                                      { begin-front, target, coll1shld, coll4shld, hybshld, back-end  }; -> Hall is an inverted volume in x and z, not y.
     Double_t z_vertex_cuts[n_regions+1] = {-20000.0, -3170., 3151., 8030.0,  9930., 18218.37, 35000.}; //last index store vertices outside of other ranges 
-    Int_t z_vertex_bin_counts[n_regions]={0};
+    Int_t z_vertex_bin_counts[n_regions+1]={0};
     Int_t z_area_per_bin = 10; // 10 mm per bin
     for (int q=0;q<n_regions;q++){
         z_vertex_bin_counts[q] = (z_vertex_cuts[q+1]-z_vertex_cuts[q])/z_area_per_bin;
     }
+    z_vertex_bin_counts[n_regions]=(z_vertex_cuts[0]-z_vertex_cuts[n_regions])/z_area_per_bin;
 
     Int_t energy_ranges[n_energy_ranges+1]={0,10,25,100000};
     Int_t energy_bin_ranges[n_energy_ranges+1]={0,10,25,10000};
@@ -181,7 +182,7 @@ int main(int argc,char** argv) {
     strline=added_file_array[1];
     list->Add(new TObjString(strline));
     list_outputs << strline << endl;
-    TCanvas * c1[5][n_regions];
+    TCanvas * c1[5][n_regions+1];
 
     printf("\nTotal_Radiation_Flux_into_the_Roof_(Counts/n_events) \n");
     strline="Total_Radiation_Flux_into_the_Roof_(Counts/n_events)";
@@ -217,9 +218,17 @@ int main(int argc,char** argv) {
                 list_outputs << line << endl;
             }
         }
+        c1[0][i]->Write();
+        c1[0][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
         if (i==n_regions-1) {
+	    c1[0][n_regions]=new TCanvas(Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d",n_regions+1),Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d",n_regions+1),1500,1500);
+	    c1[0][n_regions]->Divide(n_particles,n_energy_ranges); 
             for(int j=0;j<n_particles;j++){//pid
                 for(int k=0;k<n_energy_ranges;k++){//KE
+		    c1[0][n_regions]->cd(n_energy_ranges*j+1+k);
+		    c1[0][n_regions]->cd(n_energy_ranges*j+1+k)->SetLogy();
+                    Histo_kineE_vertices[n_regions][j][k]=new TH1F(Form("Histo_kineE_vertices[%d][%d][%d]",n_regions,j,k),Form("%s from %s Area in %s MeV Range; Z Vertices (mm); (MeV)",spid[j].Data(),svertex[n_regions].Data(),ke_range[k].Data()),z_vertex_bin_counts[n_regions],z_vertex_cuts[0]-1,z_vertex_cuts[n_regions]+1);
+                    Tmol->Draw(Form("hit.vz>>Histo_kineE_vertices[%d][%d][%d]",n_regions,j,k),Form("(hit.e-hit.m)*(hit.vz > %f && hit.vz <= %f && hit.pid==%d && (hit.e-hit.m) > %d && (hit.e-hit.m) <= %d)",z_vertex_cuts[0],z_vertex_cuts[n_regions],pidmap[j],energy_ranges[k],energy_ranges[k+1]));
                     printf("%20s %20s %20s",svertex[n_regions].Data(),spid[j].Data(),ke_range[k].Data());
                     sprintf(line,"%20s %20s %20s",svertex[n_regions].Data(),spid[j].Data(),ke_range[k].Data());
                     sprintf(line1," ");//empty previous values
@@ -230,9 +239,9 @@ int main(int argc,char** argv) {
                     list_outputs << line << endl;
                 }
             }
+            c1[0][n_regions]->Write();
+            c1[0][n_regions]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
         }
-        c1[0][i]->Write();
-        c1[0][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
         c1[1][i]=new TCanvas(Form("canvas_hallrad_energy_spectrum_region%02d",i+1),Form("canvas_hallrad_energy_spectrum_region%02d",i+1),1500,1500);
         c1[1][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
