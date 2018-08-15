@@ -48,6 +48,7 @@ remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
 remollEventParticle_t trim(remollEventParticle_t part)
 {
     remollEventParticle_t newPart;
+    newPart.trid = part.trid;
     newPart.pid = part.pid;
     newPart.vx=0;
     newPart.vy=0;
@@ -85,7 +86,8 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
 {
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
-    double startZ = 5980; //right after the end of the acceptance defining collimator
+    newPart.trid = part.trid;
+    double startZ = 5880;//5980; //right after the end of the acceptance defining collimator
     double x, y;
     bool rot = false;
     for (int i = 0; i < part.tjz.size()-1; i++)
@@ -104,7 +106,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
             rot = true;
             break;
         }
-        else if(zi != zf){
+        else if(zi > startZ && zf > startZ){
             double dx = part.tjx.at(i+1) - part.tjx.at(i);
             double dy = part.tjy.at(i+1) - part.tjy.at(i);
             double dz = zf - zi;
@@ -174,6 +176,7 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
 remollEventParticle_t interpolate(remollEventParticle_t part){
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
+    newPart.trid = part.trid;
     int stepSize = 500;
     for(size_t z = 4500; z <= 30000; z+=stepSize){
         if (z >= 12500)
@@ -276,11 +279,10 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
             {
                 //Assume vector index of part vector is the track id, trid starts at 1
                 //Of track ids that hit into desired det, get those that are saved
-                int partTRID = i+1;
-                if (partTRID == goodTRID.at(k))
+                if (part.trid == goodTRID.at(k))
                 {
-                    //std::cout << "good part TRID " << partTRID << std::endl;
-                    worthyTRID.push_back(partTRID);
+                    //std::cout << "good part TRID " << part.trid << std::endl;
+                    worthyTRID.push_back(part.trid);
 	                //Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
                     if (forceSeptant) part = interpolate(rotateVector(part));
                     else part = interpolate(part);
