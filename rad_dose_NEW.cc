@@ -193,7 +193,7 @@ int main(int argc,char** argv) {
     list->Add(new TObjString(line));
     list_outputs << line << endl;
 
-    for(int i=6;i<n_regions+1;i++){//vertices
+    for(int i=0;i<n_regions+1;i++){//vertices
 
         if(i<n_regions){
             z_cut_up=z_vertex_cuts[i+1];
