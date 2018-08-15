@@ -104,7 +104,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
             rot = true;
             break;
         }
-        else if(startZ < zi && startZ < zf){
+        else if(zi != zf){
             double dx = part.tjx.at(i+1) - part.tjx.at(i);
             double dy = part.tjy.at(i+1) - part.tjy.at(i);
             double dz = zf - zi;
@@ -225,6 +225,9 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     std::ostringstream os;
     os << file.substr(0, dotPos) << "_envelope_det" << detid << ".root";
     std::string fileName = os.str();
+    double lowR = 935.0;
+    double highR = 1100.0;
+    bool hitRcut = true;
     TFile *old = new TFile(file.c_str());
     TTree *oldTree = (TTree*)old->Get("T");
     TFile *newFile = new TFile(fileName.c_str(),"RECREATE", "", 1);
@@ -259,7 +262,7 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
         {
             remollGenericDetectorHit_t hit = fHit->at(i); 
             //Get all track ids that hit into desired det
-            if (hit.det == detid && hit.e >= 1000)
+            if (hit.det == detid && hit.e >= 1000 && (hitRcut && hit.r>lowR && hit.r<highR))
             {
                 //std::cout << "good trid" << hit.trid << std::endl;
                 goodTRID.push_back(hit.trid);
