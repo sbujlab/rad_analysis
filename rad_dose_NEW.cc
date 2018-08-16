@@ -71,59 +71,71 @@ Bool_t kSaveRootFile=kTRUE;           //save histograms and canvases into a root
 void set_plot_style();
 
 TFile * rootfile;
-int main(int argc,char** argv) {
-    TApplication theApp("App",&argc,argv);
+int main(int argc, char **argv) {
     //std::vector < remollGenericDetectorHit_t > *fGenDetHitHelper = new std::vector < remollGenericDetectorHit_t >; 
     //Double_t fEvRate;
-    ofstream list_outputs;
-
-    //remoll Tree
-    TChain * Tmol =new TChain("T");
+    
     const int n_mills = 10;// FIXME number of million events
 
     Int_t n_events = n_mills*1e6;
     Int_t beamcurrent = 85;//uA
+    
+    std::string fileString = "remollout.root";
+    TString rootfileString = "remollout.root";
 
-    TString added_file_array[n_mills]={""};
-    for (int v=1 ; v <= n_mills ; v++){ 
-        ostringstream temp_str_stream2;
-        ostringstream temp_str_stream3;
-        temp_str_stream2<<v;
-        TString vS;
-        vS=temp_str_stream2.str();
-        temp_str_stream3<<"/home/cameronc/gitdir/remoll/output/"<<argv[1]<<"_"<<n_mills<<"M/out_"<<argv[1]<<vS<<"/remoll_"<<argv[1]<<"_1M_optimized_det101.root";
-        added_file_array[v]=temp_str_stream3.str();
-        Tmol->Add(added_file_array[v]);
+    if (argc <= 1 || argc > 2){
+        std::cerr << "Usage: ./rad_dose char*:filename (can be a .txt full of file names/paths)" << std::endl;
+        return 0;
     }
 
-    ostringstream temp_str_stream4;
-    temp_str_stream4<<"/home/cameronc/gitdir/remoll/output/Plots_"<<argv[1]<<"_"<<n_mills<<"M/";//Name of folder for saving plots
-    TString plotsFolder=temp_str_stream4.str();//Name of folder for saving plots
-
-    ostringstream temp_str_stream5;
-    temp_str_stream5<<plotsFolder<<argv[1]<<"_"<<n_mills<<"M_plots.root";//name of the rootfile to save generated histograms
-    TString rootfilename=temp_str_stream5.str();//name of the rootfile to save generated histograms
-
-    ostringstream temp_str_stream6;
-    temp_str_stream6<<plotsFolder<<"list_outputs_"<<argv[1]<<"_"<<n_mills<<"M.txt";
-    TString textfilename=temp_str_stream6.str();
+    if (argc >= 1){
+        std::string fileName(argv[1]);
+        fileString = fileName;
+    }
+    TApplication theApp("App",&argc,argv);
+        //string foutNm;
+        //foutNm = Form("%s.root",fileString.substr(0,fileString.find(".")).c_str());
+   
+    int dotPos = fileString.rfind(".");
+    std::vector< std::string > fileList;
+    if (fileString.find(".root") < fileString.size() ){
+        fileList.push_back(fileString);
+    }
+    else{
+        ifstream inFile(fileString.c_str());
+        std::string temp;
+        while (inFile >> temp){
+            std::cout << "Found: " << temp << std::endl;
+            fileList.push_back(temp);
+        }
+    }
+    TString rootfilename = Form("%s_Plots.root",fileString.substr(0,fileString.find(".")).c_str());
+    TString textfilename = Form("list_outputs_%s.txt",fileString.substr(0,fileString.find(".")).c_str());
+    ofstream list_outputs;
     list_outputs.open(textfilename);
-
     list_outputs << "Contents of textout_flux and textout_power lists of strings" << std::endl;
 
+    //remoll Tree
+    TChain * Tmol =new TChain("T");
+    for (size_t y=0; y<fileList.size();y++){
+        TString ttemp = TString(fileList[y]);
+        Tmol->Add(ttemp);
+    }
+
+    // FIXME Set up a user input reader to get the detector ID, intended numbe of entries, and other cuts
     //Tmol->SetBranchAddress("rate",&fEvRate);
     //Tmol->SetBranchAddress("hit",&fGenDetHitHelper);
+    detector=101;
     Int_t n_entries=n_events;//Tmol->GetEntries();
 
     const Int_t nentries = (Int_t)Tmol->GetEntries();
-    printf("Normalized to %d events \n",n_entries);
+    printf("Normalized to %d events, %d of which hit detid==%d \n",n_entries,nentries,detector);
 
     if (kSaveRootFile){
         TString rootfilestatus="RECREATE";
         rootfile = new TFile(rootfilename, rootfilestatus);
         rootfile->cd();
     }
-
 
     gROOT->SetStyle("Plain");
     //gStyle->SetOptStat(0); 
@@ -132,7 +144,6 @@ int main(int argc,char** argv) {
 
     set_plot_style();
 
-    detector=101;
     //  //indices asigned to each detector
     //  detectormap[99]=0;    // Cyl det
     //  detectormap[101]=1;   // Roof
@@ -179,7 +190,7 @@ int main(int argc,char** argv) {
     list->Add(new TObjString(strline));
     list_outputs << strline << endl;
     //strline=added_file;
-    strline=added_file_array[1];
+    strline=fileString;
     list->Add(new TObjString(strline));
     list_outputs << strline << endl;
     TCanvas * c1[5][n_regions+1];
@@ -230,7 +241,7 @@ int main(int argc,char** argv) {
             }
         }
         c1[0][i]->Write();
-        c1[0][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
+        c1[0][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
         c1[1][i]=new TCanvas(Form("canvas_hallrad_energy_spectrum_region%02d",i+1),Form("canvas_hallrad_energy_spectrum_region%02d",i+1),1500,1500);
         c1[1][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -244,7 +255,7 @@ int main(int argc,char** argv) {
             }
         }
         c1[1][i]->Write();
-        c1[1][i]->SaveAs(plotsFolder+Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
+        c1[1][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
         c1[2][i]=new TCanvas(Form("canvas_hallrad_z_vrtx_unweighted_region%02d",i+1),Form("canvas_hallrad_z_vrtx_unweighted_region%02d",i+1),1500,1500);
         c1[2][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -257,7 +268,7 @@ int main(int argc,char** argv) {
             }
         }
         c1[2][i]->Write();
-        c1[2][i]->SaveAs(plotsFolder+Form("canvas_hallrad_z_vrtx_unweighted_region%02d.png",i+1));
+        c1[2][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_z_vrtx_unweighted_region%02d.png",i+1));
         c1[3][i]=new TCanvas(Form("canvas_hallrad_yz_hits_region%02d",i+1),Form("canvas_hallrad_yz_hits_region%02d",i+1),1500,1500);
         c1[3][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -271,7 +282,7 @@ int main(int argc,char** argv) {
             }
         }
         c1[3][i]->Write();
-        c1[3][i]->SaveAs(plotsFolder+Form("canvas_hallrad_yz_vrtx_region%02d.png",i+1));
+        c1[3][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_yz_vrtx_region%02d.png",i+1));
         c1[4][i]=new TCanvas(Form("canvas_hallrad_xz_hits_region%02d",i+1),Form("canvas_hallrad_xy_hits_region%02d",i+1),1500,1500);
         c1[4][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -284,7 +295,7 @@ int main(int argc,char** argv) {
             }
         }
         c1[4][i]->Write();
-        c1[4][i]->SaveAs(plotsFolder+Form("canvas_hallrad_xz_hits_region%02d.png",i+1));
+        c1[4][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_xz_hits_region%02d.png",i+1));
     } 
     if (kSaveRootFile){
         rootfile->WriteObject(list,"text_output");
