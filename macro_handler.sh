@@ -39,9 +39,9 @@ iterator () {
     cp -rp "${BUILD}"/geometry/mollerMother_${mod}.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/hallDaughter*.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/targetDaughter*.gdml "./geometry/"
-    cp -rp "${BUILD}"/geometry/upstreamDaughter*${mod}.gdml "./geometry/"
-    cp -rp "${BUILD}"/geometry/hybridDaughter*${mod}.gdml "./geometry/"
-    cp -rp "${BUILD}"/geometry/detectorDaughter*${mod}.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/upstreamDaughter*.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/hybridDaughter*.gdml "./geometry/"
+    cp -rp "${BUILD}"/geometry/detectorDaughter*.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/*${mod}* "./geometry/"
     cp -rp "${BUILD}"/geometry/mollerParallel.gdml "./geometry/"
     cp -rp "${BUILD}"/geometry/materials.xml "./geometry/"
@@ -166,6 +166,8 @@ runscriptPrinter () {
 #$ -S /bin/bash
 ./remoll ./runexample_${mod}.mac
 ./pruneTree remoll_${mod}_1M.root 101 n
+./pruneTree remoll_${mod}_1M.root 99 n
+./pruneTree remoll_${mod}_1M.root 28 n
 EOM
 }
 
