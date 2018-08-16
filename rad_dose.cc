@@ -3,15 +3,18 @@ Rakitha Mon Aug 25 14:48:01 EDT 2014
 Plot generated related to the radiation in the hall
 
 Radiation plots
-KE intercepted by the cylindrical and two disk detectors
-vertex distribution on the cylindrical and two disk detectors
-
 Vertex cuts are based on the shielding blocks
 
 //////
 
 Cameron Clarke Wednesday July 26 14:41:57 EDT 2017
 Plots added for y vs z vertex distributions
+
+Cameron Clarke Wednesday August 15 20:06:46 EDT 2018
+- Including libremoll.so allows for remoll v2.0.0 data types
+- Remodelled code to use T->Draw() for speed and portability
+- Advise to use pruneTree first to reduce the size of files
+- Modelled file list reading from pruneTree (Ciprian's code)
 
 */
 
