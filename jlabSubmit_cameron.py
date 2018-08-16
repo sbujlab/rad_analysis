@@ -5,21 +5,23 @@ import sys, os, time, tarfile
 def main():
 
 #FIXME Update these
-    email = "chandan@jlab.org"
+    email = "cameronc@jlab.org"
 
     configuration = "moller"
 
     identifier = raw_input("Please enter the identifier: ")
+    val = raw_input("Please enter the col1 concrete shield vertical additional height: ")
 
     # To print an xml file that allows for parameter space searches do this here
-    #f = open('../geometry/'+identifier+'.xml', 'w')
+    f = open('../geometry/'+identifier+'.xml', 'w')
+    fileout = '    <constant name="USShield1_increase_height" value="'+val+'"/>\n    <consant name="USShield2_increase_height" value"'+val+'"/>\n'
     #fileout = '    <constant name="full_sam_r_outward_offset" value="' + offset + '.0/10"/>\n    <constant name="sam_mid_dist" value="full_sam_r_outward_offset + sam_bot_face_sep + sam_can_length/2."/>\n    <constant name="sam_quartz_mid_dist" value="full_sam_r_outward_offset + sam_quartz_bot_face + sam_quartz_length/2."/>\n    <constant name="sam_quartz_height" value="' + thickness + '.0/10"/>'
-    #f.write(fileout)
-    #f.close()
+    f.write(fileout)
+    f.close()
 
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
-    sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll/"
-    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+identifier
+    sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc"
+    outputDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+identifier+"_col1ConcHPlus/"+identifier+"_col1ConcHPlus_"+val+"mm"
     if not os.path.exists(outputDir):
         os.makedirs(outputDir)
     nrEv   = 100000 #900000
@@ -32,7 +34,7 @@ def main():
 
     print('Running ' + str(nrEv*(nrStop - nrStart)) + ' events...')
 
-    jobName=configuration + '_' + identifier + '_%03dkEv'%(nrEv/1000)
+    jobName=configuration + '_' + identifier + "_col1ConcHPlus_" + val + "mm" + '_%03dkEv'%(nrEv/1000)
 
     ###tar exec+geometry
     make_tarfile(sourceDir,identifier)
@@ -135,7 +137,7 @@ def make_tarfile(sourceDir,ident):
     tar.add(sourceDir+"/remoll/geometry/upstreamDaughter_"+ident+".gdml" ,arcname="geometry/upstreamDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/remoll/geometry/hybridDaughter_"+ident+".gdml" ,arcname="geometry/hybridDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/remoll/geometry/dumpDaughter_"+ident+".gdml" ,arcname="geometry/dumpDaughter_"+ident+".gdml")
-    #tar.add(sourceDir+"/remoll/geometry/"+ident+".xml",arcname="geometry/"+ident+".xml")
+    tar.add(sourceDir+"/remoll/geometry/"+ident+".xml",arcname="geometry/"+ident+".xml")
 
     tar.close()
 
