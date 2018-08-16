@@ -87,7 +87,7 @@ void pruneTree(std::string file="remollin.root", int detid=28, bool forceSeptant
     std::vector< std::string > fileList;
     if (file.substr(dotPos) != ".root")
     {
-        ifstream inFile(file.c_str()); 
+        std::ifstream inFile(file.c_str()); 
         std::string temp;
         while (inFile >> temp)
         {
