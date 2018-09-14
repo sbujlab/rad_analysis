@@ -66,6 +66,7 @@ std::map<int,int> detectormap;
 std::map<int,int> pidmap;
 
 Bool_t kSaveRootFile=kTRUE;           //save histograms and canvases into a rootfile
+Bool_t kSavePNGs=kFALSE;              //save histograms and canvases into a pngs
 
 
 void set_plot_style();
@@ -241,7 +242,9 @@ int main(int argc, char **argv) {
             }
         }
         c1[0][i]->Write();
-        c1[0][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
+        if (kSavePNGs){
+            c1[0][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_z_vrtx_kineEweighted_region%02d.png",i+1));
+        }
         c1[1][i]=new TCanvas(Form("canvas_hallrad_energy_spectrum_region%02d",i+1),Form("canvas_hallrad_energy_spectrum_region%02d",i+1),1500,1500);
         c1[1][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -255,7 +258,9 @@ int main(int argc, char **argv) {
             }
         }
         c1[1][i]->Write();
-        c1[1][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
+        if (kSavePNGs){
+            c1[1][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_energy_spectrum_region%02d.png",i+1));
+        }
         c1[2][i]=new TCanvas(Form("canvas_hallrad_z_vrtx_unweighted_region%02d",i+1),Form("canvas_hallrad_z_vrtx_unweighted_region%02d",i+1),1500,1500);
         c1[2][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -268,7 +273,9 @@ int main(int argc, char **argv) {
             }
         }
         c1[2][i]->Write();
-        c1[2][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_z_vrtx_unweighted_region%02d.png",i+1));
+        if (kSavePNGs){
+            c1[2][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_z_vrtx_unweighted_region%02d.png",i+1));
+        }
         c1[3][i]=new TCanvas(Form("canvas_hallrad_yz_hits_region%02d",i+1),Form("canvas_hallrad_yz_hits_region%02d",i+1),1500,1500);
         c1[3][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -282,7 +289,9 @@ int main(int argc, char **argv) {
             }
         }
         c1[3][i]->Write();
-        c1[3][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_yz_vrtx_region%02d.png",i+1));
+        if (kSavePNGs){
+            c1[3][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_yz_vrtx_region%02d.png",i+1));
+        }
         c1[4][i]=new TCanvas(Form("canvas_hallrad_xz_hits_region%02d",i+1),Form("canvas_hallrad_xy_hits_region%02d",i+1),1500,1500);
         c1[4][i]->Divide(n_particles,n_energy_ranges); 
         for(int j=0;j<n_particles;j++){//pid
@@ -295,7 +304,9 @@ int main(int argc, char **argv) {
             }
         }
         c1[4][i]->Write();
-        c1[4][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_xz_hits_region%02d.png",i+1));
+        if (kSavePNGs){
+            c1[4][i]->SaveAs(/*plotsFolder+*/Form("canvas_hallrad_xz_hits_region%02d.png",i+1));
+        }
     } 
     if (kSaveRootFile){
         rootfile->WriteObject(list,"text_output");
