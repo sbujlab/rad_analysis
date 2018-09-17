@@ -23,9 +23,9 @@ def main():
     outDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+identifier
     if not os.path.exists(outDir):
         os.makedirs(outDir)
-    nrEv   = 10000 #900000
+    nrEv   = 100000 #900000
     nrStart= 1
-    nrStopActual = 100 #60
+    nrStopActual = 1000 #60
     nrStop = nrStopActual+1 #60
     ###format should be Name (removed _)
     #"SAMs_noAl" #6inDonut_SAMs"  (spherical, cylindrical, noFace, noAl, noQ, noQnoAl)

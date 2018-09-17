@@ -66,7 +66,7 @@ std::map<int,int> detectormap;
 std::map<int,int> pidmap;
 
 Bool_t kSaveRootFile=kTRUE;           //save histograms and canvases into a rootfile
-Bool_t kSavePNGs=kFALSE;              //save histograms and canvases into a pngs
+Bool_t kSavePNGs=kTRUE;              //save histograms and canvases into a pngs
 
 
 void set_plot_style();
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
     //std::vector < remollGenericDetectorHit_t > *fGenDetHitHelper = new std::vector < remollGenericDetectorHit_t >; 
     //Double_t fEvRate;
     
-    const int n_mills = 10;// FIXME number of million events
+    const int n_mills = 100;// FIXME number of million events
 
     Int_t n_events = n_mills*1e6;
     Int_t beamcurrent = 85;//uA
