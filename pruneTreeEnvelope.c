@@ -231,6 +231,8 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     double lowR = 935.0;
     double highR = 1100.0;
     bool hitRcut = true;
+    double lowE = 1000.0;
+    bool hitEcut = true;
     TFile *old = new TFile(file.c_str());
     TTree *oldTree = (TTree*)old->Get("T");
     TFile *newFile = new TFile(fileName.c_str(),"RECREATE", "", 1);
@@ -265,7 +267,7 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
         {
             remollGenericDetectorHit_t hit = fHit->at(i); 
             //Get all track ids that hit into desired det
-            if (hit.det == detid && hit.e >= 1000 && (hitRcut && hit.r>lowR && hit.r<highR))
+            if (hit.det == detid && (!lowEcut || !(hit.e<lowE)) && (!hitRcut || !(hit.r<lowR || hit.r>highR)))
             {
                 //std::cout << "good trid" << hit.trid << std::endl;
                 goodTRID.push_back(hit.trid);
