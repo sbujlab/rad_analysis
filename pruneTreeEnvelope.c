@@ -231,7 +231,7 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forc
     double lowR = 935.0;
     double highR = 1100.0;
     bool hitRcut = true;
-    double lowE = 100.0;
+    double lowE = 1000.0;
     bool lowEcut = true;
     TFile *old = new TFile(file.c_str());
     TTree *oldTree = (TTree*)old->Get("T");
