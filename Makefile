@@ -20,7 +20,12 @@ make pruneTreeEnvelope:
 	g++ pruneTreeEnvelope.o libremoll.so -o pruneTreeEnvelope `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
 	rm pruneTreeEnvelope.o
 
+make pruneTreeLGtest:
+	g++ -g -c pruneTreeLGtest.c -o pruneTreeLGtest.o `root-config --cflags --glibs`
+	g++ pruneTreeLGtest.o libremoll.so -o pruneTreeLGtest `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
+	rm pruneTreeLGtest.o
+
 clean:
 	rm ./*.o
 	rm ./fom
-	rm hallRad; rm rad_dose; rm pruneTree; rm pruneTreeEnvelope;
+	rm hallRad; rm rad_dose; rm pruneTree; rm pruneTreeEnvelope; rm pruneTreeLGtest;

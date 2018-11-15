@@ -15,33 +15,33 @@ remollGenericDetectorHit_t trim(remollGenericDetectorHit_t hit)
     remollGenericDetectorHit_t newHit;
     newHit.det = hit.det;
     newHit.id = hit.id;
-    newHit.trid=0;
+    newHit.trid=hit.;
     newHit.pid = hit.pid;
     newHit.gen=0;
     newHit.mtrid=hit.mtrid;
-    newHit.x=0;
-    newHit.y=0;
-    newHit.z=0;
+    newHit.x=hit.;
+    newHit.y=hit.;
+    newHit.z=hit.;
     newHit.xl=0;
     newHit.yl=0;
     newHit.zl=0;
-    newHit.r=0;
+    newHit.r=hit.;
     newHit.ph=0;
-    newHit.px=0;
-    newHit.py=0;
-    newHit.pz=0;
+    newHit.px=hit.;
+    newHit.py=hit.;
+    newHit.pz=hit.;
     newHit.pxl=0;
     newHit.pyl=0;
     newHit.pzl=0;
     newHit.sx=0;
     newHit.sy=0;
     newHit.sz=0;
-    newHit.p=0;
-    newHit.e=0;
-    newHit.m=0;
-    newHit.vx=0;
-    newHit.vy=0;
-    newHit.vz=0;
+    newHit.p=hit.;
+    newHit.e=hit.;
+    newHit.m=hit.;
+    newHit.vx=hit.;
+    newHit.vy=hit.;
+    newHit.vz=hit.;
     return newHit; 
 }
 
@@ -177,7 +177,7 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
     newPart.trid = part.trid;
-    int stepSize = 10;
+    int stepSize = 100;
     for(size_t z = 4500; z <= 30000; z+=stepSize){
         if (z >= 12500)
             stepSize = 500;
@@ -219,14 +219,14 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     return newPart;    
 }
 
-void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, bool forceSeptant=true)
+void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceSeptant=true)
 {
     TTree::SetMaxTreeSize(Long64_t(1024)*1024*1024*200); //200 GB tree
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
     std::vector < remollEventParticle_t > *fPart = 0;
     int dotPos = file.rfind(".");   
     std::ostringstream os;
-    os << file.substr(0, dotPos) << "_envelope_det" << detid << ".root";
+    os << file.substr(0, dotPos) << "_LGtest_det" << detid << ".root";
     std::string fileName = os.str();
     double lowR = 935.0;
     double highR = 1100.0;
@@ -329,7 +329,7 @@ int main(int argc, char **argv)
     bool forceSeptant = true;
     if (argc <= 1 || argc > 4)
     {
-        std::cerr << "Usage: ./pruneTreeEnvelope char*:filename int:detid y/n:rotateIntoSeptant" << std::endl;
+        std::cerr << "Usage: ./pruneTreeLGtest char*:filename int:detid y/n:rotateIntoSeptant" << std::endl;
         exit(0);
     }
     if (argc >= 2) 
@@ -346,6 +346,6 @@ int main(int argc, char **argv)
         forceSeptant = (argv[3][0] == 'y');
     }
     std::cout << "Running with file=" << fileString << ", detid=" << detid <<", forceSeptant=" << forceSeptant << std::endl; 
-    pruneTreeEnvelope(fileString, detid, forceSeptant);
+    pruneTreeLGtest(fileString, detid, forceSeptant);
 }
 
