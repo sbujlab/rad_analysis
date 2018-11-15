@@ -82,7 +82,7 @@ double getAngle(double x, double y)
 
 const double s = sin(2 * pi / 7.0);
 const double c = cos(2 * pi / 7.0);
-remollEventParticle_t rotateVector(remollEventParticle_t part)
+remollEventParticle_t rotateVector(remollEventParticle_t part, bool mir)
 {
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
@@ -139,14 +139,19 @@ remollEventParticle_t rotateVector(remollEventParticle_t part)
             y = tY;
         }
         newPart.tjx.push_back(x);
-        newPart.tjy.push_back((y < 0 )? -y : y);
+        if (mir) {
+            newPart.tjy.push_back((y < 0 )? -y : y);
+        }
+        else{
+            newPart.tjy.push_back(y);
+        }
         newPart.tjz.push_back(part.tjz.at(i));
     }
     //std::cout << "Rotated " << std::endl;
     return newPart;
 }
 
-remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
+remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit, bool mir)
 {
     remollGenericDetectorHit_t newHit;// = new remollGenericDetectorHit_t();
     newHit.z = hit.z;
@@ -169,7 +174,12 @@ remollGenericDetectorHit_t rotateVector(remollGenericDetectorHit_t hit)
     }
     //std::cout << "To " << getAngle(x, y) / (2 * pi) * 7 << std::endl;
     newHit.x = x;
-    newHit.y = (y < 0)? -y : y;
+    if (mir){
+        newHit.y = (y < 0)? -y : y;
+    }
+    else {
+        newHit.y = y;
+    }
     return newHit;
 }
 
@@ -228,11 +238,12 @@ void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceS
     std::ostringstream os;
     os << file.substr(0, dotPos) << "_LGtest_det" << detid << ".root";
     std::string fileName = os.str();
+    bool mirror = false;
     double lowR = 935.0;
     double highR = 1100.0;
-    bool hitRcut = true;
+    bool hitRcut = false;
     double lowE = 1000.0;
-    bool lowEcut = true;
+    bool lowEcut = false;
     TFile *old = new TFile(file.c_str());
     TTree *oldTree = (TTree*)old->Get("T");
     TFile *newFile = new TFile(fileName.c_str(),"RECREATE", "", 1);
@@ -286,7 +297,7 @@ void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceS
                     //std::cout << "good part TRID " << part.trid << std::endl;
                     worthyTRID.push_back(part.trid);
 	                //Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
-                    if (forceSeptant) part = interpolate(rotateVector(part));
+                    if (forceSeptant) part = interpolate(rotateVector(part, mirror));
                     else part = interpolate(part);
                     partCopy->push_back(trim(part));
                     break;
@@ -302,7 +313,7 @@ void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceS
                 //and save the corresponding hit aswell
                 if (trid == hit.trid)
                 {
-                    if (forceSeptant) hit = rotateVector(hit);
+                    if (forceSeptant) hit = rotateVector(hit, mirror);
                     hitCopy->push_back(trim(hit));
                     break;
                 }
