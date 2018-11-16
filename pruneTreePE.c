@@ -231,7 +231,7 @@ void pruneTreePE(std::string file="tracking.root", int detid=50001)
     std::vector < remollEventParticle_t > *fPart = 0;
     int dotPos = file.rfind(".");   
     std::ostringstream os;
-    os << file.substr(0, dotPos) << "_PE.root";
+    os << file.substr(0, dotPos) << "_PEs_"<<"det_"<<detid<<".root";
     std::string fileName = os.str();
     TFile *old = new TFile(file.c_str());
     TTree *oldTree = (TTree*)old->Get("T");
@@ -256,7 +256,7 @@ void pruneTreePE(std::string file="tracking.root", int detid=50001)
     //TODO reading data into envelopes downstream could be sped up
     //by storing the data by Z instead of by hit
     
-    newTree->Branch("catPEs", &Q);
+    newTree->Branch("catpes", &Q);
     newTree->Branch("q", &Q);
     newTree->Branch("ref", &Ref);
     newTree->Branch("refx", &RefX);
