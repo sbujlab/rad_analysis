@@ -250,8 +250,6 @@ void pe(std::string file="tracking.root", int detid=50001)
     std::vector < PMTcat_t > *PMTcat = new std::vector < PMTcat_t > ;
     std::vector < PMTbulk_t > *PMTbulk = new std::vector < PMTbulk_t > ;
     std::vector < elseX_t > *elseX = new std::vector < elseX_t > ;
-    std::vector < remollGenericDetectorHit_t > *hitCopy = new std::vector < remollGenericDetectorHit_t > ;
-    std::vector < remollEventParticle_t > *partCopy = new std::vector < remollEventParticle_t > ;
 
     //TODO reading data into envelopes downstream could be sped up
     //by storing the data by Z instead of by hit
@@ -358,11 +356,19 @@ void pe(std::string file="tracking.root", int detid=50001)
         }
         catPEs->push_back(catPEsTrim(eDETID,(int)peTRID.size(),catHitx,catHity,catHitz)); 
         elseX->push_back(elseXTrim(((int)peTRID.size()-detSourcedPEs),catHitx,catHity,catHitz));
-        if (hitCopy->size() > 0){
+        if (catPEs->size() > 0){
             newTree->Fill();
 	    }
-        hitCopy->clear();
-        partCopy->clear();
+        catPEs->clear();
+        elseX->clear();
+        Q->clear();
+        Refair->clear();
+        Ref->clear();
+        RefX->clear();
+        LGair->clear();
+        LG->clear();
+        PMTbulk->clear();
+        PMTcat->clear();
     }
     newFile = newTree->GetCurrentFile();
     newTree->Write("", TObject::kOverwrite);
