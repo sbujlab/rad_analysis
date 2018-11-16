@@ -65,9 +65,9 @@ remollEventParticle_t trim(remollEventParticle_t part)
     newPart.tpx=0;
     newPart.tpy=0;
     newPart.tpz=0;
-    newPart.tjx = part.tjx;
-    newPart.tjy = part.tjy;
-    newPart.tjz = part.tjz;
+    //newPart.tjx =0;// part.tjx;
+    //newPart.tjy =0;// part.tjy;
+    //newPart.tjz =0;// part.tjz;
     return newPart;
 }
 const double septant = (2*pi/7.0);
@@ -87,7 +87,7 @@ remollEventParticle_t rotateVector(remollEventParticle_t part, bool mir)
     remollEventParticle_t newPart;
     newPart.pid = part.pid;
     newPart.trid = part.trid;
-    double startZ = 5880;//5980; //right after the end of the acceptance defining collimator
+    double startZ = 24000;//5980; //right in front of the detector plane
     double x, y;
     bool rot = false;
     for (int i = 0; i < part.tjz.size()-1; i++)
@@ -277,6 +277,13 @@ void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceS
         for (size_t i = 0; i < fHit->size(); i++)
         {
             remollGenericDetectorHit_t hit = fHit->at(i); 
+            //Count each optical photon hit in an entry, iff the primary electron hits a detector, also sum accidentals
+            // Make a root tree out of the amounts (and locations) of photon hits on the various detectors
+            // Each branch is a different detector that the electron can hit (quartz, wall, air, cathode, PMT, etc.)
+            //  Store the electron hit location and energy, etc. for that hit
+            //  Store the total number of photons that hit the cathode after that electron hit, and their cathode hit info
+            
+
             //Get all track ids that hit into desired det
             if (hit.det == detid && (!lowEcut || !(hit.e<lowE)) && (!hitRcut || !(hit.r<lowR || hit.r>highR)))
             {
@@ -284,7 +291,7 @@ void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceS
                 goodTRID.push_back(hit.trid);
             }
         }
-        
+
         for (size_t i = 0; i < fPart->size();i++)
         {
             remollEventParticle_t part = fPart->at(i);
@@ -336,7 +343,6 @@ void pruneTreeLGtest(std::string file="tracking.root", int detid=28, bool forceS
 int main(int argc, char **argv)
 {
     std::string fileString = "tracking.root";
-    int detid = 28;
     bool forceSeptant = true;
     if (argc <= 1 || argc > 4)
     {
