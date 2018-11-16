@@ -224,7 +224,7 @@ elseX_t elseXTrim(int peLen, std::vector<double> catHitx, std::vector<double> ca
     return newHit; 
 }
 
-void pruneTreePE(std::string file="tracking.root", int detid=50001)
+void pe(std::string file="tracking.root", int detid=50001)
 {
     TTree::SetMaxTreeSize(Long64_t(1024)*1024*1024*200); //200 GB tree
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
@@ -256,7 +256,7 @@ void pruneTreePE(std::string file="tracking.root", int detid=50001)
     //TODO reading data into envelopes downstream could be sped up
     //by storing the data by Z instead of by hit
     
-    newTree->Branch("catpes", &Q);
+    newTree->Branch("catpes", catPEs);
     newTree->Branch("q", &Q);
     newTree->Branch("ref", &Ref);
     newTree->Branch("refx", &RefX);
@@ -377,7 +377,7 @@ int main(int argc, char **argv)
     int detid=50001;
     if (argc <= 1 || argc > 3)
     {
-        std::cerr << "Usage: ./pruneTreePE char*:filename int:detid" << std::endl;
+        std::cerr << "Usage: ./pe char*:filename int:detid" << std::endl;
         exit(0);
     }
     if (argc >= 2) 
@@ -390,6 +390,6 @@ int main(int argc, char **argv)
         detid = atoi(argv[2]);    
     }
     std::cout << "Running with file=" << fileString << ", detid=" << detid << std::endl; 
-    pruneTreePE(fileString, detid);
+    pe(fileString, detid);
 }
 

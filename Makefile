@@ -25,13 +25,13 @@ make pruneTreeLGtest:
 	g++ pruneTreeLGtest.o libremoll.so -o pruneTreeLGtest `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
 	rm pruneTreeLGtest.o
 
-make pruneTreePE:
-	g++ -g -c pruneTreePE.c -o pruneTreePE.o `root-config --cflags --glibs`
-	g++ pruneTreePE.o libremoll.so -o pruneTreePE `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
-	rm pruneTreePE.o
-	g++ -shared -o libpruneTreePE.so -fPIC pruneTreePE.c `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
+make pe:
+	g++ libremoll.so -shared -o libpe.so -fPIC pe.cc `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
+	g++ -g -c pe.c -o pe.o `root-config --cflags --glibs`
+	g++ pe.o libremoll.so -o pe `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
+	rm pe.o
 
 clean:
 	rm ./*.o
 	rm ./fom
-	rm hallRad; rm rad_dose; rm pruneTree; rm pruneTreeEnvelope; rm pruneTreeLGtest; rm pruneTreePE;
+	rm hallRad; rm rad_dose; rm pruneTree; rm pruneTreeEnvelope; rm pruneTreeLGtest; rm pe;
