@@ -43,6 +43,7 @@ iterator () {
     cp build/libremoll.so output/out_${mod}_${i}deg/
     cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}deg/
     cp rad_analysis/pruneTreePE output/out_${mod}_${i}deg/
+    cp rad_analysis/libpruneTreePE.so output/out_${mod}_${i}deg/
     cp schema/* output/out_${mod}_${i}deg/geometry/schema/
     cp detector/mollerParallel.gdml output/out_${mod}_${i}deg/geometry/
     cp detector/materialsOptical.xml output/out_${mod}_${i}deg/geometry/

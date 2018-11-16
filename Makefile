@@ -29,6 +29,7 @@ make pruneTreePE:
 	g++ -g -c pruneTreePE.c -o pruneTreePE.o `root-config --cflags --glibs`
 	g++ pruneTreePE.o libremoll.so -o pruneTreePE `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
 	rm pruneTreePE.o
+	g++ -shared -o libpruneTreePE.so -fPIC pruneTreePE.c `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
 
 clean:
 	rm ./*.o
