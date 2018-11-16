@@ -17,7 +17,7 @@
 
 #include "TTimeStamp.h"
 
-enum SampType_t { kActiveTargetVolume, kAllTargetVolumes };
+enum SampType_t { kNoTargetVolume, kActiveTargetVolume, kAllTargetVolumes };
 
 struct filedata_t {
     char filename[__RUNSTR_LEN];
@@ -49,7 +49,6 @@ struct remollEventParticle_t {
   double sx, sy, sz;
   double th, ph, p;
   double tpx, tpy, tpz;
-  int trid;
   std::vector<double> tjx, tjy, tjz; //Trajectory information
 };
 
