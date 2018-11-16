@@ -42,6 +42,7 @@ iterator () {
     cp build/remoll output/out_${mod}_${i}deg/
     cp build/libremoll.so output/out_${mod}_${i}deg/
     cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}deg/
+    cp rad_analysis/pruneTreePE output/out_${mod}_${i}deg/
     cp schema/* output/out_${mod}_${i}deg/geometry/schema/
     cp detector/mollerParallel.gdml output/out_${mod}_${i}deg/geometry/
     cp detector/materialsOptical.xml output/out_${mod}_${i}deg/geometry/
@@ -202,16 +203,8 @@ runscriptPrinter () {
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
-./remoll ./runexample_${mod}_${1}deg.mac
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50001
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50101
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50201
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50301
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50401
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50501
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50601
-./pruneTreeLGtest remollout_r5o_external_${mod}_${1}deg.root 50701
-# parse, but only look at hits coming from the same event as hit the specified detector - like - but add a cut: ./pruneTree remoll_${mod}_1M.root 28 n
+./remoll -t 1 -m ./runexample_${mod}_${1}deg.mac
+./pruneTreePE remollout_r5o_external_${mod}_${1}deg.root 50001
 EOM
 }
 

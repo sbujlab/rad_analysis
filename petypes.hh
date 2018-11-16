@@ -23,7 +23,7 @@ struct catPEs_t { // The full spectrum regardless of source
   int nPEs; // PE counts per event
   std::vector<int> detIDs; // store the det IDs too
   std::vector<double> catHitx, catHity, catHitz; //Cathode PE hit information
-} 
+};
 
 struct Q_t { // Quartz Hits
   int nPEs;

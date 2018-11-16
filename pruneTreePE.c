@@ -11,18 +11,18 @@
 
 #define pi 3.141592653589793238462643383279502884L
 
-catPEs_t trim(std::vector<int> detids, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+catPEs_t catPEsTrim(std::vector<int> detids, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     catPEs_t newHit;
     newHit.nPEs=peLen;
     newHit.detIDs=detids;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-Q_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+Q_t QTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     Q_t newHit;
     newHit.det = hit.det;
@@ -40,13 +40,13 @@ Q_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHi
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-Ref_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+Ref_t RefTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     Ref_t newHit;
     newHit.det = hit.det;
@@ -64,13 +64,13 @@ Ref_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> cat
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-RefX_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+RefX_t RefXTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     RefX_t newHit;
     newHit.det = hit.det;
@@ -88,13 +88,13 @@ RefX_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> ca
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-Refair_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+Refair_t RefairTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     Refair_t newHit;
     newHit.det = hit.det;
@@ -112,13 +112,13 @@ Refair_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> 
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-LG_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+LG_t LGTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     LG_t newHit;
     newHit.det = hit.det;
@@ -136,13 +136,13 @@ LG_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catH
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-LGair_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+LGair_t LGairTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     LGair_t newHit;
     newHit.det = hit.det;
@@ -160,13 +160,13 @@ LGair_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> c
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-PMTcat_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+PMTcat_t PMTcatTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     PMTcat_t newHit;
     newHit.det = hit.det;
@@ -184,13 +184,13 @@ PMTcat_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> 
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-PMTbulk_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+PMTbulk_t PMTbulkTrim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     PMTbulk_t newHit;
     newHit.det = hit.det;
@@ -208,19 +208,19 @@ PMTbulk_t trim(remollGenericDetectorHit_t hit, size_t peLen, std::vector<double>
     newHit.vy=hit.vy;
     newHit.vz=hit.vz;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
-elseX_t trim(int peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
+elseX_t elseXTrim(int peLen, std::vector<double> catHitx, std::vector<double> catHity, std::vector<double> catHitz)
 {
     elseX_t newHit;
     newHit.nPEs=peLen;
-    newHit.cadHitx=cadHitx;
-    newHit.cadHity=cadHity;
-    newHit.cadHitz=cadHitz;
+    newHit.catHitx=catHitx;
+    newHit.catHity=catHity;
+    newHit.catHitz=catHitz;
     return newHit; 
 }
 
@@ -280,8 +280,8 @@ void pruneTreePE(std::string file="tracking.root", int detid=50001)
         std::vector<int> eDETID;
         std::vector<int> peTRID;
         int detSourcedPEs = 0;
-        std::vector<int> x, y, z, px, py, pz, p, e, m, vx, vy, vz;
-        std::vector<int> catHitx, catHity, catHitz;
+        std::vector<double> x, y, z, px, py, pz, p, e, m, vx, vy, vz;
+        std::vector<double> catHitx, catHity, catHitz;
         // Log which electron track IDs (and other info) hit which detectors, and which PE IDs hit the cathode and where
         // Attribute all npe counts and cathode hit positions to all eDETID branches that are hit during that event (in lieu of getting photon birth vertex properly down)
         // int npe = 0; // do this as peTRID->Size();
@@ -329,37 +329,35 @@ void pruneTreePE(std::string file="tracking.root", int detid=50001)
                     //std::cout << "electron TRID " << hit.trid << std::endl;
                     // Make the electron hit info go into the appropriate detector branch
                     if (hit.det == detid) {     // quartz
-                        Q->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz)); 
+                        Q->push_back(QTrim(hit,peTRID.size(),catHitx,catHity,catHitz)); 
                     }
                     if (hit.det == detid+100) { // reflector air
-                        Refair->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz)); 
+                        Refair->push_back(RefairTrim(hit,peTRID.size(),catHitx,catHity,catHitz)); 
                     }
                     if (hit.det == detid+200) { // reflector skin
-                        Ref->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz)); 
+                        Ref->push_back(RefTrim(hit,peTRID.size(),catHitx,catHity,catHitz)); 
                     }
                     if (hit.det == detid+300) { // reflector volume
-                        RefX->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz));  
+                        RefX->push_back(RefXTrim(hit,peTRID.size(),catHitx,catHity,catHitz));  
                     }
                     if (hit.det == detid+400) { // light guide air
-                        LGair->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz));   
+                        LGair->push_back(LGairTrim(hit,peTRID.size(),catHitx,catHity,catHitz));   
                     }
                     if (hit.det == detid+500) { // light guide skin
-                        LG->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz));   
+                        LG->push_back(LGTrim(hit,peTRID.size(),catHitx,catHity,catHitz));   
                     }
                     if (hit.det == detid+600) { // PMT bulk
-                        PMTbulk->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz));   
+                        PMTbulk->push_back(PMTbulkTrim(hit,peTRID.size(),catHitx,catHity,catHitz));   
                     }
                     if (hit.det == detid+700) { // PMT cathode
-                        PMTcat->push_back(trim(hit,peTRID.size(),catHitx,catHity,catHitz));   
+                        PMTcat->push_back(PMTcatTrim(hit,peTRID.size(),catHitx,catHity,catHitz));   
                     }
                     //break; //how is this useful?? I want to muliple count
                 }
             }   
         }
-        if (hit.pid == 0 && hit.det == detid+700) {     // pe Cathode hits
-            catPEs->push_back(trim(eDETID,(int)peTRID.size(),catHitx,catHity,catHitz)); 
-            elseX->push_back(trim((int)peTRID.size()-detSourcedPEs,catHitx,catHity,catHitz));
-        }
+        catPEs->push_back(catPEsTrim(eDETID,(int)peTRID.size(),catHitx,catHity,catHitz)); 
+        elseX->push_back(elseXTrim(((int)peTRID.size()-detSourcedPEs),catHitx,catHity,catHitz));
         if (hitCopy->size() > 0){
             newTree->Fill();
 	    }
@@ -376,6 +374,7 @@ void pruneTreePE(std::string file="tracking.root", int detid=50001)
 int main(int argc, char **argv)
 {
     std::string fileString = "tracking.root";
+    int detid=50001;
     if (argc <= 1 || argc > 3)
     {
         std::cerr << "Usage: ./pruneTreePE char*:filename int:detid" << std::endl;
