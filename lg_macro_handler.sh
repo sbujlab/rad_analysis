@@ -43,7 +43,7 @@ iterator () {
     cp build/libremoll.so output/out_${mod}_${i}deg/
     cp analysis/build/pe output/out_${mod}_${i}deg/
     cp analysis/build/libpe.so output/out_${mod}_${i}deg/
-    cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}deg/
+    #cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}deg/ # This is useful for pruning a normal run to only have det 28 hit info in it for use in the external generator
     cp schema/* output/out_${mod}_${i}deg/geometry/schema/
     cp detector/mollerParallel.gdml output/out_${mod}_${i}deg/geometry/
     cp detector/materialsOptical.xml output/out_${mod}_${i}deg/geometry/
