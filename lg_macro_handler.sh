@@ -41,8 +41,8 @@ iterator () {
     runscriptPrinter ${i}
     cp build/remoll output/out_${mod}_${i}deg/
     cp build/libremoll.so output/out_${mod}_${i}deg/
-    cp build/pe output/out_${mod}_${i}deg/
-    cp build/libpe.so output/out_${mod}_${i}deg/
+    cp analysis/build/pe output/out_${mod}_${i}deg/
+    cp analysis/build/libpe.so output/out_${mod}_${i}deg/
     cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}deg/
     cp schema/* output/out_${mod}_${i}deg/geometry/schema/
     cp detector/mollerParallel.gdml output/out_${mod}_${i}deg/geometry/
@@ -149,13 +149,13 @@ macroPrinter () {
 #/run/beamOn 100
 
 # Beam
-#/remoll/evgen/set beam
-#/remoll/evgen/beam/x -987.5
-#/remoll/evgen/beam/z -20.0
-#/remoll/evgen/beam/px -0.0523
-#/remoll/evgen/beam/pz 0.9986 
-#/remoll/filename remollout_r5o_beam_${mod}_${1}deg.root
-#/run/beamOn 50000 
+/remoll/evgen/set beam
+/remoll/evgen/beam/x -987.5
+/remoll/evgen/beam/z -20.0
+/remoll/evgen/beam/px -0.0523
+/remoll/evgen/beam/pz 0.9986 
+/remoll/filename remollout_r5o_beam_${mod}_${1}deg.root
+/run/beamOn 1000 
 
 # External
 /remoll/evgen/set external
@@ -164,7 +164,7 @@ macroPrinter () {
 /remoll/evgen/external/startEvent 0
 /remoll/evgen/external/zOffset -28550.0
 /remoll/filename remollout_r5o_external_${mod}_${1}deg.root
-/run/beamOn 50000
+/run/beamOn 1000
 EOM
 }
 
