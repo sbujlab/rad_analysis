@@ -26,6 +26,7 @@ iterator () {
     read -p 'Minimum value of variable: ' min
     read -p 'Maximum value of variable: ' max
     read -p 'Step size of variable: ' step
+    read -p 'Units: ' unit
     let final=$(printf "%.0f\n" "$(bc -l <<< \($max-$min\)/$step)")
     echo "Angle = "
     echo $final
@@ -33,33 +34,34 @@ iterator () {
 
   for i in `seq $initial $final`;
   do
-    name=out_${mod}_${i}deg
+    name=out_${mod}_${i}
     mkdir output/$name
     mkdir output/$name/geometry
     mkdir output/$name/geometry/schema
     macroPrinter ${i}
-    runscriptPrinter ${i}
-    cp build/remoll output/out_${mod}_${i}deg/
-    cp build/libremoll.so output/out_${mod}_${i}deg/
-    cp analysis/build/pe output/out_${mod}_${i}deg/
-    cp analysis/build/libpe.so output/out_${mod}_${i}deg/
-    #cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}deg/ # This is useful for pruning a normal run to only have det 28 hit info in it for use in the external generator
-    cp schema/* output/out_${mod}_${i}deg/geometry/schema/
-    cp detector/mollerParallel.gdml output/out_${mod}_${i}deg/geometry/
-    cp detector/materialsOptical.xml output/out_${mod}_${i}deg/geometry/
-    cp detector/detectorMotherP.csv output/out_${mod}_${i}deg/geometry/
-    cp detector/cadGeneratorV1.pl output/out_${mod}_${i}deg/geometry/
-    cp detector/gdmlGeneratorV1_materials.pl output/out_${mod}_${i}deg/geometry/
-    cp detector/qe.txt output/out_${mod}_${i}deg/geometry/
-    cp detector/UVS_45total.txt output/out_${mod}_${i}deg/geometry/
-    cp detector/MylarRef.txt output/out_${mod}_${i}deg/geometry/
+    cp build/remoll output/out_${mod}_${i}/
+    cp build/libremoll.so output/out_${mod}_${i}/
+    cp analysis/build/pe output/out_${mod}_${i}/
+    cp analysis/build/libpe.so output/out_${mod}_${i}/
+    #cp rad_analysis/pruneTreeLGtest output/out_${mod}_${i}/ # This is useful for pruning a normal run to only have det 28 hit info in it for use in the external generator
+    cp schema/* output/out_${mod}_${i}/geometry/schema/
+    cp detector/mollerParallel.gdml output/out_${mod}_${i}/geometry/
+    cp detector/materialsOptical.xml output/out_${mod}_${i}/geometry/
+    cp detector/detectorMotherP.csv output/out_${mod}_${i}/geometry/
+    cp detector/cadGeneratorV1.pl output/out_${mod}_${i}/geometry/
+    cp detector/gdmlGeneratorV1_materials.pl output/out_${mod}_${i}/geometry/
+    cp detector/qe.txt output/out_${mod}_${i}/geometry/
+    cp detector/UVS_45total.txt output/out_${mod}_${i}/geometry/
+    cp detector/MylarRef.txt output/out_${mod}_${i}/geometry/
     if [ $changeInclude -eq 0 ];
       then
       #changeIncludes $i $mod $min $max $final
-      perlPrinter $i $mod $min $max $final
+      tn=$(printf "%.2f\n" "$(bc -l <<< ${min}+\(\(${i}\)*\(${max}-${min}\)/${final}\))") #initial parameter + (iterator parameter-1) * (final - initial parameter limits) / number of steps
+      perlPrinter $i $tn $mod
     fi
-    cd output/out_${mod}_${i}deg
-    qsub runscript_${mod}_${i}deg.sh
+    runscriptPrinter ${i} ${tn} ${unit}
+    cd output/out_${mod}_${i}
+    qsub runscript_${mod}_${i}.sh
     sleep 1
     cd ../../
   done
@@ -123,14 +125,14 @@ macroPrinter () {
   #cd $BUILD
   modReader 
 
-  macroFileName="output/out_${mod}_${1}deg/runexample_${mod}_${1}deg.mac"
+  macroFileName="output/out_${mod}_${1}/runexample_${mod}_${1}.mac"
 
 /bin/cat <<EOM >$macroFileName
 
 #Shoots the backtraced moller hit distribution for the first septant at a single detector
 
 # This must be called before initialize
-/remoll/setgeofile geometry/mollerMother_${mod}_${1}deg.gdml
+/remoll/setgeofile geometry/mollerMother_${mod}_${1}.gdml
 
 /remoll/physlist/optical/enable 
 # This must be explicitly called
@@ -149,13 +151,13 @@ macroPrinter () {
 #/run/beamOn 100
 
 # Beam
-/remoll/evgen/set beam
-/remoll/evgen/beam/x -987.5
-/remoll/evgen/beam/z -20.0
-/remoll/evgen/beam/px -0.0523
-/remoll/evgen/beam/pz 0.9986 
-/remoll/filename remollout_r5o_beam_${mod}_${1}deg.root
-/run/beamOn 1000 
+#/remoll/evgen/set beam
+#/remoll/evgen/beam/x -987.5
+#/remoll/evgen/beam/z -20.0
+#/remoll/evgen/beam/px -0.0523
+#/remoll/evgen/beam/pz 0.9986 
+#/remoll/filename remollout_r5o_beam_${mod}_${1}.root
+#/run/beamOn 10000 
 
 # External
 /remoll/evgen/set external
@@ -163,8 +165,8 @@ macroPrinter () {
 /remoll/evgen/external/detid 28
 /remoll/evgen/external/startEvent 0
 /remoll/evgen/external/zOffset -28550.0
-/remoll/filename remollout_r5o_external_${mod}_${1}deg.root
-/run/beamOn 1000
+/remoll/filename remollout_r5o_external_${mod}_${1}.root
+/run/beamOn 50000
 EOM
 }
 
@@ -175,15 +177,14 @@ perlPrinter() {
   setBuildDir
   #cd $BUILD
   modReader
-  cd output/out_${mod}_${1}deg/geometry/
+  cd output/out_${mod}_${1}/geometry/
   
-  n=$(printf "%.2f\n" "$(bc -l <<< ${3}+\(\(${1}\)*\(${4}-${3}\)/${5}\))") #initial parameter + (iterator parameter-1) * (final - initial parameter limits) / number of steps
 #5.0,987.5,105,1,10,3,90,80,11.5,6,1350,3,6,3,17.33,17.33,-120,0.01
-/bin/cat <<EOM >cadp_${mod}_${1}deg.csv
-5.0,987.5,105,1,10,3,90,80,$n,6,1350,3,6,3,17.33,17.33,-120,0.01
+/bin/cat <<EOM >cadp_${mod}_${1}.csv
+5.0,987.5,105,1,10,3,90,80,${2},6,1350,3,6,3,17.33,17.33,-120,0.01
 EOM
-  perl cadGeneratorV1.pl -F cadp_${mod}_${1}deg.csv
-  perl gdmlGeneratorV1_materials.pl -M detectorMotherP.csv -D parameter.csv -P qe.txt -U UVS_45total.txt -R MylarRef.txt -L 5open -T _${mod}_${1}deg
+  perl cadGeneratorV1.pl -F cadp_${mod}_${1}.csv
+  perl gdmlGeneratorV1_materials.pl -M detectorMotherP.csv -D parameter.csv -P qe.txt -U UVS_45total.txt -R MylarRef.txt -L 5open -T _${mod}_${1}
  cd ../../../
 }
 
@@ -196,7 +197,7 @@ runscriptPrinter () {
   #cd $BUILD
   modReader 
 
-  qsubFileName="output/out_${mod}_${1}deg/runscript_${mod}_${1}deg.sh"
+  qsubFileName="output/out_${mod}_${1}/runscript_${mod}_${1}.sh"
   
 /bin/cat <<EOM >$qsubFileName
 #!/bin/bash
@@ -204,8 +205,9 @@ runscriptPrinter () {
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
-./remoll -t 1 -m ./runexample_${mod}_${1}deg.mac
-./pe remollout_r5o_external_${mod}_${1}deg.root 50001
+./remoll -t 1 -m ./runexample_${mod}_${1}.mac
+#./pe remollout_r5o_external_${mod}_${1}.root 50001 reflectorAngle theValue units (n)
+./pe remollout_r5o_external_${mod}_${1}.root 50001 ${mod} ${2} ${3}
 EOM
 }
 
