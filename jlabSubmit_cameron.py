@@ -140,7 +140,7 @@ def make_tarfile(sourceDir,config,ident):
     tar.add(sourceDir+"/geometry/targetDaughter_"+ident+".gdml" ,arcname="geometry/targetDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/geometry/targetDaughter_Clamshell_Optimized_2.gdml" ,arcname="geometry/targetDaughter_Clamshell_Optimized_2.gdml")
     tar.add(sourceDir+"/geometry/hallDaughter_"+ident+".gdml" ,arcname="geometry/hallDaughter_"+ident+".gdml")
-    tar.add(sourceDir+"/geometry/detectorDaughter_"+ident+".gdml" ,arcname="geometry/detectorDaughter_"+ident+".gdml")
+#    tar.add(sourceDir+"/geometry/detectorDaughter_"+ident+".gdml" ,arcname="geometry/detectorDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/geometry/upstreamDaughter_"+ident+".gdml" ,arcname="geometry/upstreamDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/geometry/hybridDaughter_"+ident+".gdml" ,arcname="geometry/hybridDaughter_"+ident+".gdml")
     tar.add(sourceDir+"/geometry/dumpDaughter_"+ident+".gdml" ,arcname="geometry/dumpDaughter_"+ident+".gdml")
