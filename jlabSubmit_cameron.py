@@ -19,13 +19,13 @@ def main():
    # f.close()
 
     #sourceDir = "/work/halla/parity/disk1/ciprian/prexSim"
-    sourceDir = "/work/halla/parity/disk1/moller12gev/cameronc/remoll"
-    outDir = "/lustre/expphy/volatile/halla/parity/cameronc/remoll/output/"+identifier
+    sourceDir = "/work/halla/moller12gev/cameronc/remoll"
+    outDir = "/lustre/expphy/volatile/halla/moller12gev/cameronc/remoll/output/"+identifier
     if not os.path.exists(outDir):
         os.makedirs(outDir)
-    nrEv   = 100000 #900000
+    nrEv   = 1000 #900000
     nrStart= 1
-    nrStopActual = 1000 #60
+    nrStopActual = 1 #60
     nrStop = nrStopActual+1 #60
     ###format should be Name (removed _)
     #"SAMs_noAl" #6inDonut_SAMs"  (spherical, cylindrical, noFace, noAl, noQ, noQnoAl)
@@ -129,6 +129,7 @@ def make_tarfile(sourceDir,config,ident):
     tar.add(sourceDir+"/build/remoll",arcname="remoll")
     tar.add(sourceDir+"/build/libremoll.so",arcname="libremoll.so")
     tar.add(sourceDir+"/rad_analysis/pruneTree",arcname="pruneTree")
+    tar.add(sourceDir+"/rad_analysis/hallRad",arcname="hallRad")
     #tar.add(sourceDir+"/macros/runexample_"+ident+".mac",arcname="runexample_"+ident+".mac") 
     #runexample overwrite could crash
     tar.add(sourceDir+"/map_directory",arcname="map_directory")
