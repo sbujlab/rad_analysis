@@ -52,7 +52,7 @@ int alreadyDrew = 0;
 void plotConfigRatiosHelper(string fileMode = "cadSAMs", string fileMod = "thin", string fileType = "NEIL_1001") {
 
 	// Format: thickness,mm,5,0.99041,0.0301189
-	vector<vector<string>> data = CSVParse(Form("output/SAM_%s_%s_%s.csv",fileMode.c_str(),fileMod.c_str(),fileType.c_str()));
+	vector<vector<string>> data = CSVParse(Form("output/%s_%s_%s.csv",fileMode.c_str(),fileMod.c_str(),fileType.c_str()));
 	int len = data.size();
 	// Plot data
 	//   for each entry in the vector, open the sub-vector and print the modifier to the plot name (with the units)
