@@ -17,7 +17,7 @@
 
 #include "TTimeStamp.h"
 
-enum SampType_t { kActiveTargetVolume, kAllTargetVolumes };
+enum SampType_t { kNoTargetVolume, kActiveTargetVolume, kAllTargetVolumes };
 
 struct filedata_t {
     char filename[__RUNSTR_LEN];
@@ -49,6 +49,8 @@ struct remollEventParticle_t {
   double sx, sy, sz;
   double th, ph, p;
   double tpx, tpy, tpz;
+  int trid;
+  std::vector<double> tjx, tjy, tjz; //Trajectory information
 };
 
 // Generic detector hit and sum structure
@@ -70,10 +72,16 @@ struct remollGenericDetectorHit_t {
   double vx, vy, vz;
   double edep;
 };
+struct remollGenericDetectorSumByPID_t {
+  double x,y,z;
+  double edep;
+  int pid;
+};
 struct remollGenericDetectorSum_t {
+  std::vector<remollGenericDetectorSumByPID_t> by_pid;
+  double edep;
   int det;
   int vid;
-  double edep;
 };
 
 // System of units structure
