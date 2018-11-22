@@ -27,7 +27,7 @@ make pruneTreeLGtest:
 
 make pe:
 	g++ libremoll.so -shared -o libpe.so -fPIC pe.cc `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
-	g++ -g -c pe.c -o pe.o `root-config --cflags --glibs`
+	g++ -g -c pe.cc -o pe.o `root-config --cflags --glibs`
 	g++ pe.o libremoll.so -o pe `root-config --cflags --glibs` -L. -lremoll -Wl,-R.
 	rm pe.o
 

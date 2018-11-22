@@ -344,6 +344,7 @@ int main(int argc, char **argv)
 {
     std::string fileString = "tracking.root";
     bool forceSeptant = true;
+    int detid = 28;
     if (argc <= 1 || argc > 4)
     {
         std::cerr << "Usage: ./pruneTreeLGtest char*:filename int:detid y/n:rotateIntoSeptant" << std::endl;
