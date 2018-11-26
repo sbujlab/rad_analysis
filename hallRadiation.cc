@@ -256,22 +256,22 @@ void Initialize(){
             int nrBins=nBins;
             vector<TH1D*> dt2,da2,dv2;
             for(int idmg=0;idmg<n_plots;idmg++){
-                if(idmg>=n_types) nrBins=100;
+                if(idmg>=n_types) nrBins=121;// was 100
                 TH1D *h=new TH1D(Form("ht_%d_%s_%s",detNr[id],hPnm[ip].c_str(),type[idmg].c_str()),
                         Form("Total hits for det %d| part: %s| %s; energy [MeV]",
                             detNr[id],hPnm[ip].c_str(),type[idmg].c_str()),
-                        nrBins,-6,3.3);
+                        nrBins,-8,4.1);
 
                 TH1D *a=new TH1D(Form("ha_%d_%s_%s",detNr[id],hPnm[ip].c_str(),type[idmg].c_str()),
                         Form("Hits/(%d ev) hits for det %d| part: %s| %s; energy [MeV]",
                             nAvg,detNr[id],hPnm[ip].c_str(),type[idmg].c_str()),
-                        nrBins,-6,3.3);
+                        nrBins,-8,4.1);
 
                 //dummy histograms
                 TH1D *v=new TH1D(Form("hv_%d_%s_%s",detNr[id],hPnm[ip].c_str(),type[idmg].c_str()),
                         Form("Hits/(%d ev) hits for det %d| part: %s| %s; energy [MeV]",
                             nAvg,detNr[id],hPnm[ip].c_str(),type[idmg].c_str()),
-                        nrBins,-6,3.3);
+                        nrBins,-8,4.1);//was 100, -6, 3.3
 
                 if(idmg>=n_types){
                     double xBins[101];
@@ -279,7 +279,7 @@ void Initialize(){
                         xBins[i]    = i*(0.1)/40;
                         xBins[40+i] = 0.1 + i*(10-0.1)/40;
                         if(i<=20)
-                            xBins[80+i] = 10  + i*(2000 - 10)/20;
+                            xBins[80+i] = 10  + i*(13000 - 10)/20;
                     }
                     h -> GetXaxis() -> Set(nBins,xBins);
                     a -> GetXaxis() -> Set(nBins,xBins);
@@ -428,7 +428,7 @@ int processInput(int argc, char **argv){
             detNr.clear();
             for(int elem=i+1;elem<argc;elem++){
                 int det = atoi(argv[elem]);
-                if(det<1000 || det>12000) break;
+                if(det<10 || det>120000) break;
                 detNr.push_back(det);
             }
         }
