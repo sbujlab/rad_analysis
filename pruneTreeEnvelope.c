@@ -229,9 +229,41 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     return newPart;    
 }
 
-void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, double energyCut=0.0, int ringCut=0, bool forceSeptant=true)
-{
-    TTree::SetMaxTreeSize(Long64_t(1024)*1024*1024*200); //200 GB tree
+bool isValid(remollEventParticle_t part){
+    int stepSize = 10;
+    bool invert = false;
+    int acceptZ = 5975; //Z value for the acceptance defining col
+    double lowR = 35.3; 
+    double highR = 98;
+    for(size_t i = 0; i < (part.tjx).size()-1; i++){
+        double x, y, dx, dy, dz;
+        double xi = part.tjx[i];
+        double yi = part.tjy[i];
+        double zi = part.tjz[i];
+        double xf = part.tjx[i+1];
+        double yf = part.tjy[i+1];
+        double zf = part.tjz[i+1];
+        if (zi <= acceptZ && acceptZ <= zf)
+        {
+            dx = xf - xi;
+            dy = yf - yi;
+            dz = zf - zi;
+            x = xi + (dx/dz)*(acceptZ-zi);
+            y = yi + (dy/dz)*(acceptZ-zi);
+            double radius = sqrt(x*x + y*y);
+            //xor is ^
+            if (invert ^ (radius < lowR || radius > highR))
+            {
+                return false;
+            }
+        }
+
+    }
+    return true;
+}
+        void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, double energyCut=0.0, int ringCut=0, bool forceSeptant=true)
+        {
+            TTree::SetMaxTreeSize(Long64_t(1024)*1024*1024*200); //200 GB tree
     std::vector < remollGenericDetectorHit_t > *fHit = 0;
     std::vector < remollEventParticle_t > *fPart = 0;
     int dotPos = file.rfind(".");   
@@ -336,11 +368,14 @@ void pruneTreeEnvelope(std::string file="tracking.root", int detid=28, double en
                 if (part.trid == goodTRID.at(k))
                 {
                     //std::cout << "good part TRID " << part.trid << std::endl;
-                    worthyTRID.push_back(part.trid);
 	                //Interpolate at z = 4,500mm to 30,000mm in increments of 10mm.
                     if (forceSeptant) part = interpolate(rotateVector(part, mirror));
                     else part = interpolate(part);
-                    partCopy->push_back(trim(part));
+                    if (isValid(part))
+                    {
+                        worthyTRID.push_back(part.trid);
+                        partCopy->push_back(trim(part));
+                    }
                     break;
                 }
             }   
