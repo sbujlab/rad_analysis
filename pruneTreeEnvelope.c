@@ -235,6 +235,12 @@ bool isValid(remollEventParticle_t part){
     int acceptZ = 5975; //Z value for the acceptance defining col
     double lowR = 35.3; 
     double highR = 98;
+ 
+    bool planeInvert = true;
+    int planeZ = 28000;
+    double planeR = 1200;
+
+
     for(size_t i = 0; i < (part.tjx).size()-1; i++){
         double x, y, dx, dy, dz;
         double xi = part.tjx[i];
@@ -257,7 +263,20 @@ bool isValid(remollEventParticle_t part){
                 return false;
             }
         }
-
+        if (zi <= planeZ && planeZ <= zf)
+        {
+            dx = xf - xi;
+            dy = yf - yi;
+            dz = zf - zi;
+            x = xi + (dx/dz)*(planeZ-zi);
+            y = yi + (dy/dz)*(planeZ-zi);
+            double radius = sqrt(x*x + y*y);
+            //xor is ^
+            if (planeInvert ^ (radius > planeR))
+            {
+                return false;
+            }
+        }
     }
     return true;
 }
