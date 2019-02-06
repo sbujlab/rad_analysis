@@ -253,7 +253,8 @@ remollEventParticle_t interpolate(remollEventParticle_t part){
     }
     return newPart;    
 }
-
+//apply user defined cuts
+//answers the question "Is this a valid track after applying all cuts?"
 bool isValid(remollEventParticle_t part){
     int stepSize = 10;
 
@@ -293,11 +294,13 @@ bool isValid(remollEventParticle_t part){
         double yf = part.tjy[i+1];
         double zf = part.tjz[i+1];
 
-        int cutLen = 4;
+        int cutLen = 4; //apply the first n cuts in the array
         //              coll cut      ring cuts  
         double cutR[] = {35.3,  98.0, 690,   1200,  374.8, 640.5, 680.0, 1054};
         int cutZ[] =    {5975,  5975, 28228, 28228, 12800, 17811, 19500, 24200};
-        bool gte[] =    {false, true, false, true,  false, false, false, false};//include greater or equal
+        bool gte[] =    {false, true, false, true,  false, false, false, false};
+        //false -> include all particles radius > R
+        //true -> include all particles radius <= R
         for (int j = 0; j < cutLen; j++)
         {
             if (zi <= cutZ[j] && cutZ[j] <= zf)
@@ -308,10 +311,11 @@ bool isValid(remollEventParticle_t part){
                 x = xi + (dx/dz)*(cutZ[j]-zi);
                 y = yi + (dy/dz)*(cutZ[j]-zi);
                 double radius = sqrt(x*x + y*y);
-                //xor is ^
+                //xor is ^: false has no effect, true inverts < to >=
                 if (gte[j] ^ (radius < cutR[j]))
                 {
-                    return false;
+                    //this part is cut out
+                    return false; 
                 }
             }
         }
